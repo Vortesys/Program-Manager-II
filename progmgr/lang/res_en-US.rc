@@ -1,0 +1,53 @@
+/* * * * * * * *\
+	RES_EN-US.RC -
+		Copyright (c) 2023 freedom7341, Freedom Desktop
+	DESCRIPTION -
+		This file contains the language-specific
+		English resources for the Program Manager.
+	LICENSE INFORMATION -
+		MIT License, see LICENSE.txt in the root folder
+\* * * * * * * */
+
+// Includes
+#include "dlg_en-US.rc"
+
+// Menu bar
+PROGMANMENU MENU PRELOAD
+BEGIN
+	POPUP			"&File"
+	BEGIN
+		MENUITEM	"&New\tCtrl+N",				IDM_NEW
+		MENUITEM	"&Open\tEnter",				IDM_OPEN
+		MENUITEM	"&Move\tF7",				IDM_MOVE
+		MENUITEM	"&Copy\tF8",				IDM_COPY
+		MENUITEM	"&Delete\tDel",				IDM_DELETE
+		MENUITEM	"&Properties\tAlt+Enter",	IDM_PROPS
+		MENUITEM	SEPARATOR
+		MENUITEM	"&Run...",					IDM_RUN
+		MENUITEM	SEPARATOR
+		MENUITEM	"E&xit Windows",			IDM_SHUTDOWN
+	END
+	POPUP			"&Options"
+	BEGIN
+		MENUITEM	"&Auto Arrange",            IDM_AUTOARRANGE
+		MENUITEM	"&Minimize on Use",         IDM_MINONRUN
+		MENUITEM	"&Save Settings on Exit",   IDM_SAVESETTINGS
+		MENUITEM	SEPARATOR
+		MENUITEM	"Save Settings &Now",       IDM_SAVENOW
+	END
+	POPUP			"&Window"
+	BEGIN
+		MENUITEM	"&Cascade\tShift+F5",		IDM_CASCADE
+		MENUITEM	"Tile &Horizontally",		IDM_TILEHORIZONTALLY
+		MENUITEM	"&Tile Vertically\tShift+F4",	IDM_TILE
+		MENUITEM	"&Arrange Icons",			IDM_ARRANGEICONS
+	END
+	POPUP			"&Help"
+	BEGIN
+		MENUITEM	"&Contents",				IDM_HELPINDEX
+		MENUITEM	"&Search for Help on..."	IDM_HELPSEARCH
+		MENUITEM	"&How to Use Help",			IDM_HELPHELP
+		MENUITEM	SEPARATOR
+		MENUITEM	"&About Program Manager",	IDM_ABOUT
+	END
+END
