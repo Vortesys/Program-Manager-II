@@ -14,6 +14,7 @@
 #include <wtypes.h>
 
 /* Defines */
+#define SHELL_KEY  L"Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon"
 #define PROGMAN_KEY  L"Software\\Microsoft\\Windows NT\\CurrentVersion\\Program Manager"
 #define WINDOWS_KEY  L"Software\\Microsoft\\Windows NT\\CurrentVersion\\Windows"
 #define PROGMGR_KEY  L"Software\\Freedom Desktop\\Program Manager II"
@@ -25,3 +26,4 @@
 
 /* Function Prototypes */
 BOOL InitializeRegistryKeys(VOID);
+BOOL IsProgMgrDefaultShell(VOID);

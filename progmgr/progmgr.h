@@ -13,6 +13,21 @@
 name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
 processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
+/* Includes */
+#include <wtypes.h>
+
 /* Macros and Defines */
 #define CharSizeOf(x) (sizeof(x) / sizeof(*x))
 
+/* Global Variables */
+// PROGMGR.C
+extern BOOL			bIsDefaultShell;
+extern HINSTANCE	hAppInstance;
+extern HWND			hwndProgMgr;
+extern HWND			hwndMDIClient;
+extern WCHAR		szAppTitle[32];
+extern WCHAR		szProgMgr[];
+
+/* Function Prototypes */
+// WNDPROC.C
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
