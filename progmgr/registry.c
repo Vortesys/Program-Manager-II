@@ -13,7 +13,6 @@
 #include <Windows.h>
 
 /* Functions */
-
 /* * * *\
 	InitializeRegistryKeys -
 		Takes the relevant Registry Keys and turns them
@@ -38,29 +37,22 @@ BOOL InitializeRegistryKeys()
 	RETURNS -
 		True if successful, false if unsuccessful.
 \* * * */
-#if 0
 BOOL IsProgMgrDefaultShell()
 {
 	HKEY hkeyWinlogon;
-	DWORD dwType;
-	DWORD cbBuffer;
+	//DWORD szShell;
+	//DWORD cbBuffer = 0;
 
 	if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, SHELL_KEY, 0, KEY_READ, &hkeyWinlogon) == ERROR_SUCCESS) {
-		cbBuffer = sizeof(szBuffer);
-		if (RegQueryValueEx(hkeyWinlogon, L"Shell", 0, NULL, (LPBYTE)szBuffer, &cbBuffer) == ERROR_SUCCESS) {
-			CharLower(szBuffer);
-			lpt = szBuffer;
-			while (lpt = wcsstr(lpt, szProgmgr)) {
+		//if (RegQueryValueEx(hkeyWinlogon, L"Shell", 0, NULL, szShell, &cbBuffer) == ERROR_SUCCESS) {
 				// we probably found progman
-				lpt += lstrlen(szProgmgr);
-				if (*lpt == TEXT(' ') || *lpt == TEXT('.') || *lpt == TEXT(',') || !*lpt)
-					bExitWindows = TRUE;
-			}
-		}
-		else {
+		//}
+	}
+	else {
 			// assume that progman is the shell.
-			bExitWindows = TRUE;
-		}
+	}
+
+	RegCloseKey(hkeyWinlogon);
+
 	return FALSE;
 }
-#endif

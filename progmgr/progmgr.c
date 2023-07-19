@@ -15,16 +15,17 @@
 #include <Windows.h>
 
 /* Variables */
-// Miscellaneous
+// Global
 BOOL		bIsDefaultShell = FALSE;
+// Global Strings
+WCHAR		szAppTitle[32];
+WCHAR		szProgMgr[] = L"progmgr";
+WCHAR		szWebsite[64];
 // Window Related
 HICON		hProgMgrIcon = NULL;
 HINSTANCE	hAppInstance;
 HWND		hwndProgMgr = NULL;
 HWND		hwndMDIClient = NULL;
-// Global Strings
-WCHAR		szAppTitle[32];
-WCHAR		szProgMgr[] = L"progmgr";
 
 /* Program Entry Point */
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
@@ -38,7 +39,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	// Create Important Strings
 	LoadString(hAppInstance, IDS_APPTITLE, szAppTitle, CharSizeOf(szAppTitle));
 	LoadString(hAppInstance, IDS_PMCLASS, szClass, CharSizeOf(szClass));
-
+	LoadString(hAppInstance, IDS_WEBSITE, szWebsite, CharSizeOf(szWebsite));
 
 	// And add Task Manager...
 	// LoadString(hAppInstance, IDS_TASKMGR, szBuffer, CharSizeOf(szBuffer));

@@ -25,8 +25,8 @@
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 
-	switch (message)
-	{
+	switch (message) {
+
 	case WM_CREATE:
 	{
 		RECT rc;
@@ -49,23 +49,82 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if (!hwndMDIClient) {
 			return -1;
 		}
-
 		break;
 	}
-	//case WM_SYSCOMMAND:
-	//{
+
+	case WM_SYSCOMMAND:
+	{
 		// if (wParam == IDM_TASKMGR) {
 		//ShellExecute(hwndProgMgr, &TEXT("OPEN\0"), &TEXT("TASKMGR.EXE\0"), NULL, NULL, SW_NORMAL);
 			// break;
 		// }
 		//break;
-	//}
+		if (wParam == IDM_FILE_SHUTDOWN) {
+			CmdProc(hWnd, wParam, lParam);
+			break;
+		}
+		if (wParam == IDM_FILE_RUN) {
+			CmdProc(hWnd, wParam, lParam);
+			break;
+		}
+		goto WndProcDefault;
+		//return DefFrameProc(hWnd, hwndMDIClient, uiMsg, wParam, lParam);
+	}
+
+	case WM_COMMAND:
+		if (CmdProc(hWnd, wParam, lParam)) {
+			break;
+		}
+		goto WndProcDefault;
+
 	case WM_CLOSE:
 		PostQuitMessage(0);
 		break;
+
 	default:
+WndProcDefault:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;
 
+}
+
+/* * * *\
+	CmdProc -
+		Program Manager's syscommand procedure.
+	RETURNS -
+		Zero if nothing, otherwise returns the good stuff.
+\* * * */
+LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	switch (GET_WM_COMMAND_ID(wParam, lParam)) {
+
+	case IDM_FILE_RUN:
+		RunFile(hWnd, NULL, NULL, NULL, NULL, RFF_CALCDIRECTORY);
+		break;
+
+	case IDM_FILE_SHUTDOWN:
+		ShutdownDlg(hWnd);
+		break;
+
+	case IDM_HELP_INDEX:
+		ShellExecute(NULL, L"open", szWebsite, NULL, NULL, SW_SHOWNORMAL);
+		break;
+
+	case IDM_HELP_ABOUT:
+	{
+		WCHAR szTitle[40];
+		OutputDebugString(L"ABOUT BALLS!");
+		HICON hIcon = LoadIcon(hAppInstance, MAKEINTRESOURCE(PROGMGRICON));
+
+		LoadString(hAppInstance, IDS_APPTITLE, szTitle, CharSizeOf(szTitle));
+		ShellAbout(hwndProgMgr, szTitle, NULL, hIcon);
+		break;
+	}
+
+	default:
+		return FALSE;
+	}
+
+	return TRUE;
 }
