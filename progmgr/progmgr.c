@@ -36,7 +36,7 @@ HWND		hWndMDIClient = NULL;
 	wWinMain -
 		Program Manager's entry point.
 \* * * */
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
 	MSG msg = { 0 };
 	HANDLE hAccel;
@@ -73,10 +73,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	if (!hAccel)
 		return FALSE;
 
-	InitializeRegistryKeys();
-	//if (IsProgMgrDefaultShell) {
+	// Perform Registry actions, close if registry is inaccessible.
+	if (!InitializeRegistryKeys())
+		return FALSE;
 
-	//}
+	bIsDefaultShell = IsProgMgrDefaultShell();
 
 	GetUserNameEx(NameSamCompatible, szUsername, &dwUsernameLen);
 	// OutputDebugString(szUsername);

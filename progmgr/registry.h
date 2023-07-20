@@ -18,11 +18,11 @@
 #define PROGMAN_KEY  L"Software\\Microsoft\\Windows NT\\CurrentVersion\\Program Manager"
 #define WINDOWS_KEY  L"Software\\Microsoft\\Windows NT\\CurrentVersion\\Windows"
 #define PROGMGR_KEY  L"Software\\Freedom Desktop\\Program Manager II"
-#define HKEYMAXLENGTH 261
+#define HKEYMAXLEN 261
 
 /* Global Registry Keys */
-//HKEY	hkeyProgramManager;
-//HKEY	hkeyPMSettings;
+//HKEY	hKeyProgramManager;
+//HKEY	hKeyPMSettings;
 
 /* Function Prototypes */
 BOOL InitializeRegistryKeys(VOID);

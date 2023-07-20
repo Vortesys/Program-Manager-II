@@ -8,9 +8,11 @@
 \* * * * * * * */
 
 /* Headers */
+#include "progmgr.h"
 #include "registry.h"
 // #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#include <shlwapi.h>
 
 /* Functions */
 /* * * *\
@@ -35,24 +37,35 @@ BOOL InitializeRegistryKeys()
 	IsProgMgrDefaultShell -
 		Detects if Program Manager is the default shell.
 	RETURNS -
-		True if successful, false if unsuccessful.
+		True if Program Manager is the default shell,
+		false if otherwise or an error occurs.
 \* * * */
 BOOL IsProgMgrDefaultShell()
 {
-	HKEY hkeyWinlogon;
-	//DWORD szShell;
-	//DWORD cbBuffer = 0;
+	HKEY hKeyWinlogon;
+	WCHAR szShell[HKEYMAXLEN] = L"";
+	DWORD dwType;
+	DWORD dwBufferSize;
 
-	if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, SHELL_KEY, 0, KEY_READ, &hkeyWinlogon) == ERROR_SUCCESS) {
-		//if (RegQueryValueEx(hkeyWinlogon, L"Shell", 0, NULL, szShell, &cbBuffer) == ERROR_SUCCESS) {
-				// we probably found progman
-		//}
+	if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, SHELL_KEY, 0, KEY_READ, &hKeyWinlogon) == ERROR_SUCCESS) {
+		if (RegQueryValueEx(hKeyWinlogon, L"Shell", 0, &dwType, (LPBYTE)szShell, &dwBufferSize) == ERROR_SUCCESS) {
+			if (StrStr(szShell, szProgMgr)) {
+				// ProgMgr detected >:)
+				RegCloseKey(hKeyWinlogon);
+				return TRUE;
+			}
+			else {
+				// Inferior shell detected.
+				RegCloseKey(hKeyWinlogon);
+				return FALSE;
+			}
+		}
 	}
 	else {
-			// assume that progman is the shell.
+		// Assume that we're the shell... just incase.
+		RegCloseKey(hKeyWinlogon);
+		return TRUE;
 	}
-
-	RegCloseKey(hkeyWinlogon);
-
+	// No registry access.
 	return FALSE;
 }
