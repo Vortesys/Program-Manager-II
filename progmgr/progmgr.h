@@ -20,7 +20,6 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 /* Macros and Defines */
 #define GET_WM_COMMAND_ID(wParam, lParam) LOWORD(wParam)
-#define CharSizeOf(x) (sizeof(x) / sizeof(*x))
 // RunFileDlg flags
 #define RFF_NOBROWSE		0x0001	// Removes the browse button
 #define RFF_NODEFAULT		0x0002	// No default item selected
@@ -46,7 +45,7 @@ extern WCHAR		szWebsite[64];
 /* Function Prototypes */
 // SHELLINT.C
 BOOL RunFile(HWND hWndOwner, HICON hIcon, LPWSTR lpszDir, LPWSTR lpszTitle, LPWSTR lpszDesc, DWORD dwFlags);
-BOOL ShutdownDlg(HWND hWndOwner);
+BOOL ExitWindowsDialog(HWND hWndOwner);
 // WNDPROC.C
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam);

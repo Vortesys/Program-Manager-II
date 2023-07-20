@@ -53,12 +53,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_SYSCOMMAND:
 	{
-		// if (wParam == IDM_TASKMGR) {
-		//ShellExecute(hwndProgMgr, &TEXT("OPEN\0"), &TEXT("TASKMGR.EXE\0"), NULL, NULL, SW_NORMAL);
-			// break;
-		// }
-		//break;
-		if (wParam == IDM_FILE_SHUTDOWN) {
+		if (wParam == IDM_SHUTDOWN) {
+			CmdProc(hWnd, wParam, lParam);
+			break;
+		}
+		if (wParam == IDM_TASKMGR) {
+			ShellExecute(hWndProgMgr, L"open", L"TASKMGR.EXE", NULL, NULL, SW_NORMAL);
+			break;
+		}
+		if (wParam == IDM_FILE_EXIT) {
 			CmdProc(hWnd, wParam, lParam);
 			break;
 		}
@@ -98,12 +101,16 @@ LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	switch (GET_WM_COMMAND_ID(wParam, lParam)) {
 
+	case IDM_SHUTDOWN:
+		ExitWindowsDialog(hWnd);
+		break;
+		
 	case IDM_FILE_RUN:
 		RunFile(hWnd, NULL, NULL, NULL, NULL, RFF_CALCDIRECTORY);
 		break;
 
-	case IDM_FILE_SHUTDOWN:
-		ShutdownDlg(hWnd);
+	case IDM_FILE_EXIT:
+		PostQuitMessage(0);
 		break;
 
 	case IDM_HELP_INDEX:
@@ -113,9 +120,8 @@ LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case IDM_HELP_ABOUT:
 	{
 		WCHAR szTitle[40];
-		// OutputDebugString(L"ABOUT BALLS!");
 
-		LoadString(hAppInstance, IDS_APPTITLE, szTitle, CharSizeOf(szTitle));
+		LoadString(hAppInstance, IDS_APPTITLE, szTitle, ARRAYSIZE(szTitle));
 		ShellAbout(hWndProgMgr, szTitle, NULL, hProgMgrIcon);
 		break;
 	}

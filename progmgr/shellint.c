@@ -35,25 +35,25 @@ BOOL RunFile(HWND hWndOwner,
 			return TRUE;
 	}
 
-	return 0;
+	return FALSE;
 }
 
 /* * * *\
-	ShutdownDlg -
+	ExitWindowsDialog  -
 		Produces a Shutdown dialog window.
 	RETURNS -
 		True if successful, false if unsuccessful.
 \* * * */
-BOOL ShutdownDlg(HWND hWndOwner)
+BOOL ExitWindowsDialog(HWND hWndOwner)
 {
 	HMODULE hLib = LoadLibrary(L"shell32.dll");
 
 	if (hLib) {
-		FARPROC fLib = GetProcAddress(hLib, MAKEINTRESOURCEA(60));
+		FARPROC fLib = GetProcAddress(hLib, (LPCSTR)60);
 		if (fLib(hWndOwner))
 			FreeLibrary(hLib);
 			return TRUE;
 	}
 
-	return 0;
+	return FALSE;
 }

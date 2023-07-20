@@ -40,7 +40,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 {
 	MSG msg = { 0 };
 	HANDLE hAccel;
+	HMENU hMenu;
+	HMENU hSystemMenu;
 	WNDCLASS wc = { 0 };
+	WCHAR szBuffer[256];
 	WCHAR szClass[16];
 	WCHAR szUsername[UNLEN + 1] = L"";
 	DWORD dwUsernameLen = UNLEN;
@@ -49,13 +52,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	hAppInstance = hInstance;
 
 	// Create Important Strings
-	LoadString(hAppInstance, IDS_APPTITLE, szAppTitle, CharSizeOf(szAppTitle));
-	LoadString(hAppInstance, IDS_PMCLASS, szClass, CharSizeOf(szClass));
-	LoadString(hAppInstance, IDS_WEBSITE, szWebsite, CharSizeOf(szWebsite));
+	LoadString(hAppInstance, IDS_APPTITLE, szAppTitle, ARRAYSIZE(szAppTitle));
+	LoadString(hAppInstance, IDS_PMCLASS, szClass, ARRAYSIZE(szClass));
+	LoadString(hAppInstance, IDS_WEBSITE, szWebsite, ARRAYSIZE(szWebsite));
 
 	// And add Task Manager...
-	// LoadString(hAppInstance, IDS_TASKMGR, szBuffer, CharSizeOf(szBuffer));
-	// InsertMenu(hSystemMenu, 6, MF_BYPOSITION | MF_STRING, IDM_TASKMGR, szBuffer);
+	// 
 
 	// Register the Frame Window
 	wc.lpfnWndProc = WndProc;
@@ -78,7 +80,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		return FALSE;
 
 	bIsDefaultShell = IsProgMgrDefaultShell();
-
+	
 	GetUserNameEx(NameSamCompatible, szUsername, &dwUsernameLen);
 	// OutputDebugString(szUsername);
 
@@ -92,7 +94,24 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		160, 80, 640, 480, 0, 0, hAppInstance, NULL))
 		return 2;
 
-	//hSystemMenu = GetSystemMenu(hwndProgman, FALSE);
+	// Load the menus...
+	hMenu = GetMenu(hWndProgMgr);
+	hSystemMenu = GetSystemMenu(hWndProgMgr, FALSE);
+
+	if (bIsDefaultShell) {
+		// Do all the fun stuff since we're the default shell
+		DeleteMenu(hSystemMenu, SC_CLOSE, MF_BYCOMMAND);
+
+		LoadString(hAppInstance, IDS_SHUTDOWN, szBuffer, ARRAYSIZE(szBuffer));
+		InsertMenu(hSystemMenu, 6, MF_BYPOSITION | MF_STRING, IDM_SHUTDOWN, szBuffer);
+		ModifyMenu(hMenu, IDM_FILE_EXIT, MF_BYCOMMAND | MF_STRING, IDM_SHUTDOWN, szBuffer);
+
+		LoadString(hAppInstance, IDS_RUN, szBuffer, ARRAYSIZE(szBuffer));
+		InsertMenu(hSystemMenu, 6, MF_BYPOSITION | MF_STRING, IDM_FILE_RUN, szBuffer);
+
+		LoadString(hAppInstance, IDS_TASKMGR, szBuffer, ARRAYSIZE(szBuffer));
+		InsertMenu(hSystemMenu, 6, MF_BYPOSITION | MF_STRING, IDM_TASKMGR, szBuffer);
+	}
 
 	while (GetMessage(&msg, NULL, 0, 0) > 0)
 	{
