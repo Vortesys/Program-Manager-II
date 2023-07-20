@@ -15,7 +15,6 @@
 #include <Windows.h>
 
 /* Functions */
-
 /* * * *\
 	WndProc -
 		Program Manager's window procedure.
@@ -24,7 +23,6 @@
 \* * * */
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-
 	switch (message) {
 
 	case WM_CREATE:
@@ -32,21 +30,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		RECT rc;
 		CLIENTCREATESTRUCT ccs;
 
-		hwndProgMgr = hWnd;
+		// Frame Window
+		hWndProgMgr = hWnd;
 
-		// ccs.hWindowMenu = GetSubMenu(GetMenu(hWnd), IDM_WINDOW);
-		// ccs.idFirstChild = IDM_CHILDSTART;
+		// MDI Client Window
+		ccs.hWindowMenu = GetSubMenu(GetMenu(hWnd), IDM_WINDOW);
+		ccs.idFirstChild = IDM_WINDOW_CHILDSTART;
 
-		GetClientRect(hwndProgMgr, &rc);
+		GetClientRect(hWndProgMgr, &rc);
 
-		hwndMDIClient = CreateWindow(TEXT("MDIClient"),
-			NULL,
-			WS_CLIPCHILDREN | WS_CHILD | WS_VSCROLL | WS_HSCROLL | WS_BORDER,
-			rc.left - 1, rc.top - 1,
-			rc.right + 2, rc.bottom + 2,
-			hWnd, (HMENU)1, hAppInstance,
-			(LPTSTR)&ccs);
-		if (!hwndMDIClient) {
+		hWndMDIClient = CreateWindow(L"MDIClient", NULL,
+			WS_CLIPCHILDREN | WS_CHILD | WS_VSCROLL | WS_HSCROLL,
+			// rc.left - 1, rc.top - 1, rc.right + 2, rc.bottom + 2,
+			0, 0, 0, 0,
+			hWnd, (HMENU)1, hAppInstance, (LPWSTR)&ccs);
+
+		if (!hWndMDIClient) {
 			return -1;
 		}
 		break;
@@ -83,7 +82,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	default:
 WndProcDefault:
-		return DefWindowProc(hWnd, message, wParam, lParam);
+		return DefFrameProc(hWnd, hWndMDIClient, message, wParam, lParam);
 	}
 	return 0;
 
@@ -114,11 +113,10 @@ LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case IDM_HELP_ABOUT:
 	{
 		WCHAR szTitle[40];
-		OutputDebugString(L"ABOUT BALLS!");
-		HICON hIcon = LoadIcon(hAppInstance, MAKEINTRESOURCE(PROGMGRICON));
+		// OutputDebugString(L"ABOUT BALLS!");
 
 		LoadString(hAppInstance, IDS_APPTITLE, szTitle, CharSizeOf(szTitle));
-		ShellAbout(hwndProgMgr, szTitle, NULL, hIcon);
+		ShellAbout(hWndProgMgr, szTitle, NULL, hProgMgrIcon);
 		break;
 	}
 
@@ -127,4 +125,15 @@ LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	}
 
 	return TRUE;
+}
+
+/* * * *\
+	ChildWndProc -
+		Program Manager's window procedure.
+	RETURNS -
+		Zero if nothing, otherwise returns the good stuff.
+\* * * */
+LRESULT CALLBACK ChildWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	return FALSE;
 }

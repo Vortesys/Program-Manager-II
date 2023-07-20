@@ -12,6 +12,7 @@
 #pragma comment(linker,"\"/manifestdependency:type='win32' \
 name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
 processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#pragma comment(lib, "Secur32.lib")
 
 /* Includes */
 #include <wtypes.h>
@@ -33,9 +34,10 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 /* Global Variables */
 // PROGMGR.C
 extern BOOL			bIsDefaultShell;
+extern HICON		hProgMgrIcon;
 extern HINSTANCE	hAppInstance;
-extern HWND			hwndProgMgr;
-extern HWND			hwndMDIClient;
+extern HWND			hWndProgMgr;
+extern HWND			hWndMDIClient;
 extern WCHAR		szAppTitle[32];
 extern WCHAR		szProgMgr[];
 extern WCHAR		szWebsite[64];

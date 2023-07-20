@@ -156,6 +156,7 @@
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="desktop.c" />
     <ClCompile Include="progmgr.c" />
     <ClCompile Include="registry.c" />
     <ClCompile Include="shellint.c" />

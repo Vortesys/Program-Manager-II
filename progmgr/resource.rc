@@ -19,7 +19,9 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 #include "lang\res_en-US.rc" // English (US)
 
 /* Primary Icon Library */
-PROGMGRICON		ICON	PRELOAD	icons\progmgr.ico
+IDI_PROGMGR		ICON PRELOAD	icons\progmgr.ico
+IDI_PROGGRP		ICON			icons\pmgroup.ico
+IDI_PROGITM		ICON			icons\pmitem.ico
 
 /* Secondary Icon Library */
 
