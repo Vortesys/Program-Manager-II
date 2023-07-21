@@ -32,6 +32,7 @@ HWND		hWndProgMgr = NULL;
 HWND		hWndMDIClient = NULL;
 
 /* Functions */
+
 /* * * *\
 	wWinMain -
 		Program Manager's entry point.
@@ -52,13 +53,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 	hAppInstance = hInstance;
 
-	// Create Important Strings
-	LoadString(hAppInstance, IDS_APPTITLE, szAppTitle, ARRAYSIZE(szAppTitle));
+	// Create Strings
 	LoadString(hAppInstance, IDS_PMCLASS, szClass, ARRAYSIZE(szClass));
+	LoadString(hAppInstance, IDS_APPTITLE, szAppTitle, ARRAYSIZE(szAppTitle));
 	LoadString(hAppInstance, IDS_WEBSITE, szWebsite, ARRAYSIZE(szWebsite));
-
-	// And add Task Manager...
-	// 
 
 	// Register the Frame Window
 	wc.lpfnWndProc = WndProc;
@@ -82,8 +80,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 	bIsDefaultShell = IsProgMgrDefaultShell();
 	
-	GetUserNameEx(NameSamCompatible, szUsername, &dwUsernameLen);
-	// OutputDebugString(szUsername);
+	// Add username to window title
+	GetUserNameEx(NameSamCompatible, szUsername, &dwUsernameLen);\
 
 	StringCchCopy(szWindowTitle, ARRAYSIZE(szAppTitle), szAppTitle);
 	StringCchCat(szWindowTitle, ARRAYSIZE(szWindowTitle), L" - ");

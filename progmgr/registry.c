@@ -14,7 +14,17 @@
 #include <Windows.h>
 #include <shlwapi.h>
 
+/* Variables */
+// Global HKEYs
+HKEY hKeyProgramManager = NULL;
+HKEY hKeyProgramGroups = NULL;
+HKEY hKeySettings = NULL;
+// Registry Subkeys
+PWSTR szProgramGroups = L"Program Groups";
+PWSTR szSettings = L"Settings";
+
 /* Functions */
+
 /* * * *\
 	InitializeRegistryKeys -
 		Takes the relevant Registry Keys and turns them
@@ -24,10 +34,12 @@
 \* * * */
 BOOL InitializeRegistryKeys()
 {
-	HKEY	hkeyProgramManager;
-	//HKEY	hkeyPMSettings;
-
-	if (!RegCreateKeyEx(HKEY_CURRENT_USER, PROGMGR_KEY, 0, 0, 0, KEY_READ | KEY_WRITE, NULL, &hkeyProgramManager, NULL)) {
+	if (!RegCreateKeyEx(HKEY_CURRENT_USER, PROGMGR_KEY, 0, szProgMgr, 0, KEY_READ | KEY_WRITE, NULL, &hKeyProgramManager, NULL)) {
+		RegCreateKeyEx(hKeyProgramManager, szProgramGroups, 0, szProgMgr, 0,
+			KEY_READ | KEY_WRITE, NULL, &hKeyProgramGroups, NULL);
+		RegCreateKeyEx(hKeyProgramManager, szSettings, 0, szProgMgr, 0,
+			KEY_READ | KEY_WRITE, NULL, &hKeySettings, NULL);
+		
 		return TRUE;
 	}
 	return FALSE;
@@ -47,7 +59,7 @@ BOOL IsProgMgrDefaultShell()
 	DWORD dwType;
 	DWORD dwBufferSize;
 
-	if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, SHELL_KEY, 0, KEY_READ, &hKeyWinlogon) == ERROR_SUCCESS) {
+	if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, WINLOGON_KEY, 0, KEY_READ, &hKeyWinlogon) == ERROR_SUCCESS) {
 		if (RegQueryValueEx(hKeyWinlogon, L"Shell", 0, &dwType, (LPBYTE)szShell, &dwBufferSize) == ERROR_SUCCESS) {
 			if (StrStr(szShell, szProgMgr)) {
 				// ProgMgr detected >:)
@@ -67,5 +79,27 @@ BOOL IsProgMgrDefaultShell()
 		return TRUE;
 	}
 	// No registry access.
+	return FALSE;
+}
+
+/* * * *\
+	QueryConfig -
+		Finds all settings and retrieves them from the registry.
+	RETURNS -
+		True if successful, false if unsuccessful.
+\* * * */
+BOOL QueryConfig()
+{
+	return FALSE;
+}
+
+/* * * *\
+	SaveConfig -
+		Finds all settings and saves them to the registry.
+	RETURNS -
+		True if successful, false if unsuccessful.
+\* * * */
+BOOL SaveConfig()
+{
 	return FALSE;
 }

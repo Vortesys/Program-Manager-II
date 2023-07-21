@@ -15,6 +15,7 @@
 #include <Windows.h>
 
 /* Functions */
+
 /* * * *\
 	WndProc -
 		Program Manager's window procedure.
