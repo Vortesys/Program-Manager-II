@@ -43,11 +43,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	HMENU hMenu;
 	HMENU hSystemMenu;
 	WNDCLASS wc = { 0 };
-	WCHAR szBuffer[256];
+	WCHAR szBuffer[MAX_PATH];
 	WCHAR szClass[16];
 	WCHAR szUsername[UNLEN + 1] = L"";
 	DWORD dwUsernameLen = UNLEN;
 	WCHAR szWindowTitle[UNLEN + ARRAYSIZE(szAppTitle) + 4] = L"";
+	RECT rWorkArea;
 
 	hAppInstance = hInstance;
 
@@ -99,7 +100,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	hSystemMenu = GetSystemMenu(hWndProgMgr, FALSE);
 
 	if (bIsDefaultShell) {
-		// Do all the fun stuff since we're the default shell
+		// Modify the context menus since we're the default shell
 		DeleteMenu(hSystemMenu, SC_CLOSE, MF_BYCOMMAND);
 
 		LoadString(hAppInstance, IDS_SHUTDOWN, szBuffer, ARRAYSIZE(szBuffer));
@@ -111,6 +112,14 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 		LoadString(hAppInstance, IDS_TASKMGR, szBuffer, ARRAYSIZE(szBuffer));
 		InsertMenu(hSystemMenu, 6, MF_BYPOSITION | MF_STRING, IDM_TASKMGR, szBuffer);
+	
+		// Refresh the wallpaper...
+		SystemParametersInfo(SPI_GETDESKWALLPAPER, MAX_PATH, szBuffer, 0);
+		SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, szBuffer, SPIF_SENDCHANGE);
+
+		// Reset the work area (removes dead-space after switching from another shell)
+		// May have unintended consequences.
+		SystemParametersInfo(SPI_SETWORKAREA, 0, (PVOID)&rWorkArea, SPIF_SENDCHANGE);
 	}
 
 	while (GetMessage(&msg, NULL, 0, 0) > 0)

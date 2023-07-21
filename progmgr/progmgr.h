@@ -9,9 +9,6 @@
 
 /* Pragmas */
 #pragma once
-#pragma comment(linker,"\"/manifestdependency:type='win32' \
-name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
-processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #pragma comment(lib, "Shlwapi.lib")
 #pragma comment(lib, "Secur32.lib")
 
@@ -44,7 +41,7 @@ extern WCHAR		szWebsite[64];
 
 /* Function Prototypes */
 // SHELLINT.C
-BOOL RunFile(HWND hWndOwner, HICON hIcon, LPWSTR lpszDir, LPWSTR lpszTitle, LPWSTR lpszDesc, DWORD dwFlags);
+BOOL RunFileDlg(HWND hWndOwner, HICON hIcon, LPWSTR lpszDir, LPWSTR lpszTitle, LPWSTR lpszDesc, DWORD dwFlags);
 BOOL ExitWindowsDialog(HWND hWndOwner);
 // WNDPROC.C
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

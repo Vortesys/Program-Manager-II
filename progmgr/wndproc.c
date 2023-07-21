@@ -106,7 +106,7 @@ LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		break;
 		
 	case IDM_FILE_RUN:
-		RunFile(hWnd, NULL, NULL, NULL, NULL, RFF_CALCDIRECTORY);
+		RunFileDlg(hWnd, NULL, NULL, NULL, NULL, RFF_CALCDIRECTORY);
 		break;
 
 	case IDM_FILE_EXIT:

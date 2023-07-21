@@ -25,6 +25,9 @@ IDI_PROGITM		ICON			icons\pmitem.ico
 
 /* Secondary Icon Library */
 
+/* Manifest */
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "progmgr.exe.manifest"
+
 /* Version Information */
 #define APSTUDIO_HIDDEN_SYMBOLS
 #include "version.inc"

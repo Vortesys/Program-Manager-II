@@ -35,6 +35,15 @@
     <ClCompile Include="registry.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="desktop.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shellint.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wndproc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">
@@ -51,5 +60,10 @@
     <None Include="version.inc">
       <Filter>Resource Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="progmgr.exe.manifest">
+      <Filter>Resource Files</Filter>
+    </Manifest>
   </ItemGroup>
 </Project>

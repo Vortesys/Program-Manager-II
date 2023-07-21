@@ -14,12 +14,12 @@
 
 /* Functions */
 /* * * *\
-	RunFile -
+	RunFileDlg -
 		Produces a Run dialog window.
 	RETURNS -
 		True if successful, false if unsuccessful.
 \* * * */
-BOOL RunFile(HWND hWndOwner,
+BOOL RunFileDlg(HWND hWndOwner,
 	HICON	hIcon,
 	LPWSTR	lpszDir,
 	LPWSTR	lpszTitle,
