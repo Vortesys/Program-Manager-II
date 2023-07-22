@@ -120,7 +120,32 @@ LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		break;
 
+	case IDM_OPTIONS_AUTOARRANGE:
+		bAutoArrange = !bAutoArrange;
+		UpdateChecks(bAutoArrange, IDM_OPTIONS, IDM_OPTIONS_AUTOARRANGE);
+		goto SaveConfig;
+
+	case IDM_OPTIONS_MINONRUN:
+		bMinOnRun = !bMinOnRun;
+		UpdateChecks(bMinOnRun, IDM_OPTIONS, IDM_OPTIONS_MINONRUN);
+		goto SaveConfig;
+
+	case IDM_OPTIONS_TOPMOST:
+		bTopMost = !bTopMost;
+		UpdateChecks(bTopMost, IDM_OPTIONS, IDM_OPTIONS_TOPMOST);
+		goto SaveConfig;
+	case IDM_OPTIONS_SHOWUSERNAME:
+		bShowUsername = !bShowUsername;
+		UpdateChecks(bShowUsername, IDM_OPTIONS, IDM_OPTIONS_SHOWUSERNAME);
+		goto SaveConfig;
+
+	case IDM_OPTIONS_SAVESETTINGS:
+		bSaveSettings = !bSaveSettings;
+		UpdateChecks(bSaveSettings, IDM_OPTIONS, IDM_OPTIONS_SAVESETTINGS);
+		goto SaveConfig;
+
 	case IDM_OPTIONS_SAVENOW:
+SaveConfig:
 		SaveConfig();
 		break;
 
@@ -142,6 +167,22 @@ LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	}
 
 	return TRUE;
+}
+
+/* * * *\
+	UpdateChecks -
+		Updated checkmarks for a menu based on input
+	RETURNS -
+		Nothing!
+\* * * */
+VOID UpdateChecks(BOOL bVarMenu, UINT uSubMenu, UINT uID)
+{
+	HMENU hMenu;
+
+	hMenu = GetMenu(hWndProgMgr);
+	CheckMenuItem(hMenu, uID, (WORD)(bVarMenu ? MF_CHECKED : MF_UNCHECKED));
+
+	return;
 }
 
 /* * * *\

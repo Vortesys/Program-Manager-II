@@ -57,6 +57,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	LoadString(hAppInstance, IDS_PMCLASS, szClass, ARRAYSIZE(szClass));
 	LoadString(hAppInstance, IDS_APPTITLE, szAppTitle, ARRAYSIZE(szAppTitle));
 	LoadString(hAppInstance, IDS_WEBSITE, szWebsite, ARRAYSIZE(szWebsite));
+	GetUserNameEx(NameSamCompatible, szUsername, &dwUsernameLen);
 
 	// Register the Frame Window
 	wc.lpfnWndProc = WndProc;
@@ -75,16 +76,17 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		return FALSE;
 
 	// Perform Registry actions, close if registry is inaccessible.
-	if (!InitializeRegistryKeys())
+	if (InitializeRegistryKeys())
+	{
+		bIsDefaultShell = IsProgMgrDefaultShell();
+		LoadConfig();
+	}
+	else
+	{
 		return FALSE;
+	}
 
-	bIsDefaultShell = IsProgMgrDefaultShell();
-
-	LoadConfig();
-	
-	// Add username to window title
-	GetUserNameEx(NameSamCompatible, szUsername, &dwUsernameLen);
-
+	// Add username to window title if settings permit
 	StringCchCopy(szWindowTitle, ARRAYSIZE(szAppTitle), szAppTitle);
 
 	if (bShowUsername)
@@ -104,13 +106,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	hMenu = GetMenu(hWndProgMgr);
 	hSystemMenu = GetSystemMenu(hWndProgMgr, FALSE);
 
-	// Use our configuration to update our menu checkmarks
-	if (bAutoArrange)
-		CheckMenuItem(hMenu, IDM_OPTIONS_AUTOARRANGE, MF_CHECKED);
-	if (bMinOnRun)
-		CheckMenuItem(hMenu, IDM_OPTIONS_MINONRUN, MF_CHECKED);
-	if (bSaveSettings)
-		CheckMenuItem(hMenu, IDM_OPTIONS_SAVESETTINGS, MF_CHECKED);
+	// Update our menu checkmarks
+	UpdateChecks(bAutoArrange, IDM_OPTIONS, IDM_OPTIONS_AUTOARRANGE);
+	UpdateChecks(bMinOnRun, IDM_OPTIONS, IDM_OPTIONS_MINONRUN);
+	UpdateChecks(bTopMost, IDM_OPTIONS, IDM_OPTIONS_TOPMOST);
+	UpdateChecks(bShowUsername, IDM_OPTIONS, IDM_OPTIONS_SHOWUSERNAME);
+	UpdateChecks(bSaveSettings, IDM_OPTIONS, IDM_OPTIONS_SAVESETTINGS);
 
 	if (bIsDefaultShell)
 	{
