@@ -120,11 +120,11 @@ BOOL SaveConfig()
 {
 	// Shrink the settings into the bitmask
 	dwSettingsMask =
-		(bSaveSettings * PMS_SAVESETTINGS) |
-		(bShowUsername * PMS_SHOWUSERNAME) |
-		(bTopMost * PMS_TOPMOST) |
+		(bAutoArrange * PMS_AUTOARRANGE) |
 		(bMinOnRun * PMS_MINONRUN) |
-		(bAutoArrange * PMS_AUTOARRANGE);
+		(bTopMost * PMS_TOPMOST) |
+		(bShowUsername * PMS_SHOWUSERNAME) |
+		(bSaveSettings * PMS_SAVESETTINGS);
 
 	// Save settings bitmask
 	if (RegSetValueEx(hKeySettings, pszSettingsMask, 0, REG_DWORD, &dwSettingsMask, sizeof(DWORD)) == ERROR_SUCCESS)
@@ -148,11 +148,11 @@ BOOL LoadConfig()
 	// Load settings bitmask
 	if (RegGetValue(hKeySettings, L"", pszSettingsMask, RRF_RT_DWORD, NULL, &dwSettingsMask, &dwBufferSize))
 	{
+		bAutoArrange = ((dwSettingsMask & PMS_AUTOARRANGE) == PMS_AUTOARRANGE);
+		bMinOnRun = ((dwSettingsMask & PMS_MINONRUN) == PMS_MINONRUN);
+		bTopMost = ((dwSettingsMask & PMS_TOPMOST) == PMS_TOPMOST);
 		bSaveSettings = ((dwSettingsMask & PMS_SAVESETTINGS) == PMS_SAVESETTINGS);
 		bShowUsername = ((dwSettingsMask & PMS_SHOWUSERNAME) == PMS_SHOWUSERNAME);
-		bTopMost = ((dwSettingsMask & PMS_TOPMOST) == PMS_TOPMOST);
-		bMinOnRun = ((dwSettingsMask & PMS_MINONRUN) == PMS_MINONRUN);
-		bAutoArrange = ((dwSettingsMask & PMS_AUTOARRANGE) == PMS_AUTOARRANGE);
 		return TRUE;
 	}
 

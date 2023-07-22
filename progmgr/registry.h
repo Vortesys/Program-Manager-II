@@ -21,11 +21,11 @@
 // #define WINDOWS_KEY  L"Software\\Microsoft\\Windows NT\\CurrentVersion\\Windows"
 #define PROGMGR_KEY  L"Software\\Freedom Desktop\\Program Manager II"
 // Settings Bitmask Values (DWORD)
-#define PMS_SAVESETTINGS 0x00000001
-#define PMS_SHOWUSERNAME 0x00000002
-#define PMS_TOPMOST 0x00000004
-#define PMS_MINONRUN 0x00000008
-#define PMS_AUTOARRANGE 0x00000010
+#define PMS_AUTOARRANGE 0x00000001
+#define PMS_MINONRUN 0x00000002
+#define PMS_TOPMOST 0x00000008
+#define PMS_SHOWUSERNAME 0x00000004
+#define PMS_SAVESETTINGS 0x00000010
 
 /* Global Variables */
 // HKEYs
@@ -33,11 +33,11 @@ extern HKEY	hKeyProgramManager;
 extern HKEY	hkeyProgramGroups;
 extern HKEY	hKeySettings;
 // Settings
-extern BOOL bSaveSettings;
-extern BOOL bShowUsername;
-extern BOOL bTopMost;
-extern BOOL bMinOnRun;
 extern BOOL bAutoArrange;
+extern BOOL bMinOnRun;
+extern BOOL bTopMost;
+extern BOOL bShowUsername;
+extern BOOL bSaveSettings;
 
 /* Function Prototypes */
 BOOL InitializeRegistryKeys(VOID);
