@@ -79,13 +79,20 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		return FALSE;
 
 	bIsDefaultShell = IsProgMgrDefaultShell();
+
+	LoadConfig();
 	
 	// Add username to window title
-	GetUserNameEx(NameSamCompatible, szUsername, &dwUsernameLen);\
+	GetUserNameEx(NameSamCompatible, szUsername, &dwUsernameLen);
 
 	StringCchCopy(szWindowTitle, ARRAYSIZE(szAppTitle), szAppTitle);
-	StringCchCat(szWindowTitle, ARRAYSIZE(szWindowTitle), L" - ");
-	StringCchCat(szWindowTitle, ARRAYSIZE(szWindowTitle), szUsername);
+
+	if (bShowUsername)
+	{
+		StringCchCat(szWindowTitle, ARRAYSIZE(szWindowTitle), L" - ");
+		StringCchCat(szWindowTitle, ARRAYSIZE(szWindowTitle), szUsername);
+	}
+		
 
 	if (!CreateWindow(wc.lpszClassName,
 		szWindowTitle,
@@ -97,7 +104,16 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	hMenu = GetMenu(hWndProgMgr);
 	hSystemMenu = GetSystemMenu(hWndProgMgr, FALSE);
 
-	if (bIsDefaultShell) {
+	// Use our configuration to update our menu checkmarks
+	if (bAutoArrange)
+		CheckMenuItem(hMenu, IDM_OPTIONS_AUTOARRANGE, MF_CHECKED);
+	if (bMinOnRun)
+		CheckMenuItem(hMenu, IDM_OPTIONS_MINONRUN, MF_CHECKED);
+	if (bSaveSettings)
+		CheckMenuItem(hMenu, IDM_OPTIONS_SAVESETTINGS, MF_CHECKED);
+
+	if (bIsDefaultShell)
+	{
 		// Modify the context menus since we're the default shell
 		DeleteMenu(hSystemMenu, SC_CLOSE, MF_BYCOMMAND);
 

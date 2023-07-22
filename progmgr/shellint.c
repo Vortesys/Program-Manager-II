@@ -29,7 +29,8 @@ BOOL RunFileDlg(HWND hWndOwner,
 {
 	HMODULE hLib = LoadLibrary(L"shell32.dll");
 
-	if (hLib) {
+	if (hLib)
+	{
 		FARPROC fLib = GetProcAddress(hLib, MAKEINTRESOURCEA(61));
 		if (fLib(hWndOwner, hIcon, lpszDir, lpszTitle, lpszDesc, dwFlags))
 			FreeLibrary(hLib);
@@ -49,7 +50,8 @@ BOOL ExitWindowsDialog(HWND hWndOwner)
 {
 	HMODULE hLib = LoadLibrary(L"shell32.dll");
 
-	if (hLib) {
+	if (hLib)
+	{
 		FARPROC fLib = GetProcAddress(hLib, (LPCSTR)60);
 		if (fLib(hWndOwner))
 			FreeLibrary(hLib);
