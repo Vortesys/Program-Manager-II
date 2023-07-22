@@ -83,8 +83,8 @@ BOOL IsProgMgrDefaultShell()
 	if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, WINLOGON_KEY,
 		0, KEY_READ, &hKeyWinlogon) == ERROR_SUCCESS)
 	{
-		if (RegQueryValueEx(hKeyWinlogon, L"Shell", 0,
-			&dwType, (LPBYTE)szShell, &dwBufferSize) == ERROR_SUCCESS)
+		if (RegQueryValueEx(hKeyWinlogon, L"Shell", 0, &dwType,
+			(LPBYTE)szShell, &dwBufferSize) == ERROR_SUCCESS)
 		{
 			if (StrStr(szShell, szProgMgr))
 			{
@@ -112,7 +112,8 @@ BOOL IsProgMgrDefaultShell()
 
 /* * * *\
 	SaveConfig -
-		Finds and collapses all settings and saves them to the registry.
+		Finds and collapses all settings
+		and saves them to the registry.
 	RETURNS -
 		TRUE if successful, FALSE if unsuccessful.
 \* * * */
@@ -127,7 +128,8 @@ BOOL SaveConfig()
 		(bSaveSettings * PMS_SAVESETTINGS);
 
 	// Save settings bitmask
-	if (RegSetValueEx(hKeySettings, pszSettingsMask, 0, REG_DWORD, &dwSettingsMask, sizeof(DWORD)) == ERROR_SUCCESS)
+	if (RegSetValueEx(hKeySettings, pszSettingsMask, 0, REG_DWORD,
+		&dwSettingsMask, sizeof(DWORD)) == ERROR_SUCCESS)
 	{
 		return TRUE;
 	}
@@ -137,22 +139,25 @@ BOOL SaveConfig()
 
 /* * * *\
 	BOOL LoadConfig() -
-		Finds all settings and retrieves them from the registry.
+		Finds all settings and retrieves them
+		from the registry.
 	RETURNS -
 		TRUE if successful, FALSE if unsuccessful.
 \* * * */
 BOOL LoadConfig()
 {
-	DWORD dwBufferSize = 0;
+	DWORD dwType;
+	DWORD dwBufferSize = sizeof(dwSettingsMask);
 
 	// Load settings bitmask
-	if (RegGetValue(hKeySettings, L"", pszSettingsMask, RRF_RT_DWORD, NULL, &dwSettingsMask, &dwBufferSize))
+	if (RegQueryValueEx(hKeySettings, pszSettingsMask, 0, &dwType,
+		&dwSettingsMask, &dwBufferSize) == ERROR_SUCCESS)
 	{
-		bAutoArrange = ((dwSettingsMask & PMS_AUTOARRANGE) == PMS_AUTOARRANGE);
-		bMinOnRun = ((dwSettingsMask & PMS_MINONRUN) == PMS_MINONRUN);
-		bTopMost = ((dwSettingsMask & PMS_TOPMOST) == PMS_TOPMOST);
-		bSaveSettings = ((dwSettingsMask & PMS_SAVESETTINGS) == PMS_SAVESETTINGS);
-		bShowUsername = ((dwSettingsMask & PMS_SHOWUSERNAME) == PMS_SHOWUSERNAME);
+		bAutoArrange = (dwSettingsMask & PMS_AUTOARRANGE);
+		bMinOnRun = (dwSettingsMask & PMS_MINONRUN);
+		bTopMost =  (dwSettingsMask) & (PMS_TOPMOST);
+		bSaveSettings = (dwSettingsMask & PMS_SAVESETTINGS);
+		bShowUsername = (dwSettingsMask & PMS_SHOWUSERNAME);
 		return TRUE;
 	}
 
