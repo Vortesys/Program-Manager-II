@@ -2,7 +2,7 @@
 	REGISTRY.C -
 		Copyright (c) 2023 freedom7341, Freedom Desktop
 	DESCRIPTION -
-		Program Manager's registry related functions.
+		Program Manager's registry and settings related functions.
 	LICENSE INFORMATION -
 		MIT License, see LICENSE.txt in the root folder
 \* * * * * * * */
@@ -13,31 +13,52 @@
 // #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <shlwapi.h>
+#include <strsafe.h>
 
 /* Variables */
 // Global HKEYs
 HKEY hKeyProgramManager = NULL;
 HKEY hKeyProgramGroups = NULL;
 HKEY hKeySettings = NULL;
+// Global Values
+BOOL bSaveSettings;
+BOOL bShowUsername;
+BOOL bTopMost;
+BOOL bMinOnRun;
+BOOL bAutoArrange;
+DWORD dwSettingsMask = {
+	PMS_SAVESETTINGS |
+	PMS_SHOWUSERNAME |
+	!PMS_TOPMOST |
+	!PMS_MINONRUN |
+	PMS_AUTOARRANGE
+};
+RECT rcMainWindow;
 // Registry Subkeys
-PWSTR szProgramGroups = L"Program Groups";
-PWSTR szSettings = L"Settings";
+PWSTR pszProgramGroups = L"Program Groups";
+PWSTR pszSettings = L"Settings";
+// Settings Subkeys
+PWSTR pszSettingsWindow = L"Window";
+PWSTR pszSettingsMask = L"SettingsMask";
 
 /* Functions */
 
 /* * * *\
 	InitializeRegistryKeys -
-		Takes the relevant Registry Keys and turns them
+		Takes the relevant registry keys and turns them
 		into valid and usable handles.
 	RETURNS -
-		True if successful, false if unsuccessful.
+		TRUE if successful, FALSE if unsuccessful.
 \* * * */
 BOOL InitializeRegistryKeys()
 {
-	if (!RegCreateKeyEx(HKEY_CURRENT_USER, PROGMGR_KEY, 0, szProgMgr, 0, KEY_READ | KEY_WRITE, NULL, &hKeyProgramManager, NULL)) {
-		RegCreateKeyEx(hKeyProgramManager, szProgramGroups, 0, szProgMgr, 0,
+	if (!RegCreateKeyEx(HKEY_CURRENT_USER, PROGMGR_KEY, 0, szProgMgr, 0,
+		KEY_READ | KEY_WRITE, NULL, &hKeyProgramManager, NULL))
+	{
+		// Create Program Groups and Settings keys
+		RegCreateKeyEx(hKeyProgramManager, pszProgramGroups, 0, szProgMgr, 0,
 			KEY_READ | KEY_WRITE, NULL, &hKeyProgramGroups, NULL);
-		RegCreateKeyEx(hKeyProgramManager, szSettings, 0, szProgMgr, 0,
+		RegCreateKeyEx(hKeyProgramManager, pszSettings, 0, szProgMgr, 0,
 			KEY_READ | KEY_WRITE, NULL, &hKeySettings, NULL);
 		
 		return TRUE;
@@ -49,31 +70,38 @@ BOOL InitializeRegistryKeys()
 	IsProgMgrDefaultShell -
 		Detects if Program Manager is the default shell.
 	RETURNS -
-		True if Program Manager is the default shell,
-		false if otherwise or an error occurs.
+		TRUE if Program Manager is the default shell,
+		FALSE if otherwise or an error occurs.
 \* * * */
 BOOL IsProgMgrDefaultShell()
 {
 	HKEY hKeyWinlogon;
 	WCHAR szShell[HKEYMAXLEN] = L"";
 	DWORD dwType;
-	DWORD dwBufferSize;
+	DWORD dwBufferSize = 0;
 
-	if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, WINLOGON_KEY, 0, KEY_READ, &hKeyWinlogon) == ERROR_SUCCESS) {
-		if (RegQueryValueEx(hKeyWinlogon, L"Shell", 0, &dwType, (LPBYTE)szShell, &dwBufferSize) == ERROR_SUCCESS) {
-			if (StrStr(szShell, szProgMgr)) {
+	if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, WINLOGON_KEY,
+		0, KEY_READ, &hKeyWinlogon) == ERROR_SUCCESS)
+	{
+		if (RegQueryValueEx(hKeyWinlogon, L"Shell", 0,
+			&dwType, (LPBYTE)szShell, &dwBufferSize) == ERROR_SUCCESS)
+		{
+			if (StrStr(szShell, szProgMgr))
+			{
 				// ProgMgr detected >:)
 				RegCloseKey(hKeyWinlogon);
 				return TRUE;
 			}
-			else {
+			else
+			{
 				// Inferior shell detected.
 				RegCloseKey(hKeyWinlogon);
 				return FALSE;
 			}
 		}
 	}
-	else {
+	else
+	{
 		// Assume that we're the shell... just incase.
 		RegCloseKey(hKeyWinlogon);
 		return TRUE;
@@ -83,23 +111,50 @@ BOOL IsProgMgrDefaultShell()
 }
 
 /* * * *\
-	QueryConfig -
-		Finds all settings and retrieves them from the registry.
+	SaveConfig -
+		Finds and collapses all settings and saves them to the registry.
 	RETURNS -
-		True if successful, false if unsuccessful.
+		TRUE if successful, FALSE if unsuccessful.
 \* * * */
-BOOL QueryConfig()
+BOOL SaveConfig()
 {
+	// Shrink the settings into the bitmask
+	dwSettingsMask =
+		(bSaveSettings * PMS_SAVESETTINGS) |
+		(bShowUsername * PMS_SHOWUSERNAME) |
+		(bTopMost * PMS_TOPMOST) |
+		(bMinOnRun * PMS_MINONRUN) |
+		(bAutoArrange * PMS_AUTOARRANGE);
+
+	// Save settings bitmask
+	if (RegSetValueEx(hKeySettings, pszSettingsMask, 0, REG_DWORD, &dwSettingsMask, sizeof(DWORD)) == ERROR_SUCCESS)
+	{
+		return TRUE;
+	}
+
 	return FALSE;
 }
 
 /* * * *\
-	SaveConfig -
-		Finds all settings and saves them to the registry.
+	BOOL LoadConfig() -
+		Finds all settings and retrieves them from the registry.
 	RETURNS -
-		True if successful, false if unsuccessful.
+		TRUE if successful, FALSE if unsuccessful.
 \* * * */
-BOOL SaveConfig()
+BOOL LoadConfig()
 {
+	DWORD dwBufferSize = 0;
+
+	// Load settings bitmask
+	if (RegGetValue(hKeySettings, L"", pszSettingsMask, RRF_RT_DWORD, NULL, &dwSettingsMask, &dwBufferSize))
+	{
+		bSaveSettings = ((dwSettingsMask & PMS_SAVESETTINGS) == PMS_SAVESETTINGS);
+		bShowUsername = ((dwSettingsMask & PMS_SHOWUSERNAME) == PMS_SHOWUSERNAME);
+		bTopMost = ((dwSettingsMask & PMS_TOPMOST) == PMS_TOPMOST);
+		bMinOnRun = ((dwSettingsMask & PMS_MINONRUN) == PMS_MINONRUN);
+		bAutoArrange = ((dwSettingsMask & PMS_AUTOARRANGE) == PMS_AUTOARRANGE);
+		return TRUE;
+	}
+
 	return FALSE;
 }
