@@ -66,10 +66,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		}
 		if (wParam == IDM_FILE_EXIT)
-		{
-			CmdProc(hWnd, wParam, lParam);
-			break;
-		}
 		if (wParam == IDM_FILE_RUN)
 		{
 			CmdProc(hWnd, wParam, lParam);
@@ -87,6 +83,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		goto WndProcDefault;
 
 	case WM_CLOSE:
+		PostQuitMessage(0);
+		break;
+
+	case WM_ENDSESSION:
 		PostQuitMessage(0);
 		break;
 
@@ -132,8 +132,10 @@ LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	case IDM_OPTIONS_TOPMOST:
 		bTopMost = !bTopMost;
+		SetWindowPos(hWndProgMgr, bTopMost ? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOZORDER | SWP_NOSIZE);
 		UpdateChecks(bTopMost, IDM_OPTIONS, IDM_OPTIONS_TOPMOST);
 		goto SaveConfig;
+
 	case IDM_OPTIONS_SHOWUSERNAME:
 		bShowUsername = !bShowUsername;
 		UpdateChecks(bShowUsername, IDM_OPTIONS, IDM_OPTIONS_SHOWUSERNAME);

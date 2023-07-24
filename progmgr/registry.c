@@ -119,22 +119,34 @@ BOOL IsProgMgrDefaultShell()
 \* * * */
 BOOL SaveConfig()
 {
-	// Shrink the settings into the bitmask
+	BOOL bConfigStatus = TRUE;
+	WINDOWPLACEMENT wpProgMgr;
+	RECT rcWindow;
+
+	// Shrink the settings into the bitmask and save it
+	// There's definitely a better way to do this but...
+	// I'll get to it later :)
 	dwSettingsMask =
-		(bAutoArrange * PMS_AUTOARRANGE) |
-		(bMinOnRun * PMS_MINONRUN) |
-		(bTopMost * PMS_TOPMOST) |
-		(bShowUsername * PMS_SHOWUSERNAME) |
-		(bSaveSettings * PMS_SAVESETTINGS);
+		(bAutoArrange && PMS_AUTOARRANGE) * PMS_AUTOARRANGE |
+		(bMinOnRun && PMS_MINONRUN) * PMS_MINONRUN |
+		(bTopMost && PMS_TOPMOST) * PMS_TOPMOST |
+		(bShowUsername && PMS_SHOWUSERNAME) * PMS_SHOWUSERNAME |
+		(bSaveSettings && PMS_SAVESETTINGS) * PMS_SAVESETTINGS;
 
-	// Save settings bitmask
-	if (RegSetValueEx(hKeySettings, pszSettingsMask, 0, REG_DWORD,
-		&dwSettingsMask, sizeof(DWORD)) == ERROR_SUCCESS)
-	{
-		return TRUE;
-	}
+	if (!RegSetValueEx(hKeySettings, pszSettingsMask, 0, REG_DWORD,
+		&dwSettingsMask, sizeof(dwSettingsMask)) == ERROR_SUCCESS)
+		bConfigStatus = FALSE;
+	
+	// Get and save window position
+	wpProgMgr.length = sizeof(WINDOWPLACEMENT);
+	GetWindowPlacement(hWndProgMgr, &wpProgMgr);
+	CopyRect(&rcWindow, &wpProgMgr.rcNormalPosition);
 
-	return FALSE;
+	if (!RegSetValueEx(hKeySettings, pszSettingsWindow, 0, REG_BINARY,
+		&rcWindow, sizeof(rcWindow)) == ERROR_SUCCESS)
+		bConfigStatus = FALSE;
+
+	return bConfigStatus;
 }
 
 /* * * *\
@@ -146,20 +158,27 @@ BOOL SaveConfig()
 \* * * */
 BOOL LoadConfig()
 {
+	BOOL bConfigStatus = TRUE;
 	DWORD dwType;
 	DWORD dwBufferSize = sizeof(dwSettingsMask);
+	DWORD dwRectBufferSize = sizeof(rcMainWindow);
 
 	// Load settings bitmask
-	if (RegQueryValueEx(hKeySettings, pszSettingsMask, 0, &dwType,
+	if (!RegQueryValueEx(hKeySettings, pszSettingsMask, 0, &dwType,
 		&dwSettingsMask, &dwBufferSize) == ERROR_SUCCESS)
-	{
-		bAutoArrange = (dwSettingsMask & PMS_AUTOARRANGE);
-		bMinOnRun = (dwSettingsMask & PMS_MINONRUN);
-		bTopMost =  (dwSettingsMask) & (PMS_TOPMOST);
-		bSaveSettings = (dwSettingsMask & PMS_SAVESETTINGS);
-		bShowUsername = (dwSettingsMask & PMS_SHOWUSERNAME);
-		return TRUE;
-	}
+		bConfigStatus = FALSE;
+	
+	// Apply bitmask to booleans
+	bAutoArrange = (dwSettingsMask & PMS_AUTOARRANGE);
+	bMinOnRun = (dwSettingsMask & PMS_MINONRUN);
+	bTopMost = (dwSettingsMask & PMS_TOPMOST);
+	bSaveSettings = (dwSettingsMask & PMS_SAVESETTINGS);
+	bShowUsername = (dwSettingsMask & PMS_SHOWUSERNAME);
 
-	return FALSE;
+	// Load window position... and apply it!
+	if (!RegQueryValueEx(hKeySettings, pszSettingsWindow, 0, &dwType,
+		&rcMainWindow, &dwRectBufferSize) == ERROR_SUCCESS)
+		bConfigStatus = FALSE;
+
+	return bConfigStatus;
 }

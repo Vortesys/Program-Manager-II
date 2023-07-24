@@ -38,6 +38,7 @@ extern BOOL bMinOnRun;
 extern BOOL bTopMost;
 extern BOOL bShowUsername;
 extern BOOL bSaveSettings;
+extern RECT rcMainWindow;
 
 /* Function Prototypes */
 BOOL InitializeRegistryKeys(VOID);

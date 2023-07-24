@@ -62,7 +62,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	// Register the Frame Window
 	wc.lpfnWndProc = WndProc;
 	wc.hInstance = hAppInstance;
-	wc.hIcon = hProgMgrIcon = LoadImage(hAppInstance, MAKEINTRESOURCE(IDI_PROGMGR), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_SHARED);
+	wc.hIcon = hProgMgrIcon = LoadImage(hAppInstance, MAKEINTRESOURCE(IDI_PROGMGR), IMAGE_ICON,
+		0, 0, LR_DEFAULTSIZE | LR_SHARED);
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground = (HBRUSH)(COLOR_BACKGROUND);
 	wc.lpszMenuName = MAKEINTRESOURCE(IDM_MAIN);
@@ -95,11 +96,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		StringCchCat(szWindowTitle, ARRAYSIZE(szWindowTitle), szUsername);
 	}
 		
-
-	if (!CreateWindow(wc.lpszClassName,
-		szWindowTitle,
-		WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-		160, 80, 640, 480, 0, 0, hAppInstance, NULL))
+	if (!CreateWindow(wc.lpszClassName, szWindowTitle, WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+		rcMainWindow.left, rcMainWindow.top, rcMainWindow.right - rcMainWindow.left, rcMainWindow.bottom - rcMainWindow.top,
+		0, 0, hAppInstance, NULL))
 		return 2;
 
 	// Load the menus...
@@ -112,6 +111,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	UpdateChecks(bTopMost, IDM_OPTIONS, IDM_OPTIONS_TOPMOST);
 	UpdateChecks(bShowUsername, IDM_OPTIONS, IDM_OPTIONS_SHOWUSERNAME);
 	UpdateChecks(bSaveSettings, IDM_OPTIONS, IDM_OPTIONS_SAVESETTINGS);
+
+	// Update settings based on their values
+	if (bTopMost)
+		SetWindowPos(hWndProgMgr, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
 	if (bIsDefaultShell)
 	{
