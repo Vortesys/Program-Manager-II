@@ -83,6 +83,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		goto WndProcDefault;
 
 	case WM_CLOSE:
+		if (GetShellWindow())
+			SetShellWindow(0);
 		PostQuitMessage(0);
 		break;
 

@@ -40,9 +40,13 @@ extern WCHAR		szProgMgr[];
 extern WCHAR		szWebsite[64];
 
 /* Function Prototypes */
-// SHELLINT.C
+// DESKTOP.C
+BOOL CreateDesktopWindow();
+LRESULT CALLBACK DeskWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+// SYSINT.C
 BOOL RunFileDlg(HWND hWndOwner, HICON hIcon, LPWSTR lpszDir, LPWSTR lpszTitle, LPWSTR lpszDesc, DWORD dwFlags);
 BOOL ExitWindowsDialog(HWND hWndOwner);
+BOOL SetShellWindow(HWND hWndShell);
 // WNDPROC.C
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam);

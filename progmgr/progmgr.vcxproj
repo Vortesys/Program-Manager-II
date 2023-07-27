@@ -167,7 +167,7 @@
     <ClCompile Include="desktop.c" />
     <ClCompile Include="progmgr.c" />
     <ClCompile Include="registry.c" />
-    <ClCompile Include="shellint.c" />
+    <ClCompile Include="sysint.c" />
     <ClCompile Include="wndproc.c" />
   </ItemGroup>
   <ItemGroup>

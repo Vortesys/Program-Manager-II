@@ -38,7 +38,7 @@
     <ClCompile Include="desktop.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="shellint.c">
+    <ClCompile Include="sysint.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="wndproc.c">

@@ -1,8 +1,8 @@
 /* * * * * * * *\
-	SHELLINT.C -
+	SYSINT.C -
 		Copyright (c) 2023 freedom7341, Freedom Desktop
 	DESCRIPTION -
-		Program Manager's shell interface functions.
+		Program Manager's system interface functions.
 	LICENSE INFORMATION -
 		MIT License, see LICENSE.txt in the root folder
 \* * * * * * * */
@@ -33,8 +33,10 @@ BOOL RunFileDlg(HWND hWndOwner,
 	{
 		FARPROC fLib = GetProcAddress(hLib, MAKEINTRESOURCEA(61));
 		if (fLib(hWndOwner, hIcon, lpszDir, lpszTitle, lpszDesc, dwFlags))
+		{
 			FreeLibrary(hLib);
 			return TRUE;
+		}
 	}
 
 	return FALSE;
@@ -54,8 +56,32 @@ BOOL ExitWindowsDialog(HWND hWndOwner)
 	{
 		FARPROC fLib = GetProcAddress(hLib, (LPCSTR)60);
 		if (fLib(hWndOwner))
+		{
 			FreeLibrary(hLib);
 			return TRUE;
+		}
+	}
+
+	return FALSE;
+}
+
+/* * * *\
+	SetShellWindow -
+		Sets a window as the shell window.
+	RETURNS -
+		True if successful, false if unsuccessful.
+\* * * */
+BOOL SetShellWindow(HWND hWndShell)
+{
+	HMODULE hLib = GetModuleHandle(L"user32.dll");
+
+	if (hLib)
+	{
+		FARPROC fLib = GetProcAddress(hLib, "SetShellWindow");
+		if (fLib(hWndShell)) 
+		{
+			return TRUE;
+		}
 	}
 
 	return FALSE;

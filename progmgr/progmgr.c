@@ -49,7 +49,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	WCHAR szUsername[UNLEN + 1] = L"";
 	DWORD dwUsernameLen = UNLEN;
 	WCHAR szWindowTitle[UNLEN + ARRAYSIZE(szAppTitle) + 4] = L"";
-	RECT rWorkArea;
 
 	hAppInstance = hInstance;
 
@@ -58,6 +57,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	LoadString(hAppInstance, IDS_APPTITLE, szAppTitle, ARRAYSIZE(szAppTitle));
 	LoadString(hAppInstance, IDS_WEBSITE, szWebsite, ARRAYSIZE(szWebsite));
 	GetUserNameEx(NameSamCompatible, szUsername, &dwUsernameLen);
+
+	// Get Desktop background color
+	//CreateSolidBrush(GetBackgroundColor
 
 	// Register the Frame Window
 	wc.lpfnWndProc = WndProc;
@@ -95,11 +97,17 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		StringCchCat(szWindowTitle, ARRAYSIZE(szWindowTitle), L" - ");
 		StringCchCat(szWindowTitle, ARRAYSIZE(szWindowTitle), szUsername);
 	}
-		
+	
 	if (!CreateWindow(wc.lpszClassName, szWindowTitle, WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-		rcMainWindow.left, rcMainWindow.top, rcMainWindow.right - rcMainWindow.left, rcMainWindow.bottom - rcMainWindow.top,
-		0, 0, hAppInstance, NULL))
+		20, 20, 340, 220, 0, 0, hAppInstance, NULL))
 		return 2;
+
+	// Set the window size, but only if it's valid
+	if ((rcMainWindow.left != rcMainWindow.right) && (rcMainWindow.top != rcMainWindow.bottom))
+		SetWindowPos(hWndProgMgr, NULL,
+			rcMainWindow.left, rcMainWindow.top,
+			rcMainWindow.right - rcMainWindow.left,
+			rcMainWindow.bottom - rcMainWindow.top, SWP_NOZORDER);
 
 	// Load the menus...
 	hMenu = GetMenu(hWndProgMgr);
@@ -130,14 +138,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 		LoadString(hAppInstance, IDS_TASKMGR, szBuffer, ARRAYSIZE(szBuffer));
 		InsertMenu(hSystemMenu, 6, MF_BYPOSITION | MF_STRING, IDM_TASKMGR, szBuffer);
-	
-		// Refresh the wallpaper...
-		SystemParametersInfo(SPI_GETDESKWALLPAPER, MAX_PATH, szBuffer, 0);
-		SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, szBuffer, SPIF_SENDCHANGE);
-
-		// Reset the work area (removes dead-space after switching from another shell)
-		// May have unintended consequences.
-		SystemParametersInfo(SPI_SETWORKAREA, 0, (PVOID)&rWorkArea, SPIF_SENDCHANGE);
+		
+		// Create the desktop window...
+		CreateDesktopWindow();
 	}
 
 	while (GetMessage(&msg, NULL, 0, 0) > 0)

@@ -78,7 +78,7 @@ BOOL IsProgMgrDefaultShell()
 	HKEY hKeyWinlogon;
 	WCHAR szShell[HKEYMAXLEN] = L"";
 	DWORD dwType;
-	DWORD dwBufferSize = 0;
+	DWORD dwBufferSize = sizeof(szShell);
 
 	if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, WINLOGON_KEY,
 		0, KEY_READ, &hKeyWinlogon) == ERROR_SUCCESS)
@@ -134,7 +134,7 @@ BOOL SaveConfig()
 		(bSaveSettings && PMS_SAVESETTINGS) * PMS_SAVESETTINGS;
 
 	if (!RegSetValueEx(hKeySettings, pszSettingsMask, 0, REG_DWORD,
-		&dwSettingsMask, sizeof(dwSettingsMask)) == ERROR_SUCCESS)
+		(const BYTE*)&dwSettingsMask, sizeof(dwSettingsMask)) == ERROR_SUCCESS)
 		bConfigStatus = FALSE;
 	
 	// Get and save window position
@@ -143,7 +143,7 @@ BOOL SaveConfig()
 	CopyRect(&rcWindow, &wpProgMgr.rcNormalPosition);
 
 	if (!RegSetValueEx(hKeySettings, pszSettingsWindow, 0, REG_BINARY,
-		&rcWindow, sizeof(rcWindow)) == ERROR_SUCCESS)
+		(const BYTE*)&rcWindow, sizeof(rcWindow)) == ERROR_SUCCESS)
 		bConfigStatus = FALSE;
 
 	return bConfigStatus;
@@ -165,7 +165,7 @@ BOOL LoadConfig()
 
 	// Load settings bitmask
 	if (!RegQueryValueEx(hKeySettings, pszSettingsMask, 0, &dwType,
-		&dwSettingsMask, &dwBufferSize) == ERROR_SUCCESS)
+		(LPBYTE)&dwSettingsMask, &dwBufferSize) == ERROR_SUCCESS)
 		bConfigStatus = FALSE;
 	
 	// Apply bitmask to booleans
@@ -177,7 +177,7 @@ BOOL LoadConfig()
 
 	// Load window position... and apply it!
 	if (!RegQueryValueEx(hKeySettings, pszSettingsWindow, 0, &dwType,
-		&rcMainWindow, &dwRectBufferSize) == ERROR_SUCCESS)
+		(LPBYTE)&rcMainWindow, &dwRectBufferSize) == ERROR_SUCCESS)
 		bConfigStatus = FALSE;
 
 	return bConfigStatus;
