@@ -18,12 +18,18 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 #pragma code_page(65001) // UTF-8
 #include "lang\res_en-US.rc" // English (US)
 
-/* Primary Icon Library */
+/* Icon Library */
+// Primary
 IDI_PROGMGR		ICON PRELOAD	icons\progmgr.ico
 IDI_PROGGRP		ICON			icons\pmgroup.ico
 IDI_PROGITM		ICON			icons\pmitem.ico
-
-/* Secondary Icon Library */
+// Secondary
+IDI_COMMS		ICON			icons\comms.ico
+IDI_CONSOLE		ICON			icons\console.ico
+IDI_DOCUMENT	ICON			icons\document.ico
+IDI_SPREADSHEET	ICON			icons\spsheet.ico
+// Tertiary
+IDI_SUPERMAN	ICON			icons\misc\superman.ico
 
 /* Manifest */
 CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "progmgr.exe.manifest"
