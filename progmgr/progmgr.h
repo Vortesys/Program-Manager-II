@@ -41,8 +41,7 @@ extern WCHAR		szWebsite[64];
 
 /* Function Prototypes */
 // DESKTOP.C
-BOOL CreateDesktopWindow();
-LRESULT CALLBACK DeskWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+BOOL CreateDesktopWindow();// SYSINT.C
 // SYSINT.C
 BOOL RunFileDlg(HWND hWndOwner, HICON hIcon, LPWSTR lpszDir, LPWSTR lpszTitle, LPWSTR lpszDesc, DWORD dwFlags);
 BOOL ExitWindowsDialog(HWND hWndOwner);

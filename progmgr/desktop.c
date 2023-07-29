@@ -13,12 +13,31 @@
 #include "resource.h"
 // #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#include <CommCtrl.h>
+
+/* Structures */
+typedef struct _mrp
+{
+	HWND hWndMRP;
+	DWORD dwFlags;
+} MRP, * PMRP;
+
+/* Defines */
+// MRP Flags
+#define MRP_ICONIFIED	0x000000001
+#define MRP_FLASHING	0x000000002
+// Miscellaneous
+#define MAXTITLELEN	256
+#define ID_LISTVIEW	1000
 
 /* Variables */
 HWND hWndDesktop;
+HWND hWndListView;
 RECT rcRoot;
 
 /* Functions */
+LRESULT CALLBACK DeskWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+HWND CreateListView(HWND hWndParent, RECT rc);
 
 /* * * *\
 	CreateDesktopWindow -
@@ -56,15 +75,16 @@ BOOL CreateDesktopWindow()
 	wc.lpfnWndProc = DeskWndProc;
 	wc.hInstance = hAppInstance;
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wc.hbrBackground = (HBRUSH)(30);
+	wc.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);
 	wc.style = CS_NOCLOSE;
 	wc.lpszClassName = szClass;
 	if (!RegisterClassEx(&wc))
 		return FALSE;
 
-	if (!CreateWindowEx(WS_EX_TOOLWINDOW, wc.lpszClassName, NULL, WS_VISIBLE,
-		rcRoot.left, rcRoot.top, rcRoot.right - rcRoot.left, rcRoot.bottom - rcRoot.top,
-		NULL, NULL, hAppInstance, NULL));
+	if (CreateWindowEx(WS_EX_TOOLWINDOW, wc.lpszClassName,
+		NULL, WS_VISIBLE, rcRoot.left, rcRoot.top,
+		rcRoot.right - rcRoot.left, rcRoot.bottom - rcRoot.top,
+		NULL, NULL, hAppInstance, NULL) == NULL);
 		return 2;
 
 	while (GetMessage(&msg, NULL, 0, 0) > 0)
@@ -106,6 +126,9 @@ LRESULT CALLBACK DeskWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 		SetWindowPos(hWndProgMgr, HWND_TOP,
 			0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
+		// Finally, Create the ListView control
+		hWndListView = CreateListView(hWndDesktop, rcRoot);
+
 		break;
 
 	case WM_ACTIVATE:
@@ -117,6 +140,10 @@ LRESULT CALLBACK DeskWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 		SetWindowPos(hWndDesktop, HWND_BOTTOM,
 			rcRoot.left, rcRoot.top, rcRoot.right - rcRoot.left, rcRoot.bottom - rcRoot.top,
 			SWP_NOACTIVATE);
+		//if (hWndListView)
+		//	SetWindowPos(hWndListView, hWndDesktop,
+		//		rcRoot.left, rcRoot.top, rcRoot.right - rcRoot.left, rcRoot.bottom - rcRoot.top,
+		//		SWP_NOZORDER | SWP_NOACTIVATE);
 		break;
 
 	case WM_WINDOWPOSCHANGING:
@@ -133,4 +160,43 @@ LRESULT CALLBACK DeskWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 	}
 	return 0;
 
+}
+
+/* * * *\
+	CreateListView -
+		Creates the Desktop's ListView.
+	RETURNS -
+		HWND to the listview if successfull,
+		NULL otherwise.
+\* * * */
+HWND CreateListView(HWND hWndParent, RECT rc)
+{
+	HWND hWndListView;
+	LVITEM lviTestItem;
+	WCHAR szTestItem = L"Test Item";
+
+	// Create the ListView
+	hWndListView = CreateWindowEx(WS_EX_LEFT, WC_LISTVIEW, L"",
+		WS_VISIBLE | WS_CHILD | WS_BORDER | LVS_ICON | LVS_SINGLESEL,
+		rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top,
+		hWndParent, (HMENU)ID_LISTVIEW, hAppInstance,
+		NULL);
+
+	if(hWndListView == NULL)
+		return NULL;
+
+	ListView_SetBkColor(hWndListView, CLR_NONE);
+
+	lviTestItem.mask = LVIF_STATE | LVIF_TEXT;
+	lviTestItem.iItem = 0;
+	lviTestItem.iSubItem = 0;
+	lviTestItem.state = 0;
+	lviTestItem.stateMask = 0;
+	lviTestItem.pszText = &szTestItem;
+	lviTestItem.cchTextMax = MAXTITLELEN;
+	// lviTestItem.iImage = 1;
+
+	ListView_InsertItem(hWndListView, &lviTestItem);
+
+	return hWndListView;
 }
