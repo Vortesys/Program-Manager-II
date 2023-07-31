@@ -1,6 +1,6 @@
 [![Latest version](https://img.shields.io/github/v/release/Freedom-Desktop/Program-Manager-II?label=latest%20version&sort=semver&style=plastic)](/releases) [![Latest pre-release version](https://img.shields.io/github/v/release/Freedom-Desktop/Program-Manager-II?label=latest%20pre-release%20version&sort=semver&style=plastic&include_prereleases)](/releases)
 # Program Manager *II* for Windows NT
-![Progman banner](/misc/progmgr.png)
+![Progmgr banner](/misc/pman2.png)
 
 ## What is Program Manager?
 Program Manager was the shell that shipped with Microsoft Windows by default from Windows 3.0/NT 3.1 to 3.11/NT 3.51. The Program Manager shell was included with Windows as an option until Windows 2000. The new Program Manager is a shell that aims to mimic the original desktop metaphor that the original Program Manager was designed for while adding modern amenities.
