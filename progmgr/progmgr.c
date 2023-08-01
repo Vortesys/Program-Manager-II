@@ -49,6 +49,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	WCHAR szUsername[UNLEN + 1] = L"";
 	DWORD dwUsernameLen = UNLEN;
 	WCHAR szWindowTitle[UNLEN + ARRAYSIZE(szAppTitle) + 4] = L"";
+	RECT rcRoot;
+	POINT ptOffset;
 
 	hAppInstance = hInstance;
 
@@ -97,12 +99,22 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		StringCchCat(szWindowTitle, ARRAYSIZE(szWindowTitle), L" - ");
 		StringCchCat(szWindowTitle, ARRAYSIZE(szWindowTitle), szUsername);
 	}
-	
+
+	// Get size of the root HWND
+	GetWindowRect(GetDesktopWindow(), &rcRoot);
+
+	// Get the initial window offset
+	SystemParametersInfo(SPI_ICONHORIZONTALSPACING, 0, &ptOffset.x, 0);
+	SystemParametersInfo(SPI_ICONVERTICALSPACING, 0, &ptOffset.y, 0);
+
+	// Create main window with a default size
 	if (!CreateWindow(wc.lpszClassName, szWindowTitle, WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-		20, 20, 340, 220, 0, 0, hAppInstance, NULL))
+		rcRoot.left + ptOffset.x, rcRoot.top + ptOffset.y,
+		rcRoot.left + ptOffset.x + 320, rcRoot.top + ptOffset.y + 240,
+		0, 0, hAppInstance, NULL))
 		return 2;
 
-	// Set the window size, but only if it's valid
+	// Set the window size from the registry, but only if the coords make sense
 	if ((rcMainWindow.left != rcMainWindow.right) && (rcMainWindow.top != rcMainWindow.bottom))
 		SetWindowPos(hWndProgMgr, NULL,
 			rcMainWindow.left, rcMainWindow.top,
