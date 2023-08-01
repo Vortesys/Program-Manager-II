@@ -1,4 +1,4 @@
-[![Latest version](https://img.shields.io/github/v/release/Freedom-Desktop/Program-Manager-II?label=latest%20version&sort=semver&style=plastic)](/releases) [![Latest pre-release version](https://img.shields.io/github/v/release/Freedom-Desktop/Program-Manager-II?label=latest%20pre-release%20version&sort=semver&style=plastic&include_prereleases)](/releases)
+[![Latest version](https://img.shields.io/github/v/release/VortexSystems/Program-Manager-II?label=latest%20version&sort=semver&style=plastic)](/releases) [![Latest pre-release version](https://img.shields.io/github/v/release/VortexSystems/Program-Manager-II?label=latest%20pre-release%20version&sort=semver&style=plastic&include_prereleases)](/releases)
 # Program Manager *II* for Windows NT
 ![Progmgr banner](/misc/pman2.png)
 

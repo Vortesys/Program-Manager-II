@@ -108,7 +108,8 @@ WndProcDefault:
 \* * * */
 LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	switch (GET_WM_COMMAND_ID(wParam, lParam)) {
+	switch (GET_WM_COMMAND_ID(wParam, lParam))
+	{
 
 	case IDM_SHUTDOWN:
 		ExitWindowsDialog(hWnd);
