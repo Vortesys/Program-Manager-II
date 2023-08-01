@@ -27,6 +27,9 @@
     <ClInclude Include="registry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="group.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="progmgr.c">
@@ -42,6 +45,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="wndproc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="group.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

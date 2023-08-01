@@ -173,7 +173,7 @@ HWND CreateListView(HWND hWndParent, RECT rc)
 {
 	HWND hWndListView;
 	LVITEM lviTestItem;
-	WCHAR szTestItem = L"Test Item";
+	//WCHAR szTestItem[20] = L"Test Item\0";
 
 	// Create the ListView
 	hWndListView = CreateWindowEx(WS_EX_LEFT, WC_LISTVIEW, L"",
@@ -192,7 +192,7 @@ HWND CreateListView(HWND hWndParent, RECT rc)
 	lviTestItem.iSubItem = 0;
 	lviTestItem.state = 0;
 	lviTestItem.stateMask = 0;
-	lviTestItem.pszText = &szTestItem;
+	//lviTestItem.pszText = &szTestItem;
 	lviTestItem.cchTextMax = MAXTITLELEN;
 	// lviTestItem.iImage = 1;
 

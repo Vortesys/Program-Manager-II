@@ -153,7 +153,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		InsertMenu(hSystemMenu, 6, MF_BYPOSITION | MF_STRING, IDM_TASKMGR, szBuffer);
 		
 		// Create the desktop window...
-		CreateDesktopWindow();
+		// CreateDesktopWindow();
 	}
 
 	while (GetMessage(&msg, NULL, 0, 0) > 0)
