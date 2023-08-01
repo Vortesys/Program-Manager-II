@@ -117,34 +117,40 @@ BOOL IsProgMgrDefaultShell()
 	RETURNS -
 		TRUE if successful, FALSE if unsuccessful.
 \* * * */
-BOOL SaveConfig()
+BOOL SaveConfig(BOOL bPos, BOOL bSettings, BOOL bGroups)
 {
 	BOOL bConfigStatus = TRUE;
 	WINDOWPLACEMENT wpProgMgr;
 	RECT rcWindow;
 
-	// Shrink the settings into the bitmask and save it
-	// There's definitely a better way to do this but...
-	// I'll get to it later :)
-	dwSettingsMask =
-		(bAutoArrange && PMS_AUTOARRANGE) * PMS_AUTOARRANGE |
-		(bMinOnRun && PMS_MINONRUN) * PMS_MINONRUN |
-		(bTopMost && PMS_TOPMOST) * PMS_TOPMOST |
-		(bShowUsername && PMS_SHOWUSERNAME) * PMS_SHOWUSERNAME |
-		(bSaveSettings && PMS_SAVESETTINGS) * PMS_SAVESETTINGS;
+	if (bSettings)
+	{
+		// Shrink the settings into the bitmask and save it
+		// There's definitely a better way to do this but...
+		// I'll get to it later :)
+		dwSettingsMask =
+			(bAutoArrange && PMS_AUTOARRANGE) * PMS_AUTOARRANGE |
+			(bMinOnRun && PMS_MINONRUN) * PMS_MINONRUN |
+			(bTopMost && PMS_TOPMOST) * PMS_TOPMOST |
+			(bShowUsername && PMS_SHOWUSERNAME) * PMS_SHOWUSERNAME |
+			(bSaveSettings && PMS_SAVESETTINGS) * PMS_SAVESETTINGS;
 
-	if (!RegSetValueEx(hKeySettings, pszSettingsMask, 0, REG_DWORD,
-		(const BYTE*)&dwSettingsMask, sizeof(dwSettingsMask)) == ERROR_SUCCESS)
-		bConfigStatus = FALSE;
-	
-	// Get and save window position
-	wpProgMgr.length = sizeof(WINDOWPLACEMENT);
-	GetWindowPlacement(hWndProgMgr, &wpProgMgr);
-	CopyRect(&rcWindow, &wpProgMgr.rcNormalPosition);
+		if (!RegSetValueEx(hKeySettings, pszSettingsMask, 0, REG_DWORD,
+			(const BYTE*)&dwSettingsMask, sizeof(dwSettingsMask)) == ERROR_SUCCESS)
+			bConfigStatus = FALSE;
+	}
 
-	if (!RegSetValueEx(hKeySettings, pszSettingsWindow, 0, REG_BINARY,
-		(const BYTE*)&rcWindow, sizeof(rcWindow)) == ERROR_SUCCESS)
-		bConfigStatus = FALSE;
+	if (bPos)
+	{
+		// Get and save window position
+		wpProgMgr.length = sizeof(WINDOWPLACEMENT);
+		GetWindowPlacement(hWndProgMgr, &wpProgMgr);
+		CopyRect(&rcWindow, &wpProgMgr.rcNormalPosition);
+
+		if (!RegSetValueEx(hKeySettings, pszSettingsWindow, 0, REG_BINARY,
+			(const BYTE*)&rcWindow, sizeof(rcWindow)) == ERROR_SUCCESS)
+			bConfigStatus = FALSE;
+	}
 
 	return bConfigStatus;
 }

@@ -55,22 +55,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_SYSCOMMAND:
 	{
-		if (wParam == IDM_SHUTDOWN)
-		{
-			CmdProc(hWnd, wParam, lParam);
-			break;
-		}
 		if (wParam == IDM_TASKMGR)
 		{
 			ShellExecute(hWndProgMgr, L"open", L"TASKMGR.EXE", NULL, NULL, SW_NORMAL);
 			break;
 		}
+
+		if (wParam == IDM_SHUTDOWN)
 		if (wParam == IDM_FILE_EXIT)
 		if (wParam == IDM_FILE_RUN)
 		{
 			CmdProc(hWnd, wParam, lParam);
 			break;
 		}
+
 		goto WndProcDefault;
 		//return DefFrameProc(hWnd, hwndMDIClient, uiMsg, wParam, lParam);
 	}
@@ -83,8 +81,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		goto WndProcDefault;
 
 	case WM_CLOSE:
-		if (GetShellWindow())
+		if (bSaveSettings)
+			SaveConfig(TRUE, TRUE, TRUE);
+
+		if (bIsDefaultShell && (GetShellWindow() != NULL))
 			SetShellWindow(0);
+
 		PostQuitMessage(0);
 		break;
 
@@ -151,7 +153,7 @@ LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	case IDM_OPTIONS_SAVENOW:
 SaveConfig:
-		SaveConfig();
+		SaveConfig(TRUE, TRUE, TRUE);
 		break;
 
 	case IDM_HELP_INDEX:

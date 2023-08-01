@@ -108,6 +108,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	SystemParametersInfo(SPI_ICONVERTICALSPACING, 0, &ptOffset.y, 0);
 
 	// Create main window with a default size
+	// NOTE: i pulled 320x240 out of my ass, make this dynamic later
 	if (!CreateWindow(wc.lpszClassName, szWindowTitle, WS_OVERLAPPEDWINDOW | WS_VISIBLE,
 		rcRoot.left + ptOffset.x, rcRoot.top + ptOffset.y,
 		rcRoot.left + ptOffset.x + 320, rcRoot.top + ptOffset.y + 240,

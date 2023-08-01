@@ -44,4 +44,4 @@ extern RECT rcMainWindow;
 BOOL InitializeRegistryKeys(VOID);
 BOOL IsProgMgrDefaultShell(VOID);
 BOOL LoadConfig(VOID);
-BOOL SaveConfig(VOID);
+BOOL SaveConfig(BOOL bPos, BOOL bSettings, BOOL bGroups);
