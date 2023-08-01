@@ -12,7 +12,11 @@
 #include "resource.h"
 #include "registry.h"
 // #define WIN32_LEAN_AND_MEAN
+#define SECURITY_WIN32
 #include <Windows.h>
+#include <strsafe.h>
+#include <Lmcons.h>
+#include <security.h>
 
 /* Functions */
 
@@ -143,6 +147,7 @@ LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	case IDM_OPTIONS_SHOWUSERNAME:
 		bShowUsername = !bShowUsername;
+		UpdateWindowTitle();
 		UpdateChecks(bShowUsername, IDM_OPTIONS, IDM_OPTIONS_SHOWUSERNAME);
 		goto SaveConfig;
 
@@ -188,6 +193,36 @@ VOID UpdateChecks(BOOL bVarMenu, UINT uSubMenu, UINT uID)
 
 	hMenu = GetMenu(hWndProgMgr);
 	CheckMenuItem(hMenu, uID, (WORD)(bVarMenu ? MF_CHECKED : MF_UNCHECKED));
+
+	return;
+}
+
+/* * * *\
+	UpdateWindowTitle -
+		Updates Window title based on settings... and
+		current foreground group window if applicable?
+	RETURNS -
+		Nothing!
+\* * * */
+VOID UpdateWindowTitle()
+{
+	WCHAR szUsername[UNLEN + 1] = L"";
+	DWORD dwUsernameLen = UNLEN;
+	WCHAR szWindowTitle[UNLEN + ARRAYSIZE(szAppTitle) + 4] = L"";
+
+	// Get user and domain name
+	GetUserNameEx(NameSamCompatible, szUsername, &dwUsernameLen);
+
+	// Add username to window title if settings permit
+	StringCchCopy(szWindowTitle, ARRAYSIZE(szAppTitle), szAppTitle);
+
+	if (bShowUsername)
+	{
+		StringCchCat(szWindowTitle, ARRAYSIZE(szWindowTitle), L" - ");
+		StringCchCat(szWindowTitle, ARRAYSIZE(szWindowTitle), szUsername);
+	}
+
+	SetWindowText(hWndProgMgr, (LPCWSTR)&szWindowTitle);
 
 	return;
 }

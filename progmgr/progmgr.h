@@ -50,3 +50,4 @@ BOOL SetShellWindow(HWND hWndShell);
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam);
 VOID UpdateChecks(BOOL bVarMenu, UINT uSubMenu, UINT uID);
+VOID UpdateWindowTitle();

@@ -14,9 +14,6 @@
 // #define WIN32_LEAN_AND_MEAN
 #define SECURITY_WIN32
 #include <Windows.h>
-#include <strsafe.h>
-#include <Lmcons.h>
-#include <security.h>
 
 /* Variables */
 // Global
@@ -37,7 +34,7 @@ HWND		hWndMDIClient = NULL;
 	wWinMain -
 		Program Manager's entry point.
 \* * * */
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
+int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
 	MSG msg = { 0 };
 	HANDLE hAccel;
@@ -46,9 +43,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	WNDCLASS wc = { 0 };
 	WCHAR szBuffer[MAX_PATH];
 	WCHAR szClass[16];
-	WCHAR szUsername[UNLEN + 1] = L"";
-	DWORD dwUsernameLen = UNLEN;
-	WCHAR szWindowTitle[UNLEN + ARRAYSIZE(szAppTitle) + 4] = L"";
 	RECT rcRoot;
 	POINT ptOffset;
 
@@ -58,7 +52,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	LoadString(hAppInstance, IDS_PMCLASS, szClass, ARRAYSIZE(szClass));
 	LoadString(hAppInstance, IDS_APPTITLE, szAppTitle, ARRAYSIZE(szAppTitle));
 	LoadString(hAppInstance, IDS_WEBSITE, szWebsite, ARRAYSIZE(szWebsite));
-	GetUserNameEx(NameSamCompatible, szUsername, &dwUsernameLen);
 
 	// Get Desktop background color
 	//CreateSolidBrush(GetBackgroundColor
@@ -91,15 +84,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		return FALSE;
 	}
 
-	// Add username to window title if settings permit
-	StringCchCopy(szWindowTitle, ARRAYSIZE(szAppTitle), szAppTitle);
-
-	if (bShowUsername)
-	{
-		StringCchCat(szWindowTitle, ARRAYSIZE(szWindowTitle), L" - ");
-		StringCchCat(szWindowTitle, ARRAYSIZE(szWindowTitle), szUsername);
-	}
-
 	// Get size of the root HWND
 	GetWindowRect(GetDesktopWindow(), &rcRoot);
 
@@ -109,7 +93,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 	// Create main window with a default size
 	// NOTE: i pulled 320x240 out of my ass, make this dynamic later
-	if (!CreateWindow(wc.lpszClassName, szWindowTitle, WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+	if (!CreateWindow(wc.lpszClassName, szAppTitle, WS_OVERLAPPEDWINDOW | WS_VISIBLE,
 		rcRoot.left + ptOffset.x, rcRoot.top + ptOffset.y,
 		rcRoot.left + ptOffset.x + 320, rcRoot.top + ptOffset.y + 240,
 		0, 0, hAppInstance, NULL))
@@ -126,12 +110,14 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	hMenu = GetMenu(hWndProgMgr);
 	hSystemMenu = GetSystemMenu(hWndProgMgr, FALSE);
 
-	// Update our menu checkmarks
+	// Update relevant parts of the window
 	UpdateChecks(bAutoArrange, IDM_OPTIONS, IDM_OPTIONS_AUTOARRANGE);
 	UpdateChecks(bMinOnRun, IDM_OPTIONS, IDM_OPTIONS_MINONRUN);
 	UpdateChecks(bTopMost, IDM_OPTIONS, IDM_OPTIONS_TOPMOST);
 	UpdateChecks(bShowUsername, IDM_OPTIONS, IDM_OPTIONS_SHOWUSERNAME);
 	UpdateChecks(bSaveSettings, IDM_OPTIONS, IDM_OPTIONS_SAVESETTINGS);
+
+	UpdateWindowTitle();
 
 	// Update settings based on their values
 	if (bTopMost)
