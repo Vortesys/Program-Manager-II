@@ -1,6 +1,6 @@
 /* * * * * * * *\
 	REGISTRY.H -
-		Copyright (c) 2023 freedom7341, Freedom Desktop
+		Copyright (c) 2023 freedom7341, Vortesys
 	DESCRIPTION -
 		Program Manager's header file for registry related functions.
 	LICENSE INFORMATION -
@@ -19,7 +19,7 @@
 #define WINLOGON_KEY  L"Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon"
 // #define PROGMAN_KEY  L"Software\\Microsoft\\Windows NT\\CurrentVersion\\Program Manager"
 // #define WINDOWS_KEY  L"Software\\Microsoft\\Windows NT\\CurrentVersion\\Windows"
-#define PROGMGR_KEY  L"Software\\Freedom Desktop\\Program Manager II"
+#define PROGMGR_KEY  L"Software\\Vortesys\\Program Manager II"
 // Settings Bitmask Values (DWORD)
 #define PMS_AUTOARRANGE 0x00000001
 #define PMS_MINONRUN 0x00000002

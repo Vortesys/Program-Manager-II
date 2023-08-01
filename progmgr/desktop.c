@@ -1,6 +1,6 @@
 /* * * * * * * *\
 	DESKTOP.C -
-		Copyright (c) 2023 freedom7341, Freedom Desktop
+		Copyright (c) 2023 freedom7341, Vortesys
 	DESCRIPTION -
 		Program Manager's desktop window.
 		Only visible as the default shell.
@@ -75,7 +75,7 @@ BOOL CreateDesktopWindow()
 	wc.lpfnWndProc = DeskWndProc;
 	wc.hInstance = hAppInstance;
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wc.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);
+	wc.hbrBackground = (HBRUSH)GetStockObject(COLOR_WINDOW);
 	wc.style = CS_NOCLOSE;
 	wc.lpszClassName = szClass;
 	if (!RegisterClassEx(&wc))
@@ -127,7 +127,7 @@ LRESULT CALLBACK DeskWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 			0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
 		// Finally, Create the ListView control
-		hWndListView = CreateListView(hWndDesktop, rcRoot);
+		//hWndListView = CreateListView(hWndDesktop, rcRoot);
 
 		break;
 

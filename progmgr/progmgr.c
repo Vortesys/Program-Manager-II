@@ -1,6 +1,6 @@
 /* * * * * * * *\
 	PROGMGR.C -
-		Copyright (c) 2023 freedom7341, Freedom Desktop
+		Copyright (c) 2023 freedom7341, Vortesys
 	DESCRIPTION -
 		Program Manager's main file, now with extra wWinMain!
 	LICENSE INFORMATION -
