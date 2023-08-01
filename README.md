@@ -1,4 +1,4 @@
-[![Latest version](https://img.shields.io/github/v/release/Vortesys/Program-Manager-II?label=latest%20version&sort=semver&style=plastic)](/releases) [![Latest pre-release version](https://img.shields.io/github/v/release/Vortesys/Program-Manager-II?label=latest%20pre-release%20version&sort=semver&style=plastic&include_prereleases)](/releases)
+[![Latest version](https://img.shields.io/github/v/release/Vortesys/Program-Manager-II?label=latest%20version&sort=semver&style=plastic)](https://github.com/Vortesys/Program-Manager-II/releases) [![Latest pre-release version](https://img.shields.io/github/v/release/Vortesys/Program-Manager-II?label=latest%20pre-release%20version&sort=semver&style=plastic&include_prereleases)](https://github.com/Vortesys/Program-Manager-II/releases)
 # Program Manager *II* for Windows NT
 ![Progmgr banner](/misc/pman2.png)
 
@@ -9,7 +9,7 @@ Program Manager was the shell that shipped with Microsoft Windows by default fro
 Program Manager should run on ~~every AMD64 version of Windows and every 32-bit version back to 2000. The ultimate goal is to run on NT 3.51 just as well as it can run on Windows 11~~ Windows Vista and above.
 
 ## Where do I get it?
-The [releases page](/releases) will contain the latest version of Program Manager.
+The [releases page](https://github.com/Vortesys/Program-Manager-II/releases) will contain the latest version of Program Manager.
 
 ## How can I help?
-Submitting [issues](/issues) with bug reports, suggestions or comments always helps. If you're able to, contributing with a [pull request](/pulls) is much appreciated.
+Submitting [issues](https://github.com/Vortesys/Program-Manager-II/issues) with bug reports, suggestions or comments always helps. If you're able to, contributing with a [pull request](https://github.com/Vortesys/Program-Manager-II/pulls) is much appreciated.
