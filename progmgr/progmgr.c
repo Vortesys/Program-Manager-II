@@ -9,6 +9,7 @@
 
 /* Headers */
 #include "progmgr.h"
+#include "group.h"
 #include "resource.h"
 #include "registry.h"
 // #define WIN32_LEAN_AND_MEAN
@@ -18,15 +19,18 @@
 /* Variables */
 // Global
 BOOL		bIsDefaultShell = FALSE;
+// Window Related
+HICON		hProgMgrIcon = NULL;
+HICON		hGroupIcon = NULL;
+HINSTANCE	hAppInstance;
+HWND		hWndProgMgr = NULL;
+HWND		hWndMDIClient = NULL;
 // Global Strings
 WCHAR		szAppTitle[32];
 WCHAR		szProgMgr[] = L"progmgr";
 WCHAR		szWebsite[64];
-// Window Related
-HICON		hProgMgrIcon = NULL;
-HINSTANCE	hAppInstance;
-HWND		hWndProgMgr = NULL;
-HWND		hWndMDIClient = NULL;
+WCHAR		szClass[16];
+WCHAR		szGrpClass[16];
 
 /* Functions */
 
@@ -41,8 +45,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	HMENU hMenu;
 	HMENU hSystemMenu;
 	WNDCLASS wc = { 0 };
+	WNDCLASSEX wce = { 0 };
 	WCHAR szBuffer[MAX_PATH];
-	WCHAR szClass[16];
 	RECT rcRoot;
 	POINT ptOffset;
 
@@ -50,22 +54,39 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 	// Create Strings
 	LoadString(hAppInstance, IDS_PMCLASS, szClass, ARRAYSIZE(szClass));
+	LoadString(hAppInstance, IDS_GRPCLASS, szGrpClass, ARRAYSIZE(szGrpClass));
 	LoadString(hAppInstance, IDS_APPTITLE, szAppTitle, ARRAYSIZE(szAppTitle));
 	LoadString(hAppInstance, IDS_WEBSITE, szWebsite, ARRAYSIZE(szWebsite));
 
 	// Get Desktop background color
 	//CreateSolidBrush(GetBackgroundColor
 
-	// Register the Frame Window
+	// Register the Frame Window Class
 	wc.lpfnWndProc = WndProc;
 	wc.hInstance = hAppInstance;
 	wc.hIcon = hProgMgrIcon = LoadImage(hAppInstance, MAKEINTRESOURCE(IDI_PROGMGR), IMAGE_ICON,
 		0, 0, LR_DEFAULTSIZE | LR_SHARED);
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wc.hbrBackground = (HBRUSH)(COLOR_BACKGROUND);
+	// wc.hbrBackground = (HBRUSH)(COLOR_BACKGROUND);
+	wc.hbrBackground = NULL;
 	wc.lpszMenuName = MAKEINTRESOURCE(IDM_MAIN);
 	wc.lpszClassName = szClass;
 	if (!RegisterClass(&wc))
+		return FALSE;
+
+	// Register the Group Window Class
+	wce.cbSize = sizeof(WNDCLASSEX);
+	wce.lpfnWndProc = GroupWndProc;
+	wc.cbClsExtra = 0;
+	wc.cbWndExtra = 0;
+	wce.hInstance = hAppInstance;
+	wce.hIcon = hGroupIcon = LoadImage(hAppInstance, MAKEINTRESOURCE(IDI_PROGMGR), IMAGE_ICON,
+		0, 0, LR_DEFAULTSIZE | LR_SHARED);
+	wce.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wce.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wce.lpszMenuName = NULL;
+	wce.lpszClassName = szGrpClass;
+	if (!RegisterClassEx(&wce))
 		return FALSE;
 
 	// Load the Accelerator table

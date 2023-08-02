@@ -9,6 +9,7 @@
 
 /* Headers */
 #include "progmgr.h"
+#include "group.h"
 #include "resource.h"
 #include "registry.h"
 // #define WIN32_LEAN_AND_MEAN
@@ -30,78 +31,76 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
-
-	case WM_CREATE:
-	{
-		RECT rc;
-		CLIENTCREATESTRUCT ccs;
-
-		// Frame Window
-		hWndProgMgr = hWnd;
-
-		// MDI Client Window
-		ccs.hWindowMenu = GetSubMenu(GetMenu(hWnd), IDM_WINDOW);
-		ccs.idFirstChild = IDM_WINDOW_CHILDSTART;
-
-		GetClientRect(hWndProgMgr, &rc);
-
-		hWndMDIClient = CreateWindow(L"MDIClient", NULL,
-			WS_CLIPCHILDREN | WS_CHILD | WS_VSCROLL | WS_HSCROLL,
-			// rc.left - 1, rc.top - 1, rc.right + 2, rc.bottom + 2,
-			0, 0, 0, 0,
-			hWnd, (HMENU)1, hAppInstance, (LPWSTR)&ccs);
-
-		if (!hWndMDIClient) {
-			return -1;
-		}
-		break;
-	}
-
-	case WM_SYSCOMMAND:
-	{
-		if (wParam == IDM_TASKMGR)
+		case WM_CREATE:
 		{
-			ShellExecute(hWndProgMgr, L"open", L"TASKMGR.EXE", NULL, NULL, SW_NORMAL);
+			CLIENTCREATESTRUCT ccs;
+			RECT rc;
+
+			// Frame Window
+			hWndProgMgr = hWnd;
+
+			// MDI Client Window
+			ccs.hWindowMenu = GetSubMenu(GetMenu(hWnd), IDM_WINDOW);
+			ccs.idFirstChild = IDM_WINDOW_CHILDSTART;
+
+			GetClientRect(hWndProgMgr, &rc);
+
+			if (!(hWndMDIClient = CreateWindowEx(WS_EX_COMPOSITED, L"MDIClient",
+				NULL, WS_CLIPCHILDREN | WS_CHILD | WS_VSCROLL | WS_HSCROLL | WS_VISIBLE,
+				// rc.left - 1, rc.top - 1, rc.right + 2, rc.bottom + 2,
+				CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+				hWnd, (HMENU)1, hAppInstance, (LPWSTR)&ccs)))
+			{
+				return FALSE;
+			}
+
+			//TempCreateGroup(hWndMDIClient);
+
 			break;
 		}
 
-		if (wParam == IDM_SHUTDOWN)
-		if (wParam == IDM_FILE_EXIT)
-		if (wParam == IDM_FILE_RUN)
+		case WM_SYSCOMMAND:
 		{
-			CmdProc(hWnd, wParam, lParam);
-			break;
+			if (wParam == IDM_TASKMGR)
+			{
+				ShellExecute(hWndProgMgr, L"open", L"TASKMGR.EXE", NULL, NULL, SW_NORMAL);
+				break;
+			}
+			if (wParam == IDM_SHUTDOWN)
+			if (wParam == IDM_FILE_EXIT)
+			if (wParam == IDM_FILE_RUN)
+			{
+				CmdProc(hWnd, wParam, lParam);
+				break;
+			}
+
+			goto WndProcDefault;
 		}
 
-		goto WndProcDefault;
-		//return DefFrameProc(hWnd, hwndMDIClient, uiMsg, wParam, lParam);
-	}
+		case WM_COMMAND:
+			if (CmdProc(hWnd, wParam, lParam))
+				break;
 
-	case WM_COMMAND:
-		if (CmdProc(hWnd, wParam, lParam))
-		{
+			goto WndProcDefault;
+	
+		case WM_CLOSE:
+			if (bSaveSettings)
+				SaveConfig(TRUE, TRUE, TRUE);
+
+			if (bIsDefaultShell && (GetShellWindow() != NULL))
+				SetShellWindow(0);
+
+			PostQuitMessage(0);
 			break;
-		}
-		goto WndProcDefault;
 
-	case WM_CLOSE:
-		if (bSaveSettings)
-			SaveConfig(TRUE, TRUE, TRUE);
+		case WM_ENDSESSION:
+			PostQuitMessage(0);
+			break;
 
-		if (bIsDefaultShell && (GetShellWindow() != NULL))
-			SetShellWindow(0);
-
-		PostQuitMessage(0);
-		break;
-
-	case WM_ENDSESSION:
-		PostQuitMessage(0);
-		break;
-
-	default:
+		default:
 WndProcDefault:
-		return DefFrameProc(hWnd, hWndMDIClient, message, wParam, lParam);
-	}
+			return DefFrameProc(hWnd, hWndMDIClient, message, wParam, lParam);
+		}
 	return 0;
 
 }

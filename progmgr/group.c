@@ -16,3 +16,51 @@
 #include <Windows.h>
 
 /* Functions */
+
+/* * * *\
+	GroupWndProc -
+		Group window procedure.
+	RETURNS -
+		Zero if nothing, otherwise returns the good stuff.
+\* * * */
+LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+		case WM_CREATE:
+		{
+			break;
+		}
+    	default:
+GrpProcDefault:
+			return DefMDIChildProc(hWnd, message, wParam, lParam);
+	}
+	return 0;
+}
+
+/* * * *\
+	TempCreateGroup -
+		th
+	RETURNS -
+		handle to window
+\* * * */
+HWND TempCreateGroup(HWND hMDIClient)
+{
+	MDICREATESTRUCT mcs;
+	HWND hChild;
+
+	mcs.szTitle = L"[Untitled]";
+	mcs.szClass = szGrpClass;
+	mcs.hOwner = GetModuleHandle(NULL);
+	mcs.x = mcs.cx = CW_USEDEFAULT;
+	mcs.y = mcs.cy = CW_USEDEFAULT;
+	mcs.style = MDIS_ALLCHILDSTYLES;
+
+	hChild = (HWND)SendMessage(hMDIClient, WM_MDICREATE, 0, (LONG)&mcs);
+	if (!hChild)
+	{
+		MessageBox(hMDIClient, L"MDI Child creation failed.", L"Oh Oh...",
+			MB_ICONEXCLAMATION | MB_OK);
+	}
+	return hChild;
+}

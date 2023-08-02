@@ -13,3 +13,6 @@
 /* Includes */
 #include <wtypes.h>
 
+/* Function Prototypes */
+LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+HWND TempCreateGroup(HWND hMDIClient);

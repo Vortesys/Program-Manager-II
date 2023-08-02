@@ -32,12 +32,15 @@
 // PROGMGR.C
 extern BOOL			bIsDefaultShell;
 extern HICON		hProgMgrIcon;
+extern HICON		hGroupIcon;
 extern HINSTANCE	hAppInstance;
 extern HWND			hWndProgMgr;
 extern HWND			hWndMDIClient;
 extern WCHAR		szAppTitle[32];
 extern WCHAR		szProgMgr[];
 extern WCHAR		szWebsite[64];
+extern WCHAR		szClass[16];
+extern WCHAR		szGrpClass[16];
 
 /* Function Prototypes */
 // DESKTOP.C
