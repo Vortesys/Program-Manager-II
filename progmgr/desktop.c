@@ -111,7 +111,7 @@ LRESULT CALLBACK DeskWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 		hWndDesktop = hWnd;
 
 		// Set the window position to shell
-		SetShellWindow(hWndDesktop);
+		// SetShellWindow(hWndDesktop);
 		ShowWindow(hWndDesktop, SW_MAXIMIZE);
 
 		// Strip the border from the desktop window
@@ -173,11 +173,12 @@ HWND CreateListView(HWND hWndParent, RECT rc)
 {
 	HWND hWndListView;
 	LVITEM lviTestItem;
-	//WCHAR szTestItem[] = L"Test Item\0";
+	WCHAR szTestItem[] = L"Test Item";
 
 	// Create the ListView
 	hWndListView = CreateWindowEx(WS_EX_LEFT, WC_LISTVIEW, L"",
-		WS_VISIBLE | WS_CHILD | WS_BORDER | LVS_ICON | LVS_SINGLESEL,
+		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		LVS_ICON | LVS_SINGLESEL,
 		rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top,
 		hWndParent, (HMENU)ID_LISTVIEW, hAppInstance,
 		NULL);
@@ -192,7 +193,7 @@ HWND CreateListView(HWND hWndParent, RECT rc)
 	lviTestItem.iSubItem = 0;
 	lviTestItem.state = 0;
 	lviTestItem.stateMask = 0;
-	//lviTestItem.pszText = &szTestItem;
+	lviTestItem.pszText = &szTestItem;
 	lviTestItem.cchTextMax = MAXTITLELEN;
 	// lviTestItem.iImage = 1;
 

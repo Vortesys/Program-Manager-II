@@ -32,7 +32,7 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 			break;
 		}
     	default:
-GrpProcDefault:
+// GrpProcDefault:
 			return DefMDIChildProc(hWnd, message, wParam, lParam);
 	}
 	return 0;
@@ -49,18 +49,17 @@ HWND TempCreateGroup(HWND hMDIClient)
 	MDICREATESTRUCT mcs;
 	HWND hChild;
 
-	mcs.szTitle = L"[Untitled]";
 	mcs.szClass = szGrpClass;
-	mcs.hOwner = GetModuleHandle(NULL);
-	mcs.x = mcs.cx = CW_USEDEFAULT;
-	mcs.y = mcs.cy = CW_USEDEFAULT;
-	mcs.style = MDIS_ALLCHILDSTYLES;
+	mcs.szTitle = L"";
+	mcs.hOwner = hAppInstance;
+	mcs.x = mcs.y = mcs.cx = mcs.cy = CW_USEDEFAULT;
+	mcs.style = WS_VSCROLL | WS_HSCROLL;
 
-	hChild = (HWND)SendMessage(hMDIClient, WM_MDICREATE, 0, (LONG)&mcs);
-	if (!hChild)
-	{
-		MessageBox(hMDIClient, L"MDI Child creation failed.", L"Oh Oh...",
-			MB_ICONEXCLAMATION | MB_OK);
-	}
+	hChild = (HWND)SendMessage(hMDIClient, WM_MDICREATE, 0, (LPARAM)(LPTSTR)&mcs);
+	// if (!hChild)
+	// {
+	//	MessageBox(hMDIClient, L"MDI Child creation failed.", L"Oh Oh...",
+	//		MB_ICONEXCLAMATION | MB_OK);
+	// }
 	return hChild;
 }

@@ -39,7 +39,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			// Frame Window
 			hWndProgMgr = hWnd;
 
-			// MDI Client Window
+			// Create the MDI Client Window
 			ccs.hWindowMenu = GetSubMenu(GetMenu(hWnd), IDM_WINDOW);
 			ccs.idFirstChild = IDM_WINDOW_CHILDSTART;
 
@@ -47,7 +47,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			if (!(hWndMDIClient = CreateWindowEx(WS_EX_COMPOSITED, L"MDIClient",
 				NULL, WS_CLIPCHILDREN | WS_CHILD | WS_VSCROLL | WS_HSCROLL | WS_VISIBLE,
-				// rc.left - 1, rc.top - 1, rc.right + 2, rc.bottom + 2,
 				CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
 				hWnd, (HMENU)1, hAppInstance, (LPWSTR)&ccs)))
 			{
@@ -66,7 +65,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				if (wParam == IDM_TASKMGR)
 				{
 					ShellExecute(hWndProgMgr, L"open", L"TASKMGR.EXE", NULL, NULL, SW_NORMAL);
-					break;
+					return 0;
 				}
 
 				if (CmdProc(hWnd, wParam, lParam))
@@ -78,7 +77,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		case WM_COMMAND:
 			if (CmdProc(hWnd, wParam, lParam))
-				break;
+				return 0;
 
 			goto WndProcDefault;
 	
