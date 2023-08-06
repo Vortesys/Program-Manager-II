@@ -54,24 +54,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				return FALSE;
 			}
 
-			//TempCreateGroup(hWndMDIClient);
+			TempCreateGroup(hWndMDIClient);
 
 			break;
 		}
 
 		case WM_SYSCOMMAND:
 		{
-			if (wParam == IDM_TASKMGR)
+			if ((wParam >= IDM_MAIN) || (wParam <= IDM_TASKMGR))
 			{
-				ShellExecute(hWndProgMgr, L"open", L"TASKMGR.EXE", NULL, NULL, SW_NORMAL);
-				break;
-			}
-			if (wParam == IDM_SHUTDOWN)
-			if (wParam == IDM_FILE_EXIT)
-			if (wParam == IDM_FILE_RUN)
-			{
-				CmdProc(hWnd, wParam, lParam);
-				break;
+				if (wParam == IDM_TASKMGR)
+				{
+					ShellExecute(hWndProgMgr, L"open", L"TASKMGR.EXE", NULL, NULL, SW_NORMAL);
+					break;
+				}
+
+				if (CmdProc(hWnd, wParam, lParam))
+					return 0;
 			}
 
 			goto WndProcDefault;
