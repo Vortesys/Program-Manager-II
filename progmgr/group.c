@@ -2,7 +2,7 @@
 	GROUP.C -
 		Copyright (c) 2023 freedom7341, Vortesys
 	DESCRIPTION -
-		Group window and program item functions.
+		Group window and program group/item functions.
 	LICENSE INFORMATION -
 		MIT License, see LICENSE.txt in the root folder
 \* * * * * * * */
@@ -14,6 +14,9 @@
 #include "registry.h"
 // #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+
+/* Variables */
+WNDCLASSEX wcGrp;
 
 /* Functions */
 
@@ -31,12 +34,20 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 		{
 			break;
 		}
-    	default:
-// GrpProcDefault:
+		default:
+// GroupProcDefault:
 			return DefMDIChildProc(hWnd, message, wParam, lParam);
 	}
 	return 0;
 }
+
+/* * * *\
+	InitGroups -
+		Initialize variables for the betterment of groups forever
+		Make great glorious MDI Client
+	RETURNS -
+		Zero if nothing, otherwise returns the good stuff.
+\* * * */
 
 /* * * *\
 	TempCreateGroup -
@@ -53,7 +64,7 @@ HWND TempCreateGroup(HWND hMDIClient)
 	mcs.szTitle = L"";
 	mcs.hOwner = hAppInstance;
 	mcs.x = mcs.y = mcs.cx = mcs.cy = CW_USEDEFAULT;
-	mcs.style = WS_VSCROLL | WS_HSCROLL;
+	mcs.style = WS_VISIBLE;
 
 	hChild = (HWND)SendMessage(hMDIClient, WM_MDICREATE, 0, (LPARAM)(LPTSTR)&mcs);
 	// if (!hChild)
