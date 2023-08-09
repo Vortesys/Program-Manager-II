@@ -26,6 +26,18 @@
 #define GRP_FLAG_MAXIMIZED 0x00000008
 
 /* Structures */
+// Item Structure
+typedef struct _ITEM {
+	// Item executable and name
+	WCHAR szItemName[MAX_TITLE_LENGTH];
+	WCHAR szExecPath[MAX_PATH]; // Path of the item executable
+	WCHAR szWorkPath[MAX_PATH]; // Working directory
+
+	// Icon
+	WCHAR szIconPath[MAX_PATH]; // Path of the icon
+	UINT uiIconIndex; // Index of the icon
+} ITEM, * PITEM;
+
 // Group format, .GRP
 typedef struct _GROUP {
 	// Group file header
@@ -52,18 +64,6 @@ typedef struct _GROUPWND {
 	// Group information
 	HANDLE hGroup; // Handle to GROUP object
 } GROUPINFO, * PGROUPINFO;
-
-// Item Structure
-typedef struct _ITEM {
-	// Item executable and name
-	WCHAR szItemName[MAX_TITLE_LENGTH];
-	WCHAR szExecPath[MAX_PATH]; // Path of the item executable
-	WCHAR szWorkPath[MAX_PATH]; // Working directory
-
-	// Icon
-	WCHAR szIconPath[MAX_PATH]; // Path of the icon
-	UINT uiIconIndex; // Index of the icon
-} ITEM, * PITEM;
 
 /* Function Prototypes */
 LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

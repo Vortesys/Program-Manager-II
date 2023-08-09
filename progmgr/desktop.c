@@ -193,7 +193,7 @@ HWND CreateListView(HWND hWndParent, RECT rc)
 	lviTestItem.iSubItem = 0;
 	lviTestItem.state = 0;
 	lviTestItem.stateMask = 0;
-	lviTestItem.pszText = &szTestItem;
+	lviTestItem.pszText = (LPWSTR)&szTestItem;
 	lviTestItem.cchTextMax = MAXTITLELEN;
 	// lviTestItem.iImage = 1;
 
