@@ -19,18 +19,18 @@
 /* Variables */
 // Global
 BOOL		bIsDefaultShell = FALSE;
-// Window Related
+// Handles
+HINSTANCE	hAppInstance;
+HANDLE		hAppHeap;
+HWND		hWndProgMgr = NULL;
+// Icons
 HICON		hProgMgrIcon = NULL;
 HICON		hGroupIcon = NULL;
-HINSTANCE	hAppInstance;
-HWND		hWndProgMgr = NULL;
-HWND		hWndMDIClient = NULL;
 // Global Strings
 WCHAR		szAppTitle[32];
 WCHAR		szProgMgr[] = L"progmgr";
 WCHAR		szWebsite[64];
 WCHAR		szClass[16];
-WCHAR		szGrpClass[16];
 
 /* Functions */
 
@@ -45,16 +45,18 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	HMENU hMenu;
 	HMENU hSystemMenu;
 	WNDCLASS wc = { 0 };
-	WNDCLASSEX wce = { 0 };
 	WCHAR szBuffer[MAX_PATH];
 	RECT rcRoot;
 	POINT ptOffset;
 
+	// Initialize the instance
 	hAppInstance = hInstance;
+
+	// Create our global heap handle
+	hAppHeap = GetProcessHeap();
 
 	// Create Strings
 	LoadString(hAppInstance, IDS_PMCLASS, szClass, ARRAYSIZE(szClass));
-	LoadString(hAppInstance, IDS_GRPCLASS, szGrpClass, ARRAYSIZE(szGrpClass));
 	LoadString(hAppInstance, IDS_APPTITLE, szAppTitle, ARRAYSIZE(szAppTitle));
 	LoadString(hAppInstance, IDS_WEBSITE, szWebsite, ARRAYSIZE(szWebsite));
 
@@ -71,22 +73,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	wc.hbrBackground = NULL;
 	wc.lpszMenuName = MAKEINTRESOURCE(IDM_MAIN);
 	wc.lpszClassName = szClass;
-	if (!RegisterClass(&wc))
-		return FALSE;
 
-	// Register the Group Window Class
-	wce.cbSize = sizeof(WNDCLASSEX);
-	wce.lpfnWndProc = GroupWndProc;
-	wce.cbClsExtra = 0;
-	wce.cbWndExtra = 0;
-	wce.hInstance = hAppInstance;
-	wce.hIcon = hGroupIcon = LoadImage(hAppInstance, MAKEINTRESOURCE(IDI_PROGGRP), IMAGE_ICON,
-		0, 0, LR_DEFAULTSIZE | LR_SHARED);
-	wce.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wce.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-	wce.lpszMenuName = NULL;
-	wce.lpszClassName = szGrpClass;
-	if (!RegisterClassEx(&wce))
+	if (!RegisterClass(&wc))
 		return FALSE;
 
 	// Load the Accelerator table
@@ -95,15 +83,14 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		return FALSE;
 
 	// Perform Registry actions, close if registry is inaccessible.
-	if (InitializeRegistryKeys())
-	{
-		bIsDefaultShell = IsProgMgrDefaultShell();
-		LoadConfig();
-	}
-	else
-	{
+	if (!InitializeRegistryKeys())
 		return FALSE;
-	}
+	
+	bIsDefaultShell = IsProgMgrDefaultShell();
+
+	// Load configuration, but don't load groups yet
+	if(LoadConfig(TRUE, TRUE, FALSE) != RCE_SUCCESS)
+		return FALSE;
 
 	// Get size of the root HWND
 	GetWindowRect(GetDesktopWindow(), &rcRoot);
@@ -114,10 +101,10 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 	// Create main window with a default size
 	// NOTE: i pulled 320x240 out of my ass, make this dynamic later
-	if (!CreateWindow(wc.lpszClassName, szAppTitle, WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+	if (!(hWndProgMgr = CreateWindowW(wc.lpszClassName, szAppTitle, WS_OVERLAPPEDWINDOW | WS_VISIBLE,
 		rcRoot.left + ptOffset.x, rcRoot.top + ptOffset.y,
 		rcRoot.left + ptOffset.x + 320, rcRoot.top + ptOffset.y + 240,
-		0, 0, hAppInstance, NULL))
+		0, 0, hAppInstance, NULL)))
 		return 2;
 
 	// Set the window size from the registry, but only if the coords make sense
@@ -162,6 +149,10 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		// Create the desktop window...
 		// CreateDesktopWindow();
 	}
+
+	// Create the frame window
+	if (!InitializeGroups())
+		return FALSE;
 
 	while (GetMessage(&msg, NULL, 0, 0) > 0)
 	{

@@ -29,18 +29,19 @@
 #define RF_RETRY            0x0002	// Cancel the operation, but leave the dialog open
 
 /* Global Variables */
-// PROGMGR.C
 extern BOOL			bIsDefaultShell;
+// Handles
+extern HINSTANCE	hAppInstance;
+extern HANDLE		hAppHeap;
+extern HWND			hWndProgMgr;
+// Icons
 extern HICON		hProgMgrIcon;
 extern HICON		hGroupIcon;
-extern HINSTANCE	hAppInstance;
-extern HWND			hWndProgMgr;
-extern HWND			hWndMDIClient;
+// Strings
 extern WCHAR		szAppTitle[32];
 extern WCHAR		szProgMgr[];
 extern WCHAR		szWebsite[64];
 extern WCHAR		szClass[16];
-extern WCHAR		szGrpClass[16];
 
 /* Function Prototypes */
 // DESKTOP.C

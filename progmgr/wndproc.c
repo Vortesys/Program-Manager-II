@@ -33,28 +33,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		case WM_CREATE:
 		{
-			CLIENTCREATESTRUCT ccs;
-			RECT rc;
-
-			// Frame Window
-			hWndProgMgr = hWnd;
-
-			// Create the MDI Client Window
-			ccs.hWindowMenu = GetSubMenu(GetMenu(hWnd), IDM_WINDOW);
-			ccs.idFirstChild = IDM_WINDOW_CHILDSTART;
-
-			GetClientRect(hWndProgMgr, &rc);
-
-			if (!(hWndMDIClient = CreateWindowEx(WS_EX_COMPOSITED, L"MDIClient",
-				NULL, WS_CLIPCHILDREN | WS_CHILD | WS_VSCROLL | WS_HSCROLL | WS_VISIBLE,
-				CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-				hWnd, (HMENU)1, hAppInstance, (LPWSTR)&ccs)))
-			{
-				return FALSE;
-			}
-
-			TempCreateGroup(hWndMDIClient);
-
 			break;
 		}
 

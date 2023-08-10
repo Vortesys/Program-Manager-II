@@ -19,6 +19,7 @@
 #define MAX_TITLE_LENGTH MAX_PATH
 // Group Format Definitions
 #define GRP_SIGNATURE 0x47324D50L // PM2G
+#define GRP_VERSION 1 // Increment for breaking changes
 // Group Flag Values (DWORD)
 #define GRP_FLAG_COMMON 0x00000001
 #define GRP_FLAG_READONLY 0x00000002
@@ -30,12 +31,12 @@
 typedef struct _ITEM {
 	// Item executable and name
 	WCHAR szItemName[MAX_TITLE_LENGTH];
-	WCHAR szExecPath[MAX_PATH]; // Path of the item executable
+	WCHAR szExecPath[MAX_PATH]; // Path of the executable
 	WCHAR szWorkPath[MAX_PATH]; // Working directory
 
 	// Icon
-	WCHAR szIconPath[MAX_PATH]; // Path of the icon
-	UINT uiIconIndex; // Index of the icon
+	WCHAR szIconPath[MAX_PATH];
+	UINT uiIconIndex;
 } ITEM, * PITEM;
 
 // Group format, .GRP
@@ -59,12 +60,23 @@ typedef struct _GROUP {
 typedef struct _GROUPWND {
 	// Window information
 	HWND hWndGroup;
-	RECT rcGroup; // Window rectangle
 
 	// Group information
-	HANDLE hGroup; // Handle to GROUP object
-} GROUPINFO, * PGROUPINFO;
+	PGROUP pGroup; // Pointer to GROUP structure
+} GROUPWND, * PGROUPWND;
+
+/*  Global Variables */
+extern HWND			hWndMDIClient;
+
+/*  Local Variables */
 
 /* Function Prototypes */
+BOOL InitializeGroups();
+VOID TempCreateGroup();
+// Group Window
 LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-HWND TempCreateGroup(HWND hMDIClient);
+GROUPWND CreateGroupWindow(PGROUP pgGroup);
+// Group information
+DWORD GetGroupFlags(PGROUPWND pgw);
+// Import/export functions
+GROUP SaveGroup(PGROUPWND pgw);
