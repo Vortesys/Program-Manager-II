@@ -115,19 +115,17 @@ BOOL IsProgMgrDefaultShell()
 		Finds and collapses all settings
 		and saves them to the registry.
 	RETURNS -
-		TRUE if successful, FALSE if unsuccessful.
+		RCE_* configuration error value
 \* * * */
-BOOL SaveConfig(BOOL bPos, BOOL bSettings, BOOL bGroups)
+DWORD SaveConfig(BOOL bSettings, BOOL bPos, BOOL bGroups)
 {
-	BOOL bConfigStatus = TRUE;
-	WINDOWPLACEMENT wpProgMgr;
-	RECT rcWindow;
+	DWORD bConfigStatus = RCE_SUCCESS;
 
 	if (bSettings)
 	{
 		// Shrink the settings into the bitmask and save it
 		// There's definitely a better way to do this but...
-		// I'll get to it later :)
+		// TODO: do this more efficiently
 		dwSettingsMask =
 			(bAutoArrange && PMS_AUTOARRANGE) * PMS_AUTOARRANGE |
 			(bMinOnRun && PMS_MINONRUN) * PMS_MINONRUN |
@@ -137,11 +135,14 @@ BOOL SaveConfig(BOOL bPos, BOOL bSettings, BOOL bGroups)
 
 		if (!RegSetValueEx(hKeySettings, pszSettingsMask, 0, REG_DWORD,
 			(const BYTE*)&dwSettingsMask, sizeof(dwSettingsMask)) == ERROR_SUCCESS)
-			bConfigStatus = FALSE;
+			bConfigStatus = bConfigStatus && RCE_SETTINGS;
 	}
 
 	if (bPos)
 	{
+		WINDOWPLACEMENT wpProgMgr;
+		RECT rcWindow;
+
 		// Get and save window position
 		wpProgMgr.length = sizeof(WINDOWPLACEMENT);
 		GetWindowPlacement(hWndProgMgr, &wpProgMgr);
@@ -149,42 +150,64 @@ BOOL SaveConfig(BOOL bPos, BOOL bSettings, BOOL bGroups)
 
 		if (!RegSetValueEx(hKeySettings, pszSettingsWindow, 0, REG_BINARY,
 			(const BYTE*)&rcWindow, sizeof(rcWindow)) == ERROR_SUCCESS)
-			bConfigStatus = FALSE;
+			bConfigStatus = bConfigStatus && RCE_POSITION;
+	}
+
+	if (bGroups)
+	{
+		// TODO: Get list of groups, iterate through,
+		// save each one as an individual subkey based
+		// on the name of the group
+		bConfigStatus = bConfigStatus && RCE_GROUPS;
 	}
 
 	return bConfigStatus;
 }
 
 /* * * *\
-	BOOL LoadConfig() -
+	LoadConfig() -
 		Finds all settings and retrieves them
 		from the registry.
 	RETURNS -
-		TRUE if successful, FALSE if unsuccessful.
+		RCE_* configuration error value
 \* * * */
-BOOL LoadConfig()
+DWORD LoadConfig(BOOL bSettings, BOOL bPos, BOOL bGroups)
 {
-	BOOL bConfigStatus = TRUE;
+	DWORD bConfigStatus = RCE_SUCCESS;
 	DWORD dwType;
-	DWORD dwBufferSize = sizeof(dwSettingsMask);
-	DWORD dwRectBufferSize = sizeof(rcMainWindow);
 
-	// Load settings bitmask
-	if (!RegQueryValueEx(hKeySettings, pszSettingsMask, 0, &dwType,
-		(LPBYTE)&dwSettingsMask, &dwBufferSize) == ERROR_SUCCESS)
-		bConfigStatus = FALSE;
-	
-	// Apply bitmask to booleans
-	bAutoArrange = (dwSettingsMask & PMS_AUTOARRANGE);
-	bMinOnRun = (dwSettingsMask & PMS_MINONRUN);
-	bTopMost = (dwSettingsMask & PMS_TOPMOST);
-	bSaveSettings = (dwSettingsMask & PMS_SAVESETTINGS);
-	bShowUsername = (dwSettingsMask & PMS_SHOWUSERNAME);
+	if (bSettings)
+	{
+		DWORD dwBufferSize = sizeof(dwSettingsMask);
 
-	// Load window position... and apply it!
-	if (!RegQueryValueEx(hKeySettings, pszSettingsWindow, 0, &dwType,
-		(LPBYTE)&rcMainWindow, &dwRectBufferSize) == ERROR_SUCCESS)
-		bConfigStatus = FALSE;
+		// Load settings bitmask
+		if (!RegQueryValueEx(hKeySettings, pszSettingsMask, 0, &dwType,
+			(LPBYTE)&dwSettingsMask, &dwBufferSize) == ERROR_SUCCESS)
+			bConfigStatus = bConfigStatus && RCE_SETTINGS;
+
+		// Apply bitmask to booleans
+		bAutoArrange = (dwSettingsMask & PMS_AUTOARRANGE);
+		bMinOnRun = (dwSettingsMask & PMS_MINONRUN);
+		bTopMost = (dwSettingsMask & PMS_TOPMOST);
+		bSaveSettings = (dwSettingsMask & PMS_SAVESETTINGS);
+		bShowUsername = (dwSettingsMask & PMS_SHOWUSERNAME);
+	}
+
+	if (bPos)
+	{
+		DWORD dwRectBufferSize = sizeof(rcMainWindow);
+
+		// Load window position
+		if (!RegQueryValueEx(hKeySettings, pszSettingsWindow, 0, &dwType,
+			(LPBYTE)&rcMainWindow, &dwRectBufferSize) == ERROR_SUCCESS)
+			bConfigStatus = bConfigStatus && RCE_POSITION;
+	}
+
+	if (bGroups)
+	{
+		// TODO: this is unbearable
+		bConfigStatus = bConfigStatus && RCE_GROUPS;
+	}
 
 	return bConfigStatus;
 }

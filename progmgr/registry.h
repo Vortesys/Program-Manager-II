@@ -20,7 +20,12 @@
 // #define PROGMAN_KEY  L"Software\\Microsoft\\Windows NT\\CurrentVersion\\Program Manager"
 // #define WINDOWS_KEY  L"Software\\Microsoft\\Windows NT\\CurrentVersion\\Windows"
 #define PROGMGR_KEY  L"Software\\Vortesys\\Program Manager II"
-// Settings Bitmask Values (DWORD)
+// Registry configuration error values (DWORD)
+#define RCE_SUCCESS 0x0000000
+#define RCE_SETTINGS 0x0000001
+#define RCE_POSITION 0x0000002
+#define RCE_GROUPS 0x0000004
+// Settings values (DWORD)
 #define PMS_AUTOARRANGE 0x00000001
 #define PMS_MINONRUN 0x00000002
 #define PMS_TOPMOST 0x00000004
@@ -43,5 +48,5 @@ extern RECT rcMainWindow;
 /* Function Prototypes */
 BOOL InitializeRegistryKeys(VOID);
 BOOL IsProgMgrDefaultShell(VOID);
-BOOL LoadConfig(VOID);
-BOOL SaveConfig(BOOL bPos, BOOL bSettings, BOOL bGroups);
+DWORD LoadConfig(BOOL bSettings, BOOL bPos, BOOL bGroups);
+DWORD SaveConfig(BOOL bSettings, BOOL bPos, BOOL bGroups);
