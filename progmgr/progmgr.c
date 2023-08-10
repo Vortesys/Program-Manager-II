@@ -77,10 +77,10 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	// Register the Group Window Class
 	wce.cbSize = sizeof(WNDCLASSEX);
 	wce.lpfnWndProc = GroupWndProc;
-	wc.cbClsExtra = 0;
-	wc.cbWndExtra = 0;
+	wce.cbClsExtra = 0;
+	wce.cbWndExtra = 0;
 	wce.hInstance = hAppInstance;
-	wce.hIcon = hGroupIcon = LoadImage(hAppInstance, MAKEINTRESOURCE(IDI_PROGMGR), IMAGE_ICON,
+	wce.hIcon = hGroupIcon = LoadImage(hAppInstance, MAKEINTRESOURCE(IDI_PROGGRP), IMAGE_ICON,
 		0, 0, LR_DEFAULTSIZE | LR_SHARED);
 	wce.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wce.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
