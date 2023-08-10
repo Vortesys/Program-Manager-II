@@ -53,7 +53,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				return FALSE;
 			}
 
-			// TempCreateGroup(hWndMDIClient);
+			TempCreateGroup(hWndMDIClient);
 
 			break;
 		}
