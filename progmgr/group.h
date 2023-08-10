@@ -75,7 +75,7 @@ BOOL InitializeGroups();
 VOID TempCreateGroup();
 // Group Window
 LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-GROUPWND CreateGroupWindow(PGROUP pgGroup);
+PGROUPWND CreateGroupWindow(PGROUP pgGroup);
 // Group information
 DWORD GetGroupFlags(PGROUPWND pgw);
 // Import/export functions

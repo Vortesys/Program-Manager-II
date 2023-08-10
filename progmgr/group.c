@@ -36,14 +36,17 @@ BOOL InitializeGroups()
 {
 	CLIENTCREATESTRUCT ccs = { 0 };
 	WNDCLASSEX wce = { 0 };
+	RECT rcFrame;
 
 	// Create the MDI Client Window
 	ccs.hWindowMenu = GetSubMenu(GetMenu(hWndProgMgr), IDM_WINDOW);
 	ccs.idFirstChild = IDM_WINDOW_CHILDSTART;
 
+	GetClientRect(hWndProgMgr, &rcFrame);
+
 	if (!(hWndMDIClient = CreateWindowEx(WS_EX_COMPOSITED, L"MDIClient",
 		NULL, WS_CLIPCHILDREN | WS_CHILD | WS_VSCROLL | WS_HSCROLL | WS_VISIBLE,
-		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+		rcFrame.left, rcFrame.top, rcFrame.right, rcFrame.bottom,
 		hWndProgMgr, (HMENU)1, hAppInstance, (LPWSTR)&ccs)))
 	{
 		return FALSE;
@@ -70,7 +73,7 @@ BOOL InitializeGroups()
 
 	// TempCreateGroup();
 
-	// CreateGroupWindow(NULL);
+	CreateGroupWindow(NULL);
 
 	return TRUE;
 }
@@ -89,12 +92,12 @@ VOID TempCreateGroup()
 
 /* * * *\
 	CreateGroupWindow -
-		Create an MDI window from a group
+		Create an MDI window from a group structure
 	RETURNS -
-		Group Window structure
-		or NULL GROUPWND on failure
+		Pointer to a group window structure
+		or NULL on failure
 \* * * */
-GROUPWND CreateGroupWindow(PGROUP pgGroup)
+PGROUPWND CreateGroupWindow(PGROUP pgGroup)
 {
 	GROUPWND gw = { NULL };
 	MDICREATESTRUCT mcs = { NULL };
@@ -113,11 +116,10 @@ GROUPWND CreateGroupWindow(PGROUP pgGroup)
 	mcs.style = WS_VISIBLE;
 	mcs.lParam = (LPARAM)pgGroup;
 
-	hGroup = (HWND)SendMessage(hWndMDIClient, WM_MDICREATE, 0, (LPARAM)(LPTSTR)&mcs);
-	if (!hGroup)
-		return gw;
+	if (!(hGroup = (HWND)SendMessage(hWndMDIClient, WM_MDICREATE, 0, (LPARAM)(LPTSTR)&mcs)))
+		return NULL;
 
-	return gw;
+	return NULL;
 }
 
 /* * * *\
