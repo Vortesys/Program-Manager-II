@@ -9,6 +9,7 @@
 
 /* Headers */
 #include "progmgr.h"
+#include "group.h"
 #include "registry.h"
 // #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
@@ -111,6 +112,51 @@ BOOL IsProgMgrDefaultShell()
 }
 
 /* * * *\
+	SaveGroupToRegistry -
+		Saves a group structure to registry.
+	RETURNS -
+		RCE_* configuration error value
+\* * * */
+DWORD SaveGroupToRegistry(_In_ PGROUP pg)
+{
+	DWORD dwConfigStatus = RCE_SUCCESS;
+
+	// If the pointer is invalid then fail out
+	if (pg == NULL)
+		return RCE_FAILURE;
+
+	if (!RegSetValueEx(hKeyProgramGroups, pg->szGroupName, 0, REG_BINARY,
+		(const BYTE*)pg, (sizeof(*pg) + sizeof(ITEM) * pg->cItems)) == ERROR_SUCCESS)
+		dwConfigStatus = dwConfigStatus && RCE_GROUPS;
+
+	return dwConfigStatus;
+}
+
+/* * * *\
+	LoadGroupFromRegistry -
+		Loads a group structure from the registry.
+	RETURNS -
+		RCE_* configuration error value
+\* * * */
+DWORD LoadGroupFromRegistry(_Inout_ PGROUP pg, _Out_ DWORD dwBufferSize)
+{
+	DWORD dwConfigStatus = RCE_SUCCESS;
+	DWORD dwBufferSize = (sizeof(*pg) + sizeof(ITEM) * pg->cItems);
+	DWORD dwType = REG_BINARY;
+
+	// If the pointer is invalid then fail out
+	if (pg == NULL)
+		return RCE_FAILURE;
+
+	// Load window position
+	if (!RegQueryValueEx(hKeyProgramGroups, pg->szGroupName, 0, &dwType,
+		(LPBYTE)pg, &dwBufferSize) == ERROR_SUCCESS)
+		dwConfigStatus = dwConfigStatus && RCE_POSITION;
+
+	return dwConfigStatus;
+}
+
+/* * * *\
 	SaveConfig -
 		Finds and collapses all settings
 		and saves them to the registry.
@@ -119,7 +165,7 @@ BOOL IsProgMgrDefaultShell()
 \* * * */
 DWORD SaveConfig(BOOL bSettings, BOOL bPos, BOOL bGroups)
 {
-	DWORD bConfigStatus = RCE_SUCCESS;
+	DWORD dwConfigStatus = RCE_SUCCESS;
 
 	if (bSettings)
 	{
@@ -135,7 +181,7 @@ DWORD SaveConfig(BOOL bSettings, BOOL bPos, BOOL bGroups)
 
 		if (!RegSetValueEx(hKeySettings, pszSettingsMask, 0, REG_DWORD,
 			(const BYTE*)&dwSettingsMask, sizeof(dwSettingsMask)) == ERROR_SUCCESS)
-			bConfigStatus = bConfigStatus && RCE_SETTINGS;
+			dwConfigStatus = dwConfigStatus && RCE_SETTINGS;
 	}
 
 	if (bPos)
@@ -150,7 +196,7 @@ DWORD SaveConfig(BOOL bSettings, BOOL bPos, BOOL bGroups)
 
 		if (!RegSetValueEx(hKeySettings, pszSettingsWindow, 0, REG_BINARY,
 			(const BYTE*)&rcWindow, sizeof(rcWindow)) == ERROR_SUCCESS)
-			bConfigStatus = bConfigStatus && RCE_POSITION;
+			dwConfigStatus = dwConfigStatus && RCE_POSITION;
 	}
 
 	if (bGroups)
@@ -158,10 +204,10 @@ DWORD SaveConfig(BOOL bSettings, BOOL bPos, BOOL bGroups)
 		// TODO: Get list of groups, iterate through,
 		// save each one as an individual subkey based
 		// on the name of the group
-		bConfigStatus = bConfigStatus && RCE_GROUPS;
+		dwConfigStatus = dwConfigStatus && RCE_GROUPS;
 	}
 
-	return bConfigStatus;
+	return dwConfigStatus;
 }
 
 /* * * *\
@@ -173,17 +219,17 @@ DWORD SaveConfig(BOOL bSettings, BOOL bPos, BOOL bGroups)
 \* * * */
 DWORD LoadConfig(BOOL bSettings, BOOL bPos, BOOL bGroups)
 {
-	DWORD bConfigStatus = RCE_SUCCESS;
-	DWORD dwType;
+	DWORD dwConfigStatus = RCE_SUCCESS;
 
 	if (bSettings)
 	{
 		DWORD dwBufferSize = sizeof(dwSettingsMask);
+		DWORD dwType = REG_DWORD;
 
 		// Load settings bitmask
 		if (!RegQueryValueEx(hKeySettings, pszSettingsMask, 0, &dwType,
 			(LPBYTE)&dwSettingsMask, &dwBufferSize) == ERROR_SUCCESS)
-			bConfigStatus = bConfigStatus && RCE_SETTINGS;
+			dwConfigStatus = dwConfigStatus && RCE_SETTINGS;
 
 		// Apply bitmask to booleans
 		bAutoArrange = (dwSettingsMask & PMS_AUTOARRANGE);
@@ -196,18 +242,19 @@ DWORD LoadConfig(BOOL bSettings, BOOL bPos, BOOL bGroups)
 	if (bPos)
 	{
 		DWORD dwRectBufferSize = sizeof(rcMainWindow);
+		DWORD dwType = REG_BINARY;
 
 		// Load window position
 		if (!RegQueryValueEx(hKeySettings, pszSettingsWindow, 0, &dwType,
 			(LPBYTE)&rcMainWindow, &dwRectBufferSize) == ERROR_SUCCESS)
-			bConfigStatus = bConfigStatus && RCE_POSITION;
+			dwConfigStatus = dwConfigStatus && RCE_POSITION;
 	}
 
 	if (bGroups)
 	{
 		// TODO: this is unbearable
-		bConfigStatus = bConfigStatus && RCE_GROUPS;
+		dwConfigStatus = dwConfigStatus && RCE_GROUPS;
 	}
 
-	return bConfigStatus;
+	return dwConfigStatus;
 }

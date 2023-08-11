@@ -22,9 +22,10 @@
 #define PROGMGR_KEY  L"Software\\Vortesys\\Program Manager II"
 // Registry configuration error values (DWORD)
 #define RCE_SUCCESS 0x0000000
-#define RCE_SETTINGS 0x0000001
-#define RCE_POSITION 0x0000002
-#define RCE_GROUPS 0x0000004
+#define RCE_FAILURE 0x0000001
+#define RCE_SETTINGS 0x0000002
+#define RCE_POSITION 0x0000004
+#define RCE_GROUPS 0x0000008
 // Settings values (DWORD)
 #define PMS_AUTOARRANGE 0x00000001
 #define PMS_MINONRUN 0x00000002
@@ -48,5 +49,9 @@ extern RECT rcMainWindow;
 /* Function Prototypes */
 BOOL InitializeRegistryKeys(VOID);
 BOOL IsProgMgrDefaultShell(VOID);
-DWORD LoadConfig(BOOL bSettings, BOOL bPos, BOOL bGroups);
+// Groups
+DWORD SaveGroupToRegistry(_In_ PGROUP pg);
+DWORD LoadGroupFromRegistry(_Inout_ PGROUP pg, _Out_ DWORD dwBufferSize);
+// Settings
 DWORD SaveConfig(BOOL bSettings, BOOL bPos, BOOL bGroups);
+DWORD LoadConfig(BOOL bSettings, BOOL bPos, BOOL bGroups);
