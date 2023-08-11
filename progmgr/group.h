@@ -10,9 +10,6 @@
 /* Pragmas */
 #pragma once
 
-/* Includes */
-#include <wtypes.h>
-
 /* Definitions */
 #define MAX_GROUPS 512
 #define MAX_ITEMS 512
