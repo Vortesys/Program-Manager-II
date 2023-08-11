@@ -125,6 +125,7 @@ DWORD SaveGroupToRegistry(_In_ PGROUP pg)
 	if (pg == NULL)
 		return RCE_FAILURE;
 
+	// Save group
 	if (!RegSetValueEx(hKeyProgramGroups, pg->szGroupName, 0, REG_BINARY,
 		(const BYTE*)pg, (sizeof(*pg) + sizeof(ITEM) * pg->cItems)) == ERROR_SUCCESS)
 		dwConfigStatus = dwConfigStatus && RCE_GROUPS;
@@ -141,14 +142,13 @@ DWORD SaveGroupToRegistry(_In_ PGROUP pg)
 DWORD LoadGroupFromRegistry(_Inout_ PGROUP pg, _Out_ DWORD dwBufferSize)
 {
 	DWORD dwConfigStatus = RCE_SUCCESS;
-	DWORD dwBufferSize = (sizeof(*pg) + sizeof(ITEM) * pg->cItems);
 	DWORD dwType = REG_BINARY;
 
 	// If the pointer is invalid then fail out
 	if (pg == NULL)
 		return RCE_FAILURE;
 
-	// Load window position
+	// Load group
 	if (!RegQueryValueEx(hKeyProgramGroups, pg->szGroupName, 0, &dwType,
 		(LPBYTE)pg, &dwBufferSize) == ERROR_SUCCESS)
 		dwConfigStatus = dwConfigStatus && RCE_POSITION;
