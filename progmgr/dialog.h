@@ -10,3 +10,7 @@
 
 /* Pragmas */
 #pragma once
+
+/* Function Prototypes */
+BOOL CALLBACK ItemDlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK GroupDlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam);

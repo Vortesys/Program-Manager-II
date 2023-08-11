@@ -14,3 +14,43 @@
 #include "resource.h"
 // #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+
+/* Functions */
+
+/* * * *\
+	ItemDlgProc -
+		Dialog procedure for creating or modifying
+		an item.
+	RETURNS -
+		TRUE if message is handled, FALSE otherwise.
+\* * * */
+BOOL CALLBACK ItemDlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+
+		// Place message cases here. 
+
+	default:
+		return FALSE;
+	}
+}
+
+/* * * *\
+	GroupDlgProc -
+		Dialog procedure for creating or modifying
+		a group.
+	RETURNS -
+		TRUE if message is handled, FALSE otherwise.
+\* * * */
+BOOL CALLBACK GroupDlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+
+		// Place message cases here. 
+
+	default:
+		return FALSE;
+	}
+}
