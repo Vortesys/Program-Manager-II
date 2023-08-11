@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="dialog.h" />
     <ClInclude Include="group.h" />
     <ClInclude Include="grpupdat.h" />
     <ClInclude Include="progmgr.h" />
@@ -167,6 +168,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="desktop.c" />
+    <ClCompile Include="dialog.c" />
     <ClCompile Include="progmgr.c" />
     <ClCompile Include="registry.c" />
     <ClCompile Include="group.c" />

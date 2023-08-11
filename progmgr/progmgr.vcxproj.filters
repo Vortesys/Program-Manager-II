@@ -33,6 +33,9 @@
     <ClInclude Include="grpupdat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="dialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="progmgr.c">
@@ -51,6 +54,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="group.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
