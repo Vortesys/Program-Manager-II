@@ -174,14 +174,14 @@ GROUP SaveGroup(PGROUPWND pgw)
 		.dwSignature = GRP_SIGNATURE,
 		.wVersion = GRP_VERSION,
 		.wChecksum = 0,
-		.szGroupName = L"",
+		.szName = L"",
 		.dwFlags = 0,
 		.ftLastWrite = 0,
 		.cItems = 0,
 		.iItems = NULL
 	};
 	HWND hWndGrp;
-	WCHAR szName[MAX_TITLE_LENGTH];
+	WCHAR szGroupName[MAX_TITLE_LENGTH];
 
 	// Find the group and copy it
 	grp = *pgw->pGroup;
@@ -193,8 +193,8 @@ GROUP SaveGroup(PGROUPWND pgw)
 	grp.wChecksum = 1; // NOTE: implement this for real later lol
 
 	// Copy group information
-	GetWindowText(hWndGrp, szName, MAX_TITLE_LENGTH);
-	StringCchCopy(grp.szGroupName, MAX_TITLE_LENGTH, szName);
+	GetWindowText(hWndGrp, szGroupName, MAX_TITLE_LENGTH);
+	StringCchCopy(grp.szName, MAX_TITLE_LENGTH, szGroupName);
 
 	grp.dwFlags = GetGroupFlags(pgw);
 

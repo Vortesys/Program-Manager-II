@@ -22,16 +22,19 @@
 #define GRP_FLAG_READONLY 0x00000002
 #define GRP_FLAG_MINIMIZED 0x00000004
 #define GRP_FLAG_MAXIMIZED 0x00000008
+// Item Flag Values (DWORD)
+#define ITM_FLAG_MINIMIZED 0x00000001
+#define ITM_FLAG_MAXIMIZED 0x00000002
 
 /* Structures */
 // Item Structure
 typedef struct _ITEM {
 	// Item executable and name
-	WCHAR szItemName[MAX_TITLE_LENGTH];
+	WCHAR szName[MAX_TITLE_LENGTH];
 	WCHAR szExecPath[MAX_PATH]; // Path of the executable
 	WCHAR szWorkPath[MAX_PATH]; // Working directory
 	// Item flags
-	int nCmdShow; // Start application minimized
+	DWORD dwFlags; // Use with ITM_FLAG_* values.
 	UINT uiHotkeyModifiers;
 	UINT uiHotkeyVirtualKey;
 	// Icon
@@ -46,7 +49,7 @@ typedef struct _GROUP {
 	WORD wVersion; // Group format version
 	WORD wChecksum;
 	// Group information
-	WCHAR szGroupName[MAX_TITLE_LENGTH];
+	WCHAR szName[MAX_TITLE_LENGTH];
 	DWORD dwFlags; // Use with GRP_FLAG_* values.
 	FILETIME ftLastWrite;
 	// Icon
