@@ -33,7 +33,10 @@ typedef struct _ITEM {
 	WCHAR szItemName[MAX_TITLE_LENGTH];
 	WCHAR szExecPath[MAX_PATH]; // Path of the executable
 	WCHAR szWorkPath[MAX_PATH]; // Working directory
-
+	// Item flags
+	int nCmdShow; // Start application minimized
+	UINT uiHotkeyModifiers;
+	UINT uiHotkeyVirtualKey;
 	// Icon
 	WCHAR szIconPath[MAX_PATH];
 	UINT uiIconIndex;
@@ -45,12 +48,13 @@ typedef struct _GROUP {
 	DWORD dwSignature; // Set to GRP_SIGNATURE
 	WORD wVersion; // Group format version
 	WORD wChecksum;
-
 	// Group information
 	WCHAR szGroupName[MAX_TITLE_LENGTH];
 	DWORD dwFlags; // Use with GRP_FLAG_* values.
 	FILETIME ftLastWrite;
-
+	// Icon
+	WCHAR szIconPath[MAX_PATH];
+	UINT uiIconIndex;
 	// Items
 	WORD cItems; // Number of items
 	PITEM iItems; // Array of items
@@ -58,10 +62,9 @@ typedef struct _GROUP {
 
 // Group window information
 typedef struct _GROUPWND {
-	// Window information
+	// Window
 	HWND hWndGroup;
-
-	// Group information
+	// Group
 	PGROUP pGroup; // Pointer to GROUP structure
 } GROUPWND, * PGROUPWND;
 

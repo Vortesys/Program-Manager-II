@@ -160,16 +160,13 @@ DWORD GetGroupFlags(PGROUPWND pgw)
 	SaveGroup -
 		Saves group from a group window
 		into a GROUP structure.
-	INFO - 
-		This function operates under the
-		assumption that the GROUP structure
-		doesn't get modified over the course
-		of the MDI window's life and we can't
-		just grab the structure directly and
-		expect it to be updated.
+	ABSTRACT - 
+		This function will extract all of the
+		necessary information from a group window
+		in order to produce a group structure.
 	RETURNS -
 		Formatted GROUP structure.
-		Otherwise NULL if failure.
+		Upon failure, wChecksum will be 0.
 \* * * */
 GROUP SaveGroup(PGROUPWND pgw)
 {
@@ -192,10 +189,8 @@ GROUP SaveGroup(PGROUPWND pgw)
 	// Get the window handle as well
 	hWndGrp = pgw->hWndGroup;
 
-	// Set the group header information
-	grp.dwSignature = GRP_SIGNATURE;
-	grp.wVersion = GRP_VERSION;
-	grp.wChecksum = 0; // NOTE: implement this later lol
+	// Set the group checksum
+	grp.wChecksum = 1; // NOTE: implement this for real later lol
 
 	// Copy group information
 	GetWindowText(hWndGrp, szName, MAX_TITLE_LENGTH);
