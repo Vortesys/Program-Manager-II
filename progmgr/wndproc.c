@@ -31,52 +31,53 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
-		case WM_CREATE:
-		{
-			break;
-		}
 
-		case WM_SYSCOMMAND:
+	case WM_CREATE:
+	{
+		break;
+	}
+
+	case WM_SYSCOMMAND:
+	{
+		if ((wParam >= IDM_MAIN) || (wParam <= IDM_TASKMGR))
 		{
-			if ((wParam >= IDM_MAIN) || (wParam <= IDM_TASKMGR))
+			if (wParam == IDM_TASKMGR)
 			{
-				if (wParam == IDM_TASKMGR)
-				{
-					ShellExecute(hWndProgMgr, L"open", L"TASKMGR.EXE", NULL, NULL, SW_NORMAL);
-					return 0;
-				}
-
-				if (CmdProc(hWnd, wParam, lParam))
-					return 0;
+				ShellExecute(hWndProgMgr, L"open", L"TASKMGR.EXE", NULL, NULL, SW_NORMAL);
+				return 0;
 			}
 
-			goto WndProcDefault;
-		}
-
-		case WM_COMMAND:
 			if (CmdProc(hWnd, wParam, lParam))
 				return 0;
-
-			goto WndProcDefault;
-	
-		case WM_CLOSE:
-			if (bSaveSettings)
-				SaveConfig(TRUE, TRUE, TRUE);
-
-			if (bIsDefaultShell && (GetShellWindow() != NULL))
-				SetShellWindow(0);
-
-			PostQuitMessage(0);
-			break;
-
-		case WM_ENDSESSION:
-			PostQuitMessage(0);
-			break;
-
-		default:
-WndProcDefault:
-			return DefFrameProc(hWnd, hWndMDIClient, message, wParam, lParam);
 		}
+
+		goto WndProcDefault;
+	}
+
+	case WM_COMMAND:
+		if (CmdProc(hWnd, wParam, lParam))
+			return 0;
+
+		goto WndProcDefault;
+
+	case WM_CLOSE:
+		if (bSaveSettings)
+			SaveConfig(TRUE, TRUE, TRUE);
+
+		if (bIsDefaultShell && (GetShellWindow() != NULL))
+			SetShellWindow(0);
+
+		PostQuitMessage(0);
+		break;
+
+	case WM_ENDSESSION:
+		PostQuitMessage(0);
+		break;
+
+	default:
+	WndProcDefault:
+		return DefFrameProc(hWnd, hWndMDIClient, message, wParam, lParam);
+	}
 	return 0;
 
 }
@@ -95,7 +96,7 @@ LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case IDM_SHUTDOWN:
 		ExitWindowsDialog(hWnd);
 		break;
-		
+
 	case IDM_FILE_RUN:
 		RunFileDlg(hWnd, NULL, NULL, NULL, NULL, RFF_CALCDIRECTORY);
 		break;
@@ -132,7 +133,7 @@ LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		goto SaveConfig;
 
 	case IDM_OPTIONS_SAVENOW:
-SaveConfig:
+	SaveConfig:
 		SaveConfig(TRUE, TRUE, TRUE);
 		break;
 
