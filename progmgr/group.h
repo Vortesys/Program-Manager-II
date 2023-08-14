@@ -62,8 +62,9 @@ typedef struct _GROUP {
 
 // Group window information
 typedef struct _GROUPWND {
-	// Window
+	// Windows
 	HWND hWndGroup;
+	HWND hWndListView;
 	// Group
 	PGROUP pGroup; // Pointer to GROUP structure
 } GROUPWND, * PGROUPWND;

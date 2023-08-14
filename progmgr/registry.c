@@ -126,7 +126,7 @@ DWORD SaveGroupToRegistry(_In_ PGROUP pg)
 		return RCE_FAILURE;
 
 	// Save group
-	if (!RegSetValueEx(hKeyProgramGroups, pg->szGroupName, 0, REG_BINARY,
+	if (!RegSetValueEx(hKeyProgramGroups, pg->szName, 0, REG_BINARY,
 		(const BYTE*)pg, (sizeof(*pg) + sizeof(ITEM) * pg->cItems)) == ERROR_SUCCESS)
 		dwConfigStatus = dwConfigStatus && RCE_GROUPS;
 
@@ -149,7 +149,7 @@ DWORD LoadGroupFromRegistry(_Inout_ PGROUP pg, _Out_ DWORD dwBufferSize)
 		return RCE_FAILURE;
 
 	// Load group
-	if (!RegQueryValueEx(hKeyProgramGroups, pg->szGroupName, 0, &dwType,
+	if (!RegQueryValueEx(hKeyProgramGroups, pg->szName, 0, &dwType,
 		(LPBYTE)pg, &dwBufferSize) == ERROR_SUCCESS)
 		dwConfigStatus = dwConfigStatus && RCE_POSITION;
 
