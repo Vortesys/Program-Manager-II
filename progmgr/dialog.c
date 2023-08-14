@@ -17,24 +17,6 @@
 
 /* Functions */
 
-/* * * *\
-	ItemDlgProc -
-		Dialog procedure for creating or modifying
-		an item.
-	RETURNS -
-		TRUE if message is handled, FALSE otherwise.
-\* * * */
-BOOL CALLBACK ItemDlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	switch (message)
-	{
-
-		// Place message cases here. 
-
-	default:
-		return FALSE;
-	}
-}
 
 /* * * *\
 	GroupDlgProc -
@@ -47,6 +29,29 @@ BOOL CALLBACK GroupDlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lPa
 {
 	switch (message)
 	{
+
+	case WM_INITDIALOG:
+
+		// Place message cases here. 
+
+	default:
+		return FALSE;
+	}
+}
+
+/* * * *\
+	ItemDlgProc -
+		Dialog procedure for creating or modifying
+		an item.
+	RETURNS -
+		TRUE if message is handled, FALSE otherwise.
+\* * * */
+BOOL CALLBACK ItemDlgProc(HWND hwndDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+
+	case WM_INITDIALOG:
 
 		// Place message cases here. 
 
