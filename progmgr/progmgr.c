@@ -100,7 +100,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	SystemParametersInfo(SPI_ICONVERTICALSPACING, 0, &ptOffset.y, 0);
 
 	// Create main window with a default size
-	// NOTE: i pulled 320x240 out of my ass, make this dynamic later
+	// TODO: i pulled 320x240 out of my ass, make this dynamic later
 	if (!(hWndProgMgr = CreateWindowW(wc.lpszClassName, szAppTitle, WS_OVERLAPPEDWINDOW | WS_VISIBLE,
 		rcRoot.left + ptOffset.x, rcRoot.top + ptOffset.y,
 		rcRoot.left + ptOffset.x + 320, rcRoot.top + ptOffset.y + 240,
