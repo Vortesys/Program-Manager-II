@@ -146,6 +146,22 @@ LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		SaveConfig(TRUE, TRUE, TRUE);
 		break;
 
+	case IDM_WINDOW_CASCADE:
+		SendMessage(hWndMDIClient, WM_MDICASCADE, 0, 0);
+		break;
+
+	case IDM_WINDOW_TILE:
+		SendMessage(hWndMDIClient, WM_MDITILE, MDITILE_VERTICAL, 0);
+		break;
+
+	case IDM_WINDOW_TILEHORIZONTALLY:
+		SendMessage(hWndMDIClient, WM_MDITILE, MDITILE_HORIZONTAL, 0);
+		break;
+
+	case IDM_WINDOW_ARRANGEICONS:
+		SendMessage(hWndMDIClient, WM_MDIICONARRANGE, 0, 0);
+		break;
+
 	case IDM_HELP_INDEX:
 		ShellExecute(NULL, L"open", szWebsite, NULL, NULL, SW_SHOWNORMAL);
 		break;
