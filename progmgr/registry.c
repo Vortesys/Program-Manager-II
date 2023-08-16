@@ -46,21 +46,25 @@ PWSTR pszSettingsMask = L"SettingsMask";
 
 /* * * *\
 	InitializeRegistryKeys -
-		Takes the relevant registry keys and turns them
-		into valid and usable handles.
+		Creates the necessary registry keys if necessary.
 	RETURNS -
 		TRUE if successful, FALSE if unsuccessful.
 \* * * */
 BOOL InitializeRegistryKeys()
 {
-	if (!RegCreateKeyEx(HKEY_CURRENT_USER, PROGMGR_KEY, 0, szProgMgr, 0,
-		KEY_READ | KEY_WRITE, NULL, &hKeyProgramManager, NULL))
+	if (RegCreateKeyEx(HKEY_CURRENT_USER, PROGMGR_KEY, 0, szProgMgr, 0,
+		KEY_READ | KEY_WRITE, NULL, &hKeyProgramManager, NULL) == ERROR_SUCCESS)
 	{
 		// Create Program Groups and Settings keys
 		RegCreateKeyEx(hKeyProgramManager, pszProgramGroups, 0, szProgMgr, 0,
 			KEY_READ | KEY_WRITE, NULL, &hKeyProgramGroups, NULL);
 		RegCreateKeyEx(hKeyProgramManager, pszSettings, 0, szProgMgr, 0,
 			KEY_READ | KEY_WRITE, NULL, &hKeySettings, NULL);
+
+		// Close the key. We'll open/close the registry as we need to.
+		RegCloseKey(hKeyProgramGroups);
+		RegCloseKey(hKeySettings);
+		RegCloseKey(hKeyProgramManager);
 		
 		return TRUE;
 	}
@@ -87,18 +91,14 @@ BOOL IsProgMgrDefaultShell()
 		if (RegQueryValueEx(hKeyWinlogon, L"Shell", 0, &dwType,
 			(LPBYTE)szShell, &dwBufferSize) == ERROR_SUCCESS)
 		{
+			RegCloseKey(hKeyWinlogon);
 			if (StrStr(szShell, szProgMgr))
-			{
 				// ProgMgr detected >:)
-				RegCloseKey(hKeyWinlogon);
 				return TRUE;
-			}
 			else
-			{
 				// Inferior shell detected.
-				RegCloseKey(hKeyWinlogon);
 				return FALSE;
-			}
+			
 		}
 	}
 	else
@@ -121,6 +121,12 @@ DWORD SaveGroupToRegistry(_In_ PGROUP pg)
 {
 	DWORD dwConfigStatus = RCE_SUCCESS;
 
+	// Open the Program Groups key
+	RegOpenKeyEx(HKEY_LOCAL_MACHINE, PROGMGR_KEY,
+		0, KEY_READ | KEY_WRITE, &hKeyProgramManager);
+	RegOpenKeyEx(hKeyProgramManager, pszProgramGroups, 0,
+		KEY_READ | KEY_WRITE, &hKeyProgramGroups);
+
 	// If the pointer is invalid then fail out
 	if (pg == NULL)
 		return RCE_FAILURE;
@@ -129,6 +135,10 @@ DWORD SaveGroupToRegistry(_In_ PGROUP pg)
 	if (!RegSetValueEx(hKeyProgramGroups, pg->szName, 0, REG_BINARY,
 		(const BYTE*)pg, (sizeof(*pg) + sizeof(ITEM) * pg->cItems)) == ERROR_SUCCESS)
 		dwConfigStatus = dwConfigStatus && RCE_GROUPS;
+
+	// Close the keys
+	RegCloseKey(hKeyProgramGroups);
+	RegCloseKey(hKeyProgramManager);
 
 	return dwConfigStatus;
 }
@@ -144,6 +154,12 @@ DWORD LoadGroupFromRegistry(_Inout_ PGROUP pg, _Out_ DWORD dwBufferSize)
 	DWORD dwConfigStatus = RCE_SUCCESS;
 	DWORD dwType = REG_BINARY;
 
+	// Open the Program Groups key
+	RegOpenKeyEx(HKEY_LOCAL_MACHINE, PROGMGR_KEY,
+		0, KEY_READ | KEY_WRITE, &hKeyProgramManager);
+	RegOpenKeyEx(hKeyProgramManager, pszProgramGroups, 0,
+		KEY_READ | KEY_WRITE, &hKeyProgramGroups);
+
 	// If the pointer is invalid then fail out
 	if (pg == NULL)
 		return RCE_FAILURE;
@@ -152,6 +168,10 @@ DWORD LoadGroupFromRegistry(_Inout_ PGROUP pg, _Out_ DWORD dwBufferSize)
 	if (!RegQueryValueEx(hKeyProgramGroups, pg->szName, 0, &dwType,
 		(LPBYTE)pg, &dwBufferSize) == ERROR_SUCCESS)
 		dwConfigStatus = dwConfigStatus && RCE_POSITION;
+
+	// Close the keys
+	RegCloseKey(hKeyProgramGroups);
+	RegCloseKey(hKeyProgramManager);
 
 	return dwConfigStatus;
 }
@@ -166,6 +186,14 @@ DWORD LoadGroupFromRegistry(_Inout_ PGROUP pg, _Out_ DWORD dwBufferSize)
 DWORD SaveConfig(BOOL bSettings, BOOL bPos, BOOL bGroups)
 {
 	DWORD dwConfigStatus = RCE_SUCCESS;
+
+	// Open the Program Groups and Settings keys
+	RegOpenKeyEx(HKEY_LOCAL_MACHINE, PROGMGR_KEY,
+		0, KEY_READ | KEY_WRITE, &hKeyProgramManager);
+	RegOpenKeyEx(hKeyProgramManager, pszProgramGroups, 0,
+		KEY_READ | KEY_WRITE, &hKeyProgramGroups);
+	RegOpenKeyEx(hKeyProgramManager, pszSettings, 0,
+		KEY_READ | KEY_WRITE, &hKeySettings);
 
 	if (bSettings)
 	{
@@ -207,6 +235,11 @@ DWORD SaveConfig(BOOL bSettings, BOOL bPos, BOOL bGroups)
 		dwConfigStatus = dwConfigStatus && RCE_GROUPS;
 	}
 
+	// Close the keys
+	RegCloseKey(hKeyProgramGroups);
+	RegCloseKey(hKeySettings);
+	RegCloseKey(hKeyProgramManager);
+
 	return dwConfigStatus;
 }
 
@@ -220,6 +253,14 @@ DWORD SaveConfig(BOOL bSettings, BOOL bPos, BOOL bGroups)
 DWORD LoadConfig(BOOL bSettings, BOOL bPos, BOOL bGroups)
 {
 	DWORD dwConfigStatus = RCE_SUCCESS;
+
+	// Open the Program Groups and Settings keys
+	RegOpenKeyEx(HKEY_LOCAL_MACHINE, PROGMGR_KEY,
+		0, KEY_READ | KEY_WRITE, &hKeyProgramManager);
+	RegOpenKeyEx(hKeyProgramManager, pszProgramGroups, 0,
+		KEY_READ | KEY_WRITE, &hKeyProgramGroups);
+	RegOpenKeyEx(hKeyProgramManager, pszSettings, 0,
+		KEY_READ | KEY_WRITE, &hKeySettings);
 
 	if (bSettings)
 	{
@@ -255,6 +296,11 @@ DWORD LoadConfig(BOOL bSettings, BOOL bPos, BOOL bGroups)
 		// TODO: this is unbearable
 		dwConfigStatus = dwConfigStatus && RCE_GROUPS;
 	}
+
+	// Close the keys
+	RegCloseKey(hKeyProgramGroups);
+	RegCloseKey(hKeySettings);
+	RegCloseKey(hKeyProgramManager);
 
 	return dwConfigStatus;
 }
