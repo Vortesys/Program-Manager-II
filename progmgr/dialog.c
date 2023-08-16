@@ -132,9 +132,13 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 
 				// Group's ready!
 				if (CreateGroupWindow(&grp) != NULL)
+				{
+					EndDialog(hWndDlg, FALSE);
 					break;
-
+				}
+					
 				// Failure!
+				EndDialog(hWndDlg, FALSE);
 				break;
 			}
 
