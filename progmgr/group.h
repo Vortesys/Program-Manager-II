@@ -39,7 +39,7 @@ typedef struct _ITEM {
 	UINT uiHotkeyVirtualKey;
 	// Icon
 	WCHAR szIconPath[MAX_PATH];
-	UINT uiIconIndex;
+	INT iIconIndex;
 } ITEM, * PITEM;
 
 // Group format, .GRP
@@ -52,9 +52,11 @@ typedef struct _GROUP {
 	WCHAR szName[MAX_TITLE_LENGTH];
 	DWORD dwFlags; // Use with GRP_FLAG_* values.
 	FILETIME ftLastWrite;
+	// Window information
+	RECT rcGroup;
 	// Icon
 	WCHAR szIconPath[MAX_PATH];
-	UINT uiIconIndex;
+	INT iIconIndex;
 	// Items
 	WORD cItems; // Number of items
 	PITEM iItems; // Array of items
@@ -66,7 +68,7 @@ typedef struct _GROUPWND {
 	HWND hWndGroup;
 	HWND hWndListView;
 	// Group
-	PGROUP pGroup; // Pointer to GROUP structure
+	GROUP grp; // Pointer to GROUP structure
 } GROUPWND, * PGROUPWND;
 
 /*  Global Variables */
@@ -76,11 +78,11 @@ extern HWND			hWndMDIClient;
 
 /* Function Prototypes */
 BOOL InitializeGroups();
-VOID TempCreateGroup();
 // Group Window
 LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 PGROUPWND CreateGroupWindow(PGROUP pgGroup);
 // Group information
-DWORD GetGroupFlags(PGROUPWND pgw);
+BOOL SetGroupFlags(PGROUPWND pgw, DWORD dwFlags);
+BOOL GetGroupFlags(PGROUPWND pgw, DWORD dwFlags);
 // Import/export functions
 GROUP SaveGroup(PGROUPWND pgw);

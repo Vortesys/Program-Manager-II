@@ -16,6 +16,7 @@
 // #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <Shlobj.h>
+#include <strsafe.h>
 
 /* Functions */
 
@@ -27,12 +28,22 @@
 \* * * */
 BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	GROUP grp = {
+		.dwSignature = GRP_SIGNATURE,
+		.wVersion = GRP_VERSION,
+		.wChecksum = 0,
+		.szName = L"",
+		.dwFlags = 0,
+		.ftLastWrite = 0,
+		.cItems = 0,
+		.iItems = NULL
+	};
 	BOOL bOKEnabled = FALSE;
-	WCHAR szBuffer[] = { L"\0" };
+	WCHAR szBuffer[MAX_TITLE_LENGTH] = { L"\0" };
 	HICON hIconDef = NULL;
 	HICON hIconDlg = NULL;
 	WCHAR szIconPath[MAX_PATH] = { L"\0" };
-	int iIconIndex = 0;
+	INT iIconIndex = 0;
 
 	switch (message)
 	{
@@ -41,6 +52,8 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 		// TODO:
 		// Enable creation of common groups (enable the controls)
 		// if permissions are available.
+		// TODO:
+		// fix minor GDI font/region leak
 		
 		// Populate the icon with the default path and index.
 		GetModuleFileName(NULL, (LPWSTR)&szIconPath, MAX_PATH);
@@ -62,6 +75,19 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 		break;
 
 	case WM_COMMAND:
+
+		if (HIWORD(wParam) == EN_CHANGE)
+		{
+			if (LOWORD(wParam) == IDD_NAME)
+			{
+				// Name text control changed. See what's up...
+				bOKEnabled = GetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer));
+
+				// Enable or disable the OK button based on the information
+				EnableWindow(GetDlgItem(hWndDlg, IDD_OK), bOKEnabled);
+			}
+		}
+
 		switch (GET_WM_COMMAND_ID(wParam, lParam))
 		{
 
@@ -79,8 +105,38 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 			// Check that all the applicable fields are filled out
 			bOKEnabled = GetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer));
 
+			// If not, set the focus to the offending field
+			if (!bOKEnabled)
+				SendDlgItemMessage(hWndDlg, IDD_NAME, EM_TAKEFOCUS, 0, 0);
+
 			// Enable or disable the OK button based on the information
 			EnableWindow(GetDlgItem(hWndDlg, IDD_OK), bOKEnabled);
+
+			if (bOKEnabled)
+			{
+				// Set the name of the group
+				StringCchCopy(grp.szName, ARRAYSIZE(szBuffer), szBuffer);
+
+				// Set the flags of the group
+				if (SendDlgItemMessage(hWndDlg, IDD_COMMGROUP, BM_GETCHECK, 0, 0) != BST_UNCHECKED)
+					grp.dwFlags = grp.dwFlags || GRP_FLAG_COMMON;
+
+				// TODO: set FILETIME
+
+				// Set the rectangle of the group to be CW_USEDEFAULT
+				grp.rcGroup.left = grp.rcGroup.top = grp.rcGroup.right = grp.rcGroup.bottom = CW_USEDEFAULT;
+				
+				// Set icon properties
+				StringCchCopy(grp.szIconPath, ARRAYSIZE(szIconPath), szIconPath);
+				grp.iIconIndex = iIconIndex;
+
+				// Group's ready!
+				if (CreateGroupWindow(&grp) != NULL)
+					break;
+
+				// Failure!
+				break;
+			}
 
 			break;
 

@@ -71,23 +71,9 @@ BOOL InitializeGroups()
 	if (!RegisterClassEx(&wce))
 		return FALSE;
 
-	// TempCreateGroup();
-
-	CreateGroupWindow(NULL);
+	// CreateGroupWindow(NULL);
 
 	return TRUE;
-}
-
-
-/* * * *\
-	TempCreateGroup -
-		th
-	RETURNS -
-		real
-\* * * */
-VOID TempCreateGroup()
-{
-	return;
 }
 
 /* * * *\
@@ -101,35 +87,69 @@ PGROUPWND CreateGroupWindow(PGROUP pgGroup)
 {
 	GROUPWND gw = { NULL };
 	MDICREATESTRUCT mcs = { NULL };
-	HWND hGroup;
+	HICON hIconBig = NULL;
+	HICON hIconSmall = NULL;
+	
+	// Copy group structure to our group window
+	gw.grp = *pgGroup;
 
 	// TODO: allocate memory from pgwArray in here
 
-	// TODO: rethink the structure of this, when i create a group window
-	// i don't have a pggroup handle. or maybe i do. think about this
-	// just a little bit more, thanks!
+	// TODO: Automatically add itself to the array of
+	// PGW pointers?
+
+	// Get group minimized/maximized flags
 
 	mcs.szClass = szGrpClass;
-	mcs.szTitle = L"";
+	mcs.szTitle = gw.grp.szName;
 	mcs.hOwner = hAppInstance;
-	mcs.x = mcs.y = mcs.cx = mcs.cy = CW_USEDEFAULT;
+	if ((gw.grp.rcGroup.left == CW_USEDEFAULT) & (gw.grp.rcGroup.right == CW_USEDEFAULT))
+	{
+		mcs.x = mcs.y = mcs.cx = mcs.cy = CW_USEDEFAULT;
+	}
+	else
+	{
+		mcs.x = gw.grp.rcGroup.left;
+		mcs.y = gw.grp.rcGroup.top;
+		mcs.cx = gw.grp.rcGroup.right - gw.grp.rcGroup.left;
+		mcs.cy = gw.grp.rcGroup.bottom - gw.grp.rcGroup.top;
+	}
 	mcs.style = WS_VISIBLE;
 	mcs.lParam = (LPARAM)pgGroup;
 
-	if (!(hGroup = (HWND)SendMessage(hWndMDIClient, WM_MDICREATE, 0, (LPARAM)(LPTSTR)&mcs)))
+	if (!(gw.hWndGroup = (HWND)SendMessage(hWndMDIClient, WM_MDICREATE, 0, (LPARAM)(LPTSTR)&mcs)))
 		return NULL;
 
-	return NULL;
+	// Load the group icon
+	ExtractIconEx(gw.grp.szIconPath, gw.grp.iIconIndex, &hIconBig, &hIconSmall, 0);
+	SendMessage(gw.hWndGroup, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall);
+	SendMessage(gw.hWndGroup, WM_SETICON, ICON_BIG, (LPARAM)hIconBig);
+
+	// TODO: make sure the groups delete their icons upon destruction!
+
+	return &gw;
+}
+
+/* * * *\
+	SetGroupFlags -
+		Retrieve the flags of a group window.
+	RETURNS -
+		TRUE if the flag mask is applied
+		FALSE if the flags aren't set
+\* * * */
+BOOL SetGroupFlags(PGROUPWND pgw, DWORD dwFlags)
+{
+	return FALSE;
 }
 
 /* * * *\
 	GetGroupFlags -
 		Retrieve the flags of a group window.
 	RETURNS -
-		DWORD containing the flags of the group.
-		Otherwise 0xFFFFFFFF if failure.
+		TRUE if the flag mask is applied
+		FALSE if the flags aren't set
 \* * * */
-DWORD GetGroupFlags(PGROUPWND pgw)
+BOOL GetGroupFlags(PGROUPWND pgw, DWORD dwFlags)
 {
 	HWND hWndGrp;
 
@@ -184,7 +204,7 @@ GROUP SaveGroup(PGROUPWND pgw)
 	WCHAR szGroupName[MAX_TITLE_LENGTH];
 
 	// Find the group and copy it
-	grp = *pgw->pGroup;
+	grp = pgw->grp;
 
 	// Get the window handle as well
 	hWndGrp = pgw->hWndGroup;
@@ -196,7 +216,7 @@ GROUP SaveGroup(PGROUPWND pgw)
 	GetWindowText(hWndGrp, szGroupName, MAX_TITLE_LENGTH);
 	StringCchCopy(grp.szName, MAX_TITLE_LENGTH, szGroupName);
 
-	grp.dwFlags = GetGroupFlags(pgw);
+	grp.dwFlags = GRP_FLAG_MAXIMIZED;// GetGroupFlags(pgw);
 
 	GetSystemTimeAsFileTime(&grp.ftLastWrite);
 
