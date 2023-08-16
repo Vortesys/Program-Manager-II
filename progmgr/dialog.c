@@ -101,6 +101,8 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 
 		return FALSE;
 	}
+
+	return TRUE;
 }
 
 /* * * *\
@@ -134,4 +136,6 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 	default:
 		return FALSE;
 	}
+
+	return TRUE;
 }
