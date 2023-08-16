@@ -9,6 +9,7 @@
 
 /* Headers */
 #include "progmgr.h"
+#include "dialog.h"
 #include "group.h"
 #include "resource.h"
 #include "registry.h"
@@ -39,7 +40,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_SYSCOMMAND:
 	{
-		if ((wParam >= IDM_MAIN) || (wParam <= IDM_TASKMGR))
+		if ((wParam >= IDM_MAIN) && (wParam <= IDM_TASKMGR))
 		{
 			if (wParam == IDM_TASKMGR)
 			{
@@ -95,6 +96,14 @@ LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	case IDM_SHUTDOWN:
 		ExitWindowsDialog(hWnd);
+		break;
+
+	case IDM_FILE_NEW_GROUP:
+		DialogBox(hAppInstance, MAKEINTRESOURCE(DLG_GROUP), hWnd, (DLGPROC)NewGroupDlgProc);
+		break;
+
+	case IDM_FILE_NEW_ITEM:
+		DialogBox(hAppInstance, MAKEINTRESOURCE(DLG_ITEM), hWnd, (DLGPROC)NewItemDlgProc);
 		break;
 
 	case IDM_FILE_RUN:
