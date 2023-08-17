@@ -121,7 +121,8 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 				if (SendDlgItemMessage(hWndDlg, IDD_COMMGROUP, BM_GETCHECK, 0, 0) != BST_UNCHECKED)
 					grp.dwFlags = grp.dwFlags || GRP_FLAG_COMMON;
 
-				// TODO: set FILETIME
+				// Set FILETIME
+				GetSystemTimeAsFileTime(&grp.ftLastWrite);
 
 				// Set the rectangle of the group to be CW_USEDEFAULT
 				grp.rcGroup.left = grp.rcGroup.top = grp.rcGroup.right = grp.rcGroup.bottom = CW_USEDEFAULT;
