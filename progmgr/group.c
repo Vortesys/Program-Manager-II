@@ -14,6 +14,7 @@
 #include "registry.h"
 // #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#include <CommCtrl.h>
 #include <strsafe.h>
 
 /* Variables */
@@ -117,13 +118,25 @@ PGROUPWND CreateGroupWindow(PGROUP pgGroup)
 	mcs.style = WS_VISIBLE;
 	mcs.lParam = (LPARAM)pgGroup;
 
-	if (!(gw.hWndGroup = (HWND)SendMessage(hWndMDIClient, WM_MDICREATE, 0, (LPARAM)(LPTSTR)&mcs)))
+	if ((gw.hWndGroup = (HWND)SendMessage(hWndMDIClient, WM_MDICREATE, 0, (LPARAM)(LPTSTR)&mcs)) == NULL)
+		return NULL;
+
+	// Create the group window ListView control
+	if ((gw.hWndListView = CreateWindowEx(WS_EX_LEFT, WC_LISTVIEW, L"ListView",
+		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
+		| LVS_ICON | ((LVS_AUTOARRANGE & bAutoArrange) * LVS_AUTOARRANGE) | LVS_NOSORTHEADER,
+		gw.grp.rcGroup.left, gw.grp.rcGroup.top,
+		gw.grp.rcGroup.right - gw.grp.rcGroup.left, gw.grp.rcGroup.bottom - gw.grp.rcGroup.top,
+		gw.hWndGroup, NULL, hAppInstance,
+		NULL)) == NULL)
 		return NULL;
 
 	// Load the group icon
-	ExtractIconEx(gw.grp.szIconPath, gw.grp.iIconIndex, &hIconBig, &hIconSmall, 0);
-	SendMessage(gw.hWndGroup, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall);
-	SendMessage(gw.hWndGroup, WM_SETICON, ICON_BIG, (LPARAM)hIconBig);
+	if (ExtractIconEx(gw.grp.szIconPath, gw.grp.iIconIndex, &hIconBig, &hIconSmall, 1))
+	{
+		SendMessage(gw.hWndGroup, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall);
+		SendMessage(gw.hWndGroup, WM_SETICON, ICON_BIG, (LPARAM)hIconBig);
+	}
 
 	// TODO: make sure the groups delete their icons upon destruction!
 
