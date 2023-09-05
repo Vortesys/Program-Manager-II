@@ -24,13 +24,15 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDI_PROGMGR		ICON	icons\progmgr.ico
 IDI_PROGGRP		ICON	icons\pmgroup.ico
 IDI_PROGITM		ICON	icons\pmitem.ico
+IDI_COMMON		ICON	icons\common.ico
+IDI_PERSONAL	ICON	icons\personal.ico
 // Secondary
-IDI_COMMS		ICON	icons\comms.ico
-IDI_CONSOLE		ICON	icons\console.ico
-IDI_DOCUMENT	ICON	icons\document.ico
-IDI_SPREADSHEET	ICON	icons\spsheet.ico
+// IDI_COMMS		ICON	icons\comms.ico
+// IDI_CONSOLE		ICON	icons\console.ico
+// IDI_DOCUMENT	ICON	icons\document.ico
+// IDI_SPREADSHEET	ICON	icons\spsheet.ico
 // Tertiary
-IDI_SUPERMAN	ICON	icons\misc\superman.ico
+// IDI_SUPERMAN	ICON	icons\misc\superman.ico
 
 /* Manifest */
 CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "progmgr.exe.manifest"
