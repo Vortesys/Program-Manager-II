@@ -9,6 +9,7 @@
 
 /* Pragmas */
 #pragma once
+#pragma comment(lib, "Pathcch.lib")
 #pragma comment(lib, "Shlwapi.lib")
 #pragma comment(lib, "Secur32.lib")
 

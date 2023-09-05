@@ -15,6 +15,7 @@
 #include "resource.h"
 // #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#include <pathcch.h>
 #include <Shlobj.h>
 #include <strsafe.h>
 
@@ -102,11 +103,9 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 			break;
 
 		case IDD_OK:
-			// Check that all the applicable fields are filled out
-			bOKEnabled = GetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer));
-
-			// If not, set the focus to the offending field
-			if (!bOKEnabled)
+			// Check that all the applicable fields are filled out,
+			// and if not then set the focus to the offending field
+			if (!(bOKEnabled = GetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer))))
 				SendDlgItemMessage(hWndDlg, IDD_NAME, EM_TAKEFOCUS, 0, 0);
 
 			// Enable or disable the OK button based on the information
@@ -175,16 +174,166 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 \* * * */
 BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	ITEM itm = {
+		.szName = L"",
+		.szExecPath = L"",
+		.szWorkPath = L"",
+		.dwFlags = 0,
+		.uiHotkeyModifiers = 0,
+		.uiHotkeyModifiers = 0,
+		.szIconPath = L"",
+		.iIconIndex = 0,
+	};
+	BOOL bOKEnabled = FALSE;
+	BOOL bWorkPath = FALSE;
+	WCHAR szBuffer[MAX_TITLE_LENGTH] = { L"\0" };
+	HICON hIconDef = NULL;
+	HICON hIconDlg = NULL;
+	WCHAR szIconPath[MAX_PATH] = { L"\0" };
+	INT iIconIndex = 0;
+
 	switch (message)
 	{
 
+
 	case WM_INITDIALOG:
-		// Place message cases here. 
+		// TODO:
+		// actually create an item and add it to the GROUP structure
+		// TODO:
+		// require a valid group to be selected or else the dialog won't
+		// let you press OK
+		// TODO:
+		// populate working directory with the directory of the application
+		// when box is first checked
+
+		// Populate the icon with the default path and index.
+		GetModuleFileName(NULL, (LPWSTR)&szIconPath, MAX_PATH);
+		iIconIndex = IDI_PROGITM - 1;
+
+		// Get the default hIcon so we can delete it later
+		hIconDef = (HICON)SendDlgItemMessage(hWndDlg, IDD_STAT_ICON, STM_GETICON, 0, 0);
+
+		// Set the icon in the dialog
+		hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)&szIconPath, iIconIndex);
+		SendDlgItemMessage(hWndDlg, IDD_STAT_ICON, STM_SETICON, (WPARAM)hIconDlg, 0);
+
+		// Set the maximum input length of the text boxes
+		SendDlgItemMessage(hWndDlg, IDD_NAME, EM_LIMITTEXT, MAX_TITLE_LENGTH, 0);
+		SendDlgItemMessage(hWndDlg, IDD_PATH, EM_LIMITTEXT, MAX_PATH, 0);
+		SendDlgItemMessage(hWndDlg, IDD_WORKPATH, EM_LIMITTEXT, MAX_PATH, 0);
+
+		// Disable the OK button since we're starting with no text in the box.
+		EnableWindow(GetDlgItem(hWndDlg, IDD_OK), bOKEnabled);
+
 		break;
 
 	case WM_COMMAND:
+		if (HIWORD(wParam) == EN_CHANGE)
+		{
+			if ((LOWORD(wParam) == IDD_NAME) || (LOWORD(wParam) == IDD_PATH) || (LOWORD(wParam) == IDD_WORKPATH))
+			{
+				// A control has changed. See what's up...
+				bOKEnabled = GetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer));
+				bOKEnabled = bOKEnabled && GetDlgItemText(hWndDlg, IDD_PATH, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer));
+
+				if (bWorkPath)
+					bOKEnabled = bOKEnabled && GetDlgItemText(hWndDlg, IDD_WORKPATH, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer));
+
+				// Enable or disable the relevant controls based on the information
+				EnableWindow(GetDlgItem(hWndDlg, IDD_OK), bOKEnabled);
+			}
+		}
+
 		switch (GET_WM_COMMAND_ID(wParam, lParam))
 		{
+		case IDD_BROWSE:
+		{
+			OPENFILENAME ofn;
+
+			GetDlgItemText(hWndDlg, IDD_PATH, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer));
+
+			// Initialize the structure
+			ZeroMemory(&ofn, sizeof(ofn));
+			ofn.lStructSize = sizeof(ofn);
+			ofn.hwndOwner = hWndDlg;
+			ofn.lpstrFilter = TEXT("Programs\0*.exe;*.bat;*.com;*.cmd;*.lnk\0All Files (*.*)\0*.*\0");
+			ofn.nFilterIndex = 1;
+			ofn.lpstrFile = (LPWSTR)&szBuffer;
+			// ofn.lpstrFile[0] = '\0';
+			ofn.nMaxFile = ARRAYSIZE(szBuffer);
+			ofn.lpstrFileTitle = NULL;
+			ofn.nMaxFileTitle = 0;
+			ofn.lpstrInitialDir = NULL;
+			ofn.Flags = OFN_FILEMUSTEXIST;
+
+			if (GetOpenFileName(&ofn) == TRUE) {
+				SetDlgItemText(hWndDlg, IDD_PATH, (LPWSTR)&szBuffer);
+			}
+
+			break;
+		}
+
+		case IDD_BROWSE2:
+		{
+			OPENFILENAME ofn;
+
+			GetDlgItemText(hWndDlg, IDD_WORKPATH, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer));
+
+			// Initialize the structure
+			ZeroMemory(&ofn, sizeof(ofn));
+			ofn.lStructSize = sizeof(ofn);
+			ofn.hwndOwner = hWndDlg;
+			ofn.lpstrFilter = TEXT("Programs\0*.exe;*.bat;*.com;*.cmd;*.lnk\0All Files (*.*)\0*.*\0");
+			ofn.nFilterIndex = 1;
+			ofn.lpstrFile = (LPWSTR)&szBuffer;
+			// ofn.lpstrFile[0] = '\0';
+			ofn.nMaxFile = ARRAYSIZE(szBuffer);
+			ofn.lpstrFileTitle = NULL;
+			ofn.nMaxFileTitle = 0;
+			ofn.lpstrInitialDir = NULL;
+			ofn.Flags = OFN_FILEMUSTEXIST;
+
+			if (GetOpenFileName(&ofn) == TRUE) {
+				SetDlgItemText(hWndDlg, IDD_WORKPATH, (LPWSTR)&szBuffer);
+			}
+
+			break;
+		}
+			
+
+		case IDD_CHICON:
+			if (PickIconDlg(hWndDlg, (LPWSTR)&szIconPath, ARRAYSIZE(szIconPath), &iIconIndex) == TRUE)
+			{
+				// Since we've got the new icon...
+				hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)&szIconPath, iIconIndex);
+				SendDlgItemMessage(hWndDlg, IDD_STAT_ICON, STM_SETICON, (WPARAM)hIconDlg, 0);
+			}
+
+			break;
+
+		case IDD_WORKDIR:
+			bWorkPath = IsDlgButtonChecked(hWndDlg, IDD_WORKDIR);
+
+			if (bWorkPath)
+			{
+				GetDlgItemText(hWndDlg, IDD_WORKPATH, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer));
+				PathCchRemoveFileSpec((PWSTR)&szBuffer, ARRAYSIZE(szBuffer));
+				SetDlgItemText(hWndDlg, IDD_WORKPATH, (LPWSTR)&szBuffer);
+			}
+			else
+			{
+				SendDlgItemMessage(hWndDlg, IDD_WORKPATH, WM_CLEAR, 0, 0);
+			}
+				
+			EnableWindow(GetDlgItem(hWndDlg, IDD_STAT_WORKDIR), bWorkPath);
+			EnableWindow(GetDlgItem(hWndDlg, IDD_WORKPATH), bWorkPath);
+			EnableWindow(GetDlgItem(hWndDlg, IDD_BROWSE2), bWorkPath);
+
+			break;
+
+		case IDD_OK:
+			SendDlgItemMessage(hWndDlg, IDD_WORKPATH, WM_CLEAR, 0, 0);
+			break;
 
 		case IDD_CANCEL:
 			EndDialog(hWndDlg, FALSE);

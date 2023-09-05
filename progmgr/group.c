@@ -90,6 +90,10 @@ PGROUPWND CreateGroupWindow(PGROUP pgGroup)
 	MDICREATESTRUCT mcs = { NULL };
 	HICON hIconBig = NULL;
 	HICON hIconSmall = NULL;
+	// BEGIN LISTVIEW TEMP ITEM
+	LVITEM lviTestItem;
+	WCHAR szTestItem[] = L"Test Item";
+	// END LISTVIEW TEMP ITEM
 	
 	// Copy group structure to our group window
 	gw.grp = *pgGroup;
@@ -125,11 +129,25 @@ PGROUPWND CreateGroupWindow(PGROUP pgGroup)
 	if ((gw.hWndListView = CreateWindowEx(WS_EX_LEFT, WC_LISTVIEW, L"ListView",
 		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
 		| LVS_ICON | ((LVS_AUTOARRANGE & bAutoArrange) * LVS_AUTOARRANGE) | LVS_NOSORTHEADER,
-		gw.grp.rcGroup.left, gw.grp.rcGroup.top,
-		gw.grp.rcGroup.right - gw.grp.rcGroup.left, gw.grp.rcGroup.bottom - gw.grp.rcGroup.top,
+		mcs.x, mcs.y, mcs.cx, mcs.cy,
 		gw.hWndGroup, NULL, hAppInstance,
 		NULL)) == NULL)
 		return NULL;
+
+	// BEGIN LISTVIEW TEMP ITEM
+	ListView_SetBkColor(gw.hWndListView, CLR_NONE);
+
+	lviTestItem.mask = LVIF_STATE | LVIF_TEXT | LVIF_IMAGE;
+	lviTestItem.iItem = 0;
+	lviTestItem.iSubItem = 0;
+	lviTestItem.state = 0;
+	lviTestItem.stateMask = 0;
+	lviTestItem.pszText = (LPWSTR)&szTestItem;
+	lviTestItem.cchTextMax = MAX_TITLE_LENGTH;
+	lviTestItem.iImage = 1;
+
+	ListView_InsertItem(gw.hWndListView, &lviTestItem);
+	// END LISTVIEW TEMP ITEM
 
 	// Load the group icon
 	if (ExtractIconEx(gw.grp.szIconPath, gw.grp.iIconIndex, &hIconBig, &hIconSmall, 1))
