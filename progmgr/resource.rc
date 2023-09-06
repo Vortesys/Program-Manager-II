@@ -9,7 +9,7 @@
 
 /* Necessary Evil */
 #define APSTUDIO_HIDDEN_SYMBOLS
-#include <afxres.h>
+#include <windows.h>
 #include "resource.h"
 #undef APSTUDIO_HIDDEN_SYMBOLS
 
