@@ -44,7 +44,6 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 	HICON hIconDef = NULL;
 	HICON hIconDlg = NULL;
 	WCHAR szIconPath[MAX_PATH] = { L"\0" };
-	INT iIconIndex = 0;
 
 	switch (message)
 	{
@@ -58,13 +57,13 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 		
 		// Populate the icon with the default path and index.
 		GetModuleFileName(NULL, (LPWSTR)&szIconPath, MAX_PATH);
-		iIconIndex = IDI_PROGGRP - 1;
+		grp.iIconIndex = IDI_PROGGRP - 1;
 
 		// Get the default hIcon so we can delete it later
 		hIconDef = (HICON)SendDlgItemMessage(hWndDlg, IDD_STAT_ICON, STM_GETICON, 0, 0);
 
 		// Set the icon in the dialog
-		hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)&szIconPath, iIconIndex);
+		hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)&szIconPath, grp.iIconIndex);
 		SendDlgItemMessage(hWndDlg, IDD_STAT_ICON, STM_SETICON, (WPARAM)hIconDlg, 0);
 
 		// Set the maximum input length of the text boxes
@@ -82,7 +81,11 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 			if (LOWORD(wParam) == IDD_NAME)
 			{
 				// Name text control changed. See what's up...
-				bOKEnabled = GetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer));
+				if (bOKEnabled = GetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer)))
+				{
+					// Set the name of the group
+					StringCchCopy(grp.szName, ARRAYSIZE(szBuffer), szBuffer);
+				}
 
 				// Enable or disable the OK button based on the information
 				EnableWindow(GetDlgItem(hWndDlg, IDD_OK), bOKEnabled);
@@ -93,11 +96,14 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 		{
 
 		case IDD_CHICON:
-			if (PickIconDlg(hWndDlg, (LPWSTR)&szIconPath, ARRAYSIZE(szIconPath), &iIconIndex) == TRUE)
+			if (PickIconDlg(hWndDlg, (LPWSTR)&szIconPath, ARRAYSIZE(szIconPath), &grp.iIconIndex) == TRUE)
 			{
 				// Since we've got the new icon...
-				hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)&szIconPath, iIconIndex);
+				hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)&szIconPath, grp.iIconIndex);
 				SendDlgItemMessage(hWndDlg, IDD_STAT_ICON, STM_SETICON, (WPARAM)hIconDlg, 0);
+
+				// Populate the icon varialbes
+				StringCchCopy(grp.szIconPath, ARRAYSIZE(szIconPath), szIconPath);
 			}
 
 			break;
@@ -113,9 +119,6 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 
 			if (bOKEnabled)
 			{
-				// Set the name of the group
-				StringCchCopy(grp.szName, ARRAYSIZE(szBuffer), szBuffer);
-
 				// Set the flags of the group
 				if (SendDlgItemMessage(hWndDlg, IDD_COMMGROUP, BM_GETCHECK, 0, 0) != BST_UNCHECKED)
 					grp.dwFlags = grp.dwFlags || GRP_FLAG_COMMON;
@@ -125,10 +128,6 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 
 				// Set the rectangle of the group to be CW_USEDEFAULT
 				grp.rcGroup.left = grp.rcGroup.top = grp.rcGroup.right = grp.rcGroup.bottom = CW_USEDEFAULT;
-				
-				// Set icon properties
-				StringCchCopy(grp.szIconPath, ARRAYSIZE(szIconPath), szIconPath);
-				grp.iIconIndex = iIconIndex;
 
 				// Group's ready!
 				if (CreateGroupWindow(&grp) != NULL)
@@ -202,9 +201,6 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 		// TODO:
 		// require a valid group to be selected or else the dialog won't
 		// let you press OK
-		// TODO:
-		// populate working directory with the directory of the application
-		// when box is first checked
 
 		// Populate the icon with the default path and index.
 		GetModuleFileName(NULL, (LPWSTR)&szIconPath, MAX_PATH);
@@ -316,13 +312,13 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 
 			if (bWorkPath)
 			{
-				GetDlgItemText(hWndDlg, IDD_WORKPATH, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer));
+				GetDlgItemText(hWndDlg, IDD_PATH, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer));
 				PathCchRemoveFileSpec((PWSTR)&szBuffer, ARRAYSIZE(szBuffer));
 				SetDlgItemText(hWndDlg, IDD_WORKPATH, (LPWSTR)&szBuffer);
 			}
 			else
 			{
-				SendDlgItemMessage(hWndDlg, IDD_WORKPATH, WM_CLEAR, 0, 0);
+				SetWindowText(GetDlgItem(hWndDlg, IDD_WORKPATH), 0);
 			}
 				
 			EnableWindow(GetDlgItem(hWndDlg, IDD_STAT_WORKDIR), bWorkPath);
