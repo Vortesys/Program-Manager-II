@@ -142,7 +142,7 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 				grp.rcGroup.left = grp.rcGroup.top = grp.rcGroup.right = grp.rcGroup.bottom = CW_USEDEFAULT;
 
 				// Group's ready!
-				if (CreateGroupWindow(&grp) != NULL)
+				if (CreateGroupWindow(grp) != NULL)
 				{
 					EndDialog(hWndDlg, FALSE);
 					break;

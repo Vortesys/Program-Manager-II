@@ -80,7 +80,7 @@ extern HWND			hWndMDIClient;
 BOOL InitializeGroups();
 // Group Window
 LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-PGROUPWND CreateGroupWindow(PGROUP pgGroup);
+HWND CreateGroupWindow(GROUP grp);
 // Group information
 BOOL SetGroupFlags(PGROUPWND pgw, DWORD dwFlags);
 BOOL GetGroupFlags(PGROUPWND pgw, DWORD dwFlags);

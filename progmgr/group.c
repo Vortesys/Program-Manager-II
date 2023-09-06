@@ -81,12 +81,12 @@ BOOL InitializeGroups()
 	CreateGroupWindow -
 		Create an MDI window from a group structure
 	RETURNS -
-		Pointer to a group window structure
+		Pointer to the new group window
 		or NULL on failure
 \* * * */
 #pragma warning(push)
 #pragma warning(disable: 4172)
-PGROUPWND CreateGroupWindow(PGROUP pgGroup)
+HWND CreateGroupWindow(GROUP grp)
 {
 	GROUPWND gw = { NULL };
 	MDICREATESTRUCT mcs = { NULL };
@@ -95,7 +95,7 @@ PGROUPWND CreateGroupWindow(PGROUP pgGroup)
 	HICON hIconTemp = NULL;
 	
 	// Copy group structure to our group window
-	gw.grp = *pgGroup;
+	gw.grp = grp;
 
 	// TODO: allocate memory from pgwArray in here
 
@@ -119,7 +119,7 @@ PGROUPWND CreateGroupWindow(PGROUP pgGroup)
 		mcs.cy = gw.grp.rcGroup.bottom - gw.grp.rcGroup.top;
 	}
 	mcs.style = WS_VISIBLE;
-	mcs.lParam = (LPARAM)pgGroup;
+	mcs.lParam = (LPARAM)&grp;
 
 	if ((gw.hWndGroup = (HWND)SendMessage(hWndMDIClient, WM_MDICREATE, 0, (LPARAM)(LPTSTR)&mcs)) == NULL)
 		return NULL;
@@ -144,7 +144,7 @@ PGROUPWND CreateGroupWindow(PGROUP pgGroup)
 
 	// TODO: make sure the groups delete their icons upon destruction!
 
-	return &gw;
+	return gw.hWndGroup;
 }
 #pragma warning(pop)
 
