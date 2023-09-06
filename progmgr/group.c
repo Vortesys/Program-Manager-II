@@ -84,6 +84,8 @@ BOOL InitializeGroups()
 		Pointer to a group window structure
 		or NULL on failure
 \* * * */
+#pragma warning(push)
+#pragma warning(disable: 4172)
 PGROUPWND CreateGroupWindow(PGROUP pgGroup)
 {
 	GROUPWND gw = { NULL };
@@ -144,6 +146,7 @@ PGROUPWND CreateGroupWindow(PGROUP pgGroup)
 
 	return &gw;
 }
+#pragma warning(pop)
 
 /* * * *\
 	SetGroupFlags -

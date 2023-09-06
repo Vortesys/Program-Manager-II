@@ -165,3 +165,20 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 	return 0;
 }
+
+#pragma function(memset)
+void *memset(char* dst, int value, size_t count) {
+    while (count--) { *dst++ = value; }
+    return dst;
+}
+
+#pragma function(memcpy)
+void *memcpy(char *dst, const char *src, size_t count) {
+    while (count--) { *dst++ = *src++; }
+    return dst;
+}
+
+void __stdcall wWinMainCRTStartup() {
+    int code = wWinMain(GetModuleHandle(0), 0, 0, 0);
+    ExitProcess(code);
+}

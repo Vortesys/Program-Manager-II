@@ -44,7 +44,6 @@
 
 # Kernel Module Compile Results
 *.mod*
-*.cmd
 .tmp_versions/
 modules.order
 Module.symvers
@@ -52,9 +51,10 @@ Mkfile.old
 dkms.conf
 /.vs/Program-Manager-II
 /planning
-/progmgr/RCa10968
+/progmgr/RCa*
 /progmgr/icons/Thumbs.db
 /bin/
 /misc/supermiumman.png
 /bin.7z
 *.zip
+*.res
