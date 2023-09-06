@@ -166,7 +166,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	return 0;
 }
 
-#ifdef MEMSETFIX
+#ifdef PROGMGR_NO_CRT
 #pragma function(memset)
 void *memset(char* dst, int value, size_t count) {
     while (count--) { *dst++ = value; }
