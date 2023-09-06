@@ -88,12 +88,9 @@ PGROUPWND CreateGroupWindow(PGROUP pgGroup)
 {
 	GROUPWND gw = { NULL };
 	MDICREATESTRUCT mcs = { NULL };
-	HICON hIconBig = NULL;
+	HICON hIconLarge = NULL;
 	HICON hIconSmall = NULL;
-	// BEGIN LISTVIEW TEMP ITEM
-	LVITEM lviTestItem;
-	WCHAR szTestItem[] = L"Test Item";
-	// END LISTVIEW TEMP ITEM
+	HICON hIconTemp = NULL;
 	
 	// Copy group structure to our group window
 	gw.grp = *pgGroup;
@@ -125,6 +122,15 @@ PGROUPWND CreateGroupWindow(PGROUP pgGroup)
 	if ((gw.hWndGroup = (HWND)SendMessage(hWndMDIClient, WM_MDICREATE, 0, (LPARAM)(LPTSTR)&mcs)) == NULL)
 		return NULL;
 
+	// Load the group icon
+	if (ExtractIconEx(gw.grp.szIconPath, gw.grp.iIconIndex, &hIconLarge, &hIconSmall, 1))
+	{
+		if (hIconTemp = (HICON)SendMessage(gw.hWndGroup, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall))
+			DestroyIcon(hIconTemp);
+		if (hIconTemp = (HICON)SendMessage(gw.hWndGroup, WM_SETICON, ICON_BIG, (LPARAM)hIconLarge))
+			DestroyIcon(hIconTemp);
+	}
+
 	// Create the group window ListView control
 	if ((gw.hWndListView = CreateWindowEx(WS_EX_LEFT, WC_LISTVIEW, L"ListView",
 		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
@@ -133,28 +139,6 @@ PGROUPWND CreateGroupWindow(PGROUP pgGroup)
 		gw.hWndGroup, NULL, hAppInstance,
 		NULL)) == NULL)
 		return NULL;
-
-	// BEGIN LISTVIEW TEMP ITEM
-	ListView_SetBkColor(gw.hWndListView, CLR_NONE);
-
-	lviTestItem.mask = LVIF_STATE | LVIF_TEXT | LVIF_IMAGE;
-	lviTestItem.iItem = 0;
-	lviTestItem.iSubItem = 0;
-	lviTestItem.state = 0;
-	lviTestItem.stateMask = 0;
-	lviTestItem.pszText = (LPWSTR)&szTestItem;
-	lviTestItem.cchTextMax = MAX_TITLE_LENGTH;
-	lviTestItem.iImage = 1;
-
-	ListView_InsertItem(gw.hWndListView, &lviTestItem);
-	// END LISTVIEW TEMP ITEM
-
-	// Load the group icon
-	if (ExtractIconEx(gw.grp.szIconPath, gw.grp.iIconIndex, &hIconBig, &hIconSmall, 1))
-	{
-		SendMessage(gw.hWndGroup, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall);
-		SendMessage(gw.hWndGroup, WM_SETICON, ICON_BIG, (LPARAM)hIconBig);
-	}
 
 	// TODO: make sure the groups delete their icons upon destruction!
 
@@ -268,12 +252,13 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 {
 	switch (message)
 	{
+
 	case WM_CREATE:
 	{
 		break;
 	}
+
 	default:
-		// GroupProcDefault:
 		return DefMDIChildProc(hWnd, message, wParam, lParam);
 	}
 	return 0;

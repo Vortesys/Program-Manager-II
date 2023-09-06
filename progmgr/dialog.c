@@ -19,6 +19,9 @@
 #include <Shlobj.h>
 #include <strsafe.h>
 
+/* Variables */
+WCHAR		szDlgTitle[64];
+
 /* Functions */
 
 /* * * *\
@@ -36,6 +39,8 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 		.szName = L"",
 		.dwFlags = 0,
 		.ftLastWrite = 0,
+		.szIconPath = L"",
+		.iIconIndex = 0,
 		.cItems = 0,
 		.iItems = NULL
 	};
@@ -43,7 +48,6 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 	WCHAR szBuffer[MAX_TITLE_LENGTH] = { L"\0" };
 	HICON hIconDef = NULL;
 	HICON hIconDlg = NULL;
-	WCHAR szIconPath[MAX_PATH] = { L"\0" };
 
 	switch (message)
 	{
@@ -54,16 +58,20 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 		// if permissions are available.
 		// TODO:
 		// fix minor GDI font/region leak
+
+		// Set the window title
+		LoadString(hAppInstance, IDS_DLT_GRP_NEW, szDlgTitle, ARRAYSIZE(szDlgTitle));
+		SetWindowText(hWndDlg, szDlgTitle);
 		
 		// Populate the icon with the default path and index.
-		GetModuleFileName(NULL, (LPWSTR)&szIconPath, MAX_PATH);
+		GetModuleFileName(hAppInstance, (LPWSTR)&grp.szIconPath, ARRAYSIZE(grp.szIconPath));
 		grp.iIconIndex = IDI_PROGGRP - 1;
 
 		// Get the default hIcon so we can delete it later
 		hIconDef = (HICON)SendDlgItemMessage(hWndDlg, IDD_STAT_ICON, STM_GETICON, 0, 0);
 
 		// Set the icon in the dialog
-		hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)&szIconPath, grp.iIconIndex);
+		hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)&grp.szIconPath, grp.iIconIndex);
 		SendDlgItemMessage(hWndDlg, IDD_STAT_ICON, STM_SETICON, (WPARAM)hIconDlg, 0);
 
 		// Set the maximum input length of the text boxes
@@ -81,11 +89,7 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 			if (LOWORD(wParam) == IDD_NAME)
 			{
 				// Name text control changed. See what's up...
-				if (bOKEnabled = GetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer)))
-				{
-					// Set the name of the group
-					StringCchCopy(grp.szName, ARRAYSIZE(szBuffer), szBuffer);
-				}
+				bOKEnabled = GetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer));
 
 				// Enable or disable the OK button based on the information
 				EnableWindow(GetDlgItem(hWndDlg, IDD_OK), bOKEnabled);
@@ -96,19 +100,17 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 		{
 
 		case IDD_CHICON:
-			if (PickIconDlg(hWndDlg, (LPWSTR)&szIconPath, ARRAYSIZE(szIconPath), &grp.iIconIndex) == TRUE)
+			if (PickIconDlg(hWndDlg, (LPWSTR)&grp.szIconPath, ARRAYSIZE(grp.szIconPath), &grp.iIconIndex) == TRUE)
 			{
 				// Since we've got the new icon...
-				hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)&szIconPath, grp.iIconIndex);
+				hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)&grp.szIconPath, grp.iIconIndex);
 				SendDlgItemMessage(hWndDlg, IDD_STAT_ICON, STM_SETICON, (WPARAM)hIconDlg, 0);
-
-				// Populate the icon varialbes
-				StringCchCopy(grp.szIconPath, ARRAYSIZE(szIconPath), szIconPath);
 			}
 
 			break;
 
 		case IDD_OK:
+
 			// Check that all the applicable fields are filled out,
 			// and if not then set the focus to the offending field
 			if (!(bOKEnabled = GetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer))))
@@ -119,6 +121,9 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 
 			if (bOKEnabled)
 			{
+				// Set the name of the group
+				StringCchCopy(grp.szName, ARRAYSIZE(szBuffer), szBuffer);
+
 				// Set the flags of the group
 				if (SendDlgItemMessage(hWndDlg, IDD_COMMGROUP, BM_GETCHECK, 0, 0) != BST_UNCHECKED)
 					grp.dwFlags = grp.dwFlags || GRP_FLAG_COMMON;
@@ -188,8 +193,6 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 	WCHAR szBuffer[MAX_TITLE_LENGTH] = { L"\0" };
 	HICON hIconDef = NULL;
 	HICON hIconDlg = NULL;
-	WCHAR szIconPath[MAX_PATH] = { L"\0" };
-	INT iIconIndex = 0;
 
 	switch (message)
 	{
@@ -201,16 +204,20 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 		// TODO:
 		// require a valid group to be selected or else the dialog won't
 		// let you press OK
+		
+		// Set the window title
+		LoadString(hAppInstance, IDS_DLT_ITEM_NEW, szDlgTitle, ARRAYSIZE(szDlgTitle));
+		SetWindowText(hWndDlg, szDlgTitle);
 
 		// Populate the icon with the default path and index.
-		GetModuleFileName(NULL, (LPWSTR)&szIconPath, MAX_PATH);
-		iIconIndex = IDI_PROGITM - 1;
+		GetModuleFileName(NULL, (LPWSTR)&itm.szIconPath, MAX_PATH);
+		itm.iIconIndex = IDI_PROGITM - 1;
 
 		// Get the default hIcon so we can delete it later
 		hIconDef = (HICON)SendDlgItemMessage(hWndDlg, IDD_STAT_ICON, STM_GETICON, 0, 0);
 
 		// Set the icon in the dialog
-		hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)&szIconPath, iIconIndex);
+		hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)&itm.szIconPath, itm.iIconIndex);
 		SendDlgItemMessage(hWndDlg, IDD_STAT_ICON, STM_SETICON, (WPARAM)hIconDlg, 0);
 
 		// Set the maximum input length of the text boxes
@@ -298,10 +305,10 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 			
 
 		case IDD_CHICON:
-			if (PickIconDlg(hWndDlg, (LPWSTR)&szIconPath, ARRAYSIZE(szIconPath), &iIconIndex) == TRUE)
+			if (PickIconDlg(hWndDlg, (LPWSTR)&itm.szIconPath, ARRAYSIZE(itm.szIconPath), &itm.iIconIndex) == TRUE)
 			{
 				// Since we've got the new icon...
-				hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)&szIconPath, iIconIndex);
+				hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)&itm.szIconPath, itm.iIconIndex);
 				SendDlgItemMessage(hWndDlg, IDD_STAT_ICON, STM_SETICON, (WPARAM)hIconDlg, 0);
 			}
 
@@ -340,6 +347,12 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 		}
 
 	default:
+		// Cleanup
+		if (hIconDef)
+			DestroyIcon(hIconDef);
+		if (hIconDlg)
+			DestroyIcon(hIconDlg);
+
 		return FALSE;
 	}
 
