@@ -32,7 +32,7 @@ WCHAR		szDlgTitle[64];
 \* * * */
 BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	GROUP grp = {
+	static GROUP grp = {
 		.dwSignature = GRP_SIGNATURE,
 		.wVersion = GRP_VERSION,
 		.wChecksum = 0,
@@ -58,6 +58,14 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 		// if permissions are available.
 		// TODO:
 		// fix minor GDI font/region leak
+
+		// Reset the group structure
+		grp.dwSignature = GRP_SIGNATURE;
+		grp.wVersion = GRP_VERSION;
+		grp.wChecksum = 0;
+		grp.dwFlags = 0;
+		grp.cItems = 0;
+		grp.iItems = NULL;
 
 		// Set the window title
 		LoadString(hAppInstance, IDS_DLT_GRP_NEW, szDlgTitle, ARRAYSIZE(szDlgTitle));
@@ -110,7 +118,6 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 			break;
 
 		case IDD_OK:
-
 			// Check that all the applicable fields are filled out,
 			// and if not then set the focus to the offending field
 			if (!(bOKEnabled = GetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer))))
@@ -178,13 +185,13 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 \* * * */
 BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	ITEM itm = {
+	static ITEM itm = {
 		.szName = L"",
 		.szExecPath = L"",
 		.szWorkPath = L"",
 		.dwFlags = 0,
 		.uiHotkeyModifiers = 0,
-		.uiHotkeyModifiers = 0,
+		.uiHotkeyVirtualKey = 0,
 		.szIconPath = L"",
 		.iIconIndex = 0,
 	};
@@ -197,13 +204,17 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 	switch (message)
 	{
 
-
 	case WM_INITDIALOG:
 		// TODO:
 		// actually create an item and add it to the GROUP structure
 		// TODO:
 		// require a valid group to be selected or else the dialog won't
 		// let you press OK
+		
+		// Reset the item structure
+		itm.dwFlags = 0;
+		itm.uiHotkeyModifiers = 0;
+		itm.uiHotkeyVirtualKey = 0;
 		
 		// Set the window title
 		LoadString(hAppInstance, IDS_DLT_ITEM_NEW, szDlgTitle, ARRAYSIZE(szDlgTitle));
