@@ -1,6 +1,5 @@
 @echo off
 
-set DEFS=/DUNICODE
 set DIR_ROOT=%~dp0.
 set DIR_PROGMGR=%DIR_ROOT%\progmgr
 set DIR_RELEASE=%DIR_ROOT%\release
@@ -8,18 +7,22 @@ set DIR_RELEASE=%DIR_ROOT%\release
 rmdir /S /Q "%DIR_RELEASE%" > nul 2>&1
 if not exist "%DIR_RELEASE%" mkdir "%DIR_RELEASE%"
 
+git rev-parse HEAD > %DIR_RELEASE%\.git_hash
+set /P GIT_HASH=<%DIR_RELEASE%\.git_hash
+set "GIT_HASH=%GIT_HASH:~0,8%"
+
 if "%1" == "debug" (
-    set CL=/MT /Od /Zi /RTC1 /Fdprogmgr.pdb /fsanitize=address %DEFS%
+    set CL=/MT /Od /Zi /RTC1 /Fdprogmgr.pdb /fsanitize=address /DUNICODE /DPROGMGR_DEBUG /DPROGMGR_GIT_HASH="%GIT_HASH%"
     set LINK=/DEBUG
 ) else (
-    set CL=/GL /O1 /DNDEBUG /GS- %DEFS%
-    set LINK=/LTCG /OPT:REF /OPT:ICF
+    set CL=/O1 /GS- /DUNICODE /DNDEBUG /DPROGMGR_RELEASE /DPROGMGR_GIT_HASH="%GIT_HASH%"
+    set LINK=/NODEFAULTLIB /OPT:REF /OPT:ICF
 )
 
 pushd "%DIR_RELEASE%"
-rc /nologo /i "%DIR_PROGMGR%" "%DIR_PROGMGR%\lang\dlg_en-US.rc"
-rc /nologo /i "%DIR_PROGMGR%" "%DIR_PROGMGR%\lang\res_en-US.rc"
-rc /nologo /i "%DIR_PROGMGR%" "%DIR_PROGMGR%\resource.rc"
+rc /nologo /DPROGMGR_GIT_HASH="""%GIT_HASH%""" /i "%DIR_PROGMGR%" "%DIR_PROGMGR%\lang\dlg_en-US.rc"
+rc /nologo /DPROGMGR_GIT_HASH="""%GIT_HASH%""" /i "%DIR_PROGMGR%" "%DIR_PROGMGR%\lang\res_en-US.rc"
+rc /nologo /DPROGMGR_GIT_HASH="""%GIT_HASH%""" /i "%DIR_PROGMGR%" "%DIR_PROGMGR%\resource.rc"
 cl /nologo /W3 /WX /MP /Feprogmgr.exe ^
     "%DIR_PROGMGR%\*.c" ^
     "%DIR_PROGMGR%\resource.res" ^
