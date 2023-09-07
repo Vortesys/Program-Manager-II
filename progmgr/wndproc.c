@@ -176,6 +176,18 @@ LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	}
 
 	default:
+		if (GET_WM_COMMAND_ID(wParam, lParam) >= IDM_WINDOW_CHILDSTART)
+		{
+			DefFrameProc(hWnd, hWndMDIClient, 0, wParam, lParam);
+		}
+		else
+		{
+			HWND hChild = (HWND)SendMessage(hWndMDIClient, WM_MDIGETACTIVE, 0, 0);
+			if (hChild)
+			{
+				SendMessage(hChild, WM_COMMAND, wParam, lParam);
+			}
+		}
 		return FALSE;
 	}
 
