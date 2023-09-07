@@ -58,3 +58,5 @@ dkms.conf
 /bin.7z
 *.zip
 *.res
+
+release
