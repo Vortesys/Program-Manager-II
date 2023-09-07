@@ -40,7 +40,7 @@ BOOL InitializeGroups()
 	RECT rcFrame;
 
 	// Create the MDI Client Window
-	ccs.hWindowMenu = GetSubMenu(GetMenu(hWndProgMgr), IDM_WINDOW);
+	ccs.hWindowMenu = GetSubMenu(GetMenu(hWndProgMgr), 2);
 	ccs.idFirstChild = IDM_WINDOW_CHILDSTART;
 
 	GetClientRect(hWndProgMgr, &rcFrame);
