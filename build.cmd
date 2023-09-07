@@ -1,6 +1,6 @@
 @echo off
 
-set DEFS=/DUNICODE
+set DEFS=
 set DIR_ROOT=%~dp0.
 set DIR_PROGMGR=%DIR_ROOT%\progmgr
 set DIR_RELEASE=%DIR_ROOT%\release
@@ -9,10 +9,10 @@ rmdir /S /Q "%DIR_RELEASE%" > nul 2>&1
 if not exist "%DIR_RELEASE%" mkdir "%DIR_RELEASE%"
 
 if "%1" == "debug" (
-    set CL=/MT /Od /Zi /RTC1 /Fdprogmgr.pdb /fsanitize=address %DEFS%
+    set CL=/MT /Od /Zi /RTC1 /Fdprogmgr.pdb /fsanitize=address /DUNICODE %DEFS%
     set LINK=/DEBUG
 ) else (
-    set CL=/O1 /DNDEBUG /DPROGMGR_NO_CRT /GS- %DEFS%
+    set CL=/O1 /GS- /DUNICODE /DNDEBUG /DPROGMGR_NO_CRT %DEFS%
     set LINK=/NODEFAULTLIB /OPT:REF /OPT:ICF
 )
 
