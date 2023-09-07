@@ -39,7 +39,7 @@ extern HWND			hWndProgMgr;
 extern HICON		hProgMgrIcon;
 extern HICON		hGroupIcon;
 // Strings
-extern WCHAR		szAppTitle[32];
+extern WCHAR		szAppTitle[64];
 extern WCHAR		szProgMgr[];
 extern WCHAR		szWebsite[64];
 extern WCHAR		szClass[16];

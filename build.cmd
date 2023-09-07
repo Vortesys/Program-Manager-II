@@ -12,7 +12,7 @@ set /P GIT_HASH=<%DIR_RELEASE%\.git_hash
 set "GIT_HASH=%GIT_HASH:~0,8%"
 
 if "%1" == "debug" (
-    set CL=/MT /Od /Zi /RTC1 /Fdprogmgr.pdb /fsanitize=address /DUNICODE /DPROGMGR_DEBUG /DPROGMGR_GIT_HASH="%GIT_HASH%"
+    set CL=/MT /Od /Zi /RTC1 /Fdprogmgr.pdb /fsanitize=address /DUNICODE /D_DEBUG /DPROGMGR_DEBUG /DPROGMGR_GIT_HASH="%GIT_HASH%"
     set LINK=/DEBUG
 ) else (
     set CL=/O1 /GS- /DUNICODE /DNDEBUG /DPROGMGR_RELEASE /DPROGMGR_GIT_HASH="%GIT_HASH%"

@@ -18,6 +18,11 @@
 
 /* Variables */
 // Global
+#ifdef _DEBUG
+BOOL		bIsDebugBuild = TRUE;
+#else
+BOOL		bIsDebugBuild = FALSE;
+#endif
 BOOL		bIsDefaultShell = FALSE;
 // Handles
 HINSTANCE	hAppInstance;
@@ -27,7 +32,7 @@ HWND		hWndProgMgr = NULL;
 HICON		hProgMgrIcon = NULL;
 HICON		hGroupIcon = NULL;
 // Global Strings
-WCHAR		szAppTitle[32];
+WCHAR		szAppTitle[64];
 WCHAR		szProgMgr[] = L"progmgr";
 WCHAR		szWebsite[64];
 WCHAR		szClass[16];
