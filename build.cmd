@@ -12,8 +12,8 @@ if "%1" == "debug" (
     set CL=/MT /Od /Zi /RTC1 /Fdprogmgr.pdb /fsanitize=address %DEFS%
     set LINK=/DEBUG
 ) else (
-    set CL=/GL /O1 /DNDEBUG /GS- %DEFS%
-    set LINK=/LTCG /OPT:REF /OPT:ICF
+    set CL=/O1 /DNDEBUG /DPROGMGR_NO_CRT /GS- %DEFS%
+    set LINK=/NODEFAULTLIB /OPT:REF /OPT:ICF
 )
 
 pushd "%DIR_RELEASE%"
