@@ -20,7 +20,7 @@
 /* Variables */
 WNDCLASSEX wcGrp;
 WCHAR szGrpClass[16];
-PGROUPWND pgwArray[];
+PGROUP pgArray[];
 HWND hWndMDIClient = NULL;
 
 /* Functions */
@@ -84,114 +84,62 @@ BOOL InitializeGroups()
 		Pointer to the new group window
 		or NULL on failure
 \* * * */
-#pragma warning(push)
-#pragma warning(disable: 4172)
 HWND CreateGroupWindow(GROUP grp)
 {
-	GROUPWND gw = { NULL };
 	MDICREATESTRUCT mcs = { NULL };
 	HICON hIconLarge = NULL;
 	HICON hIconSmall = NULL;
 	HICON hIconTemp = NULL;
-	
-	// Copy group structure to our group window
-	gw.grp = grp;
+	HWND hWndGroup = NULL;
+	HWND hWndListView = NULL;
 
-	// TODO: allocate memory from pgwArray in here
-
-	// TODO: Automatically add itself to the array of
-	// PGW pointers?
+	// TODO: allocate memory for the group in the array
+	// of group pointers in PGARRAY, then pass this to
+	// the group window in that little pointer thing :D
 
 	// Get group minimized/maximized flags
 
 	mcs.szClass = szGrpClass;
-	mcs.szTitle = gw.grp.szName;
+	mcs.szTitle = grp.szName;
 	mcs.hOwner = hAppInstance;
-	if ((gw.grp.rcGroup.left == CW_USEDEFAULT) & (gw.grp.rcGroup.right == CW_USEDEFAULT))
+	if ((grp.rcGroup.left == CW_USEDEFAULT) & (grp.rcGroup.right == CW_USEDEFAULT))
 	{
 		mcs.x = mcs.y = mcs.cx = mcs.cy = CW_USEDEFAULT;
 	}
 	else
 	{
-		mcs.x = gw.grp.rcGroup.left;
-		mcs.y = gw.grp.rcGroup.top;
-		mcs.cx = gw.grp.rcGroup.right - gw.grp.rcGroup.left;
-		mcs.cy = gw.grp.rcGroup.bottom - gw.grp.rcGroup.top;
+		mcs.x = grp.rcGroup.left;
+		mcs.y = grp.rcGroup.top;
+		mcs.cx = grp.rcGroup.right - grp.rcGroup.left;
+		mcs.cy = grp.rcGroup.bottom - grp.rcGroup.top;
 	}
 	mcs.style = WS_VISIBLE;
 	mcs.lParam = (LPARAM)&grp;
 
-	if ((gw.hWndGroup = (HWND)SendMessage(hWndMDIClient, WM_MDICREATE, 0, (LPARAM)(LPTSTR)&mcs)) == NULL)
+	if ((hWndGroup = (HWND)SendMessage(hWndMDIClient, WM_MDICREATE, 0, (LPARAM)(LPTSTR)&mcs)) == NULL)
 		return NULL;
 
 	// Load the group icon
-	if (ExtractIconEx(gw.grp.szIconPath, gw.grp.iIconIndex, &hIconLarge, &hIconSmall, 1))
+	if (ExtractIconEx(grp.szIconPath, grp.iIconIndex, &hIconLarge, &hIconSmall, 1))
 	{
-		if (hIconTemp = (HICON)SendMessage(gw.hWndGroup, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall))
+		if (hIconTemp = (HICON)SendMessage(hWndGroup, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall))
 			DestroyIcon(hIconTemp);
-		if (hIconTemp = (HICON)SendMessage(gw.hWndGroup, WM_SETICON, ICON_BIG, (LPARAM)hIconLarge))
+		if (hIconTemp = (HICON)SendMessage(hWndGroup, WM_SETICON, ICON_BIG, (LPARAM)hIconLarge))
 			DestroyIcon(hIconTemp);
 	}
 
 	// Create the group window ListView control
-	if ((gw.hWndListView = CreateWindowEx(WS_EX_LEFT, WC_LISTVIEW, L"ListView",
+	if ((hWndListView = CreateWindowEx(WS_EX_LEFT, WC_LISTVIEW, L"ListView",
 		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
 		| LVS_ICON | ((LVS_AUTOARRANGE & bAutoArrange) * LVS_AUTOARRANGE) | LVS_NOSORTHEADER,
 		mcs.x, mcs.y, mcs.cx, mcs.cy,
-		gw.hWndGroup, NULL, hAppInstance,
+		hWndGroup, NULL, hAppInstance,
 		NULL)) == NULL)
 		return NULL;
 
 	// TODO: make sure the groups delete their icons upon destruction!
 
-	return gw.hWndGroup;
-}
-#pragma warning(pop)
-
-/* * * *\
-	SetGroupFlags -
-		Retrieve the flags of a group window.
-	RETURNS -
-		TRUE if the flag mask is applied
-		FALSE if the flags aren't set
-\* * * */
-BOOL SetGroupFlags(PGROUPWND pgw, DWORD dwFlags)
-{
-	return FALSE;
-}
-
-/* * * *\
-	GetGroupFlags -
-		Retrieve the flags of a group window.
-	RETURNS -
-		TRUE if the flag mask is applied
-		FALSE if the flags aren't set
-\* * * */
-BOOL GetGroupFlags(PGROUPWND pgw, DWORD dwFlags)
-{
-	HWND hWndGrp;
-
-	// Cancel if the group window doesn't exist
-	if (pgw == NULL)
-		return 0xFFFFFFFF;
-
-	// Get the window handle
-	hWndGrp = pgw->hWndGroup;
-
-	if (hWndGrp != NULL)
-	{
-		// NOTE: come back to this lol
-		// TODO: establish better what this actually does
-		// min/max flags are pulled from hwnd
-		// common/readonly flags are set upon group creation
-		// this means that some flags are static whereas
-		// others change over time, this means that we can
-		// either assume certain flags never change over time
-		// or grab them every time.
-		return 0xFFFFFFFF;
-	}
-
-	return 0xFFFFFFFF;
+	return hWndGroup;
 }
 
 /* * * *\
@@ -206,7 +154,7 @@ BOOL GetGroupFlags(PGROUPWND pgw, DWORD dwFlags)
 		Formatted GROUP structure.
 		Upon failure, wChecksum will be 0.
 \* * * */
-GROUP SaveGroup(PGROUPWND pgw)
+GROUP SaveGroup(PGROUP pg)
 {
 	GROUP grp = {
 		.dwSignature = GRP_SIGNATURE,
@@ -218,21 +166,21 @@ GROUP SaveGroup(PGROUPWND pgw)
 		.cItems = 0,
 		.iItems = NULL
 	};
-	HWND hWndGrp;
+	HWND hWndGrp = NULL;
 	WCHAR szGroupName[MAX_TITLE_LENGTH];
 
 	// Find the group and copy it
-	grp = pgw->grp;
-
-	// Get the window handle as well
-	hWndGrp = pgw->hWndGroup;
+	grp = *pg;
 
 	// Set the group checksum
 	grp.wChecksum = 1; // NOTE: implement this for real later lol
 
 	// Copy group information
-	GetWindowText(hWndGrp, szGroupName, MAX_TITLE_LENGTH);
-	StringCchCopy(grp.szName, MAX_TITLE_LENGTH, szGroupName);
+	if (hWndGrp != NULL)
+	{
+		GetWindowText(hWndGrp, szGroupName, MAX_TITLE_LENGTH);
+		StringCchCopy(grp.szName, MAX_TITLE_LENGTH, szGroupName);
+	}
 
 	grp.dwFlags = GRP_FLAG_MAXIMIZED;// GetGroupFlags(pgw);
 

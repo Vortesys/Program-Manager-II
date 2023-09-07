@@ -62,15 +62,6 @@ typedef struct _GROUP {
 	PITEM iItems; // Array of items
 } GROUP, * PGROUP;
 
-// Group window information
-typedef struct _GROUPWND {
-	// Windows
-	HWND hWndGroup;
-	HWND hWndListView;
-	// Group
-	GROUP grp; // Pointer to GROUP structure
-} GROUPWND, * PGROUPWND;
-
 /*  Global Variables */
 extern HWND			hWndMDIClient;
 
@@ -81,8 +72,5 @@ BOOL InitializeGroups();
 // Group Window
 LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 HWND CreateGroupWindow(GROUP grp);
-// Group information
-BOOL SetGroupFlags(PGROUPWND pgw, DWORD dwFlags);
-BOOL GetGroupFlags(PGROUPWND pgw, DWORD dwFlags);
 // Import/export functions
-GROUP SaveGroup(PGROUPWND pgw);
+GROUP SaveGroup(PGROUP pg);
