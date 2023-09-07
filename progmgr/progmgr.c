@@ -166,7 +166,11 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	return 0;
 }
 
-#ifdef PROGMGR_NO_CRT
+// NOTE(u130b8): We're compiling without the C runtime by default in Release builds.
+// But in Debug builds, we need the C runtime, otherwise the address sanitizer and
+// MSVC debug tools break because they use the wWinMainCRTStartup entrypoint to initialize.
+
+#ifdef NDEBUG
 #pragma function(memset)
 void *memset(char* dst, int value, size_t count) {
     while (count--) { *dst++ = value; }

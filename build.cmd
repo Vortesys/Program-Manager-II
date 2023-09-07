@@ -15,7 +15,7 @@ if "%1" == "debug" (
     set CL=/MT /Od /Zi /RTC1 /Fdprogmgr.pdb /fsanitize=address /DUNICODE /DPROGMGR_GIT_HASH="%GIT_HASH%"
     set LINK=/DEBUG
 ) else (
-    set CL=/O1 /GS- /DUNICODE /DNDEBUG /DPROGMGR_NO_CRT /DPROGMGR_GIT_HASH="%GIT_HASH%"
+    set CL=/O1 /GS- /DUNICODE /DNDEBUG /DPROGMGR_GIT_HASH="%GIT_HASH%"
     set LINK=/NODEFAULTLIB /OPT:REF /OPT:ICF
 )
 
