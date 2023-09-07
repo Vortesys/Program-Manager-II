@@ -49,7 +49,7 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
-/.vs/Program-Manager-II
+/.vs
 /planning
 /progmgr/RCa*
 /progmgr/icons/Thumbs.db
