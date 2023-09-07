@@ -57,7 +57,7 @@ BEGIN
 			VALUE "LegalCopyright",   VER_LEGALCOPYRIGHT_STR "\0"
 			VALUE "OriginalFilename", VER_ORIGINALFILENAME_STR "\0"
 			VALUE "ProductName",      VER_PRODUCTNAME_STR
-			VALUE "ProductVersion",   VER_PRODUCTVERSION_STR "\0"
+			VALUE "ProductVersion",   "git-" PROGMGR_GIT_HASH "\0"
 		END
 	END
 	BLOCK "VarFileInfo"
