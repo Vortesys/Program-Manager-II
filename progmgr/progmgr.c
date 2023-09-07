@@ -170,7 +170,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 // But in Debug builds, we need the C runtime, otherwise the address sanitizer and
 // MSVC debug tools break because they use the wWinMainCRTStartup entrypoint to initialize.
 
-#ifdef NDEBUG
+#ifdef PROGMGR_RELEASE
 #pragma function(memset)
 void *memset(char* dst, int value, size_t count) {
     while (count--) { *dst++ = value; }
