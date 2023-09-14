@@ -168,6 +168,7 @@
     <ClInclude Include="dialog.h" />
     <ClInclude Include="group.h" />
     <ClInclude Include="grpupdat.h" />
+    <ClInclude Include="perms.h" />
     <ClInclude Include="progmgr.h" />
     <ClInclude Include="registry.h" />
     <ClInclude Include="resource.h" />

@@ -1,6 +1,6 @@
 /* * * * * * * *\
 	PROGMGR.H -
-		Copyright (c) 2023 freedom7341, Vortesys
+		Copyright (c) 2023 Vortesys
 	DESCRIPTION -
 		Program Manager's primary header file.
 	LICENSE INFORMATION -

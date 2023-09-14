@@ -1,6 +1,6 @@
 /* * * * * * * *\
 	REGISTRY.C -
-		Copyright (c) 2023 freedom7341, Vortesys
+		Copyright (c) 2023 Vortesys
 	DESCRIPTION -
 		Program Manager's registry and settings related functions.
 	LICENSE INFORMATION -

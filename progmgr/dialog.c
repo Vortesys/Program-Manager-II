@@ -1,6 +1,6 @@
 /* * * * * * * *\
 	DIALOG.C -
-		Copyright (c) 2023 freedom7341, Vortesys
+		Copyright (c) 2023 Vortesys
 	DESCRIPTION -
 		Program Manager's dialogs and related
 		common functions.

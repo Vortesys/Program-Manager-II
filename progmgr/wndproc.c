@@ -1,6 +1,6 @@
 /* * * * * * * *\
 	WNDPROC.C -
-		Copyright (c) 2023 freedom7341, Vortesys
+		Copyright (c) 2023 Vortesys
 	DESCRIPTION -
 		Program Manager's window procedure.
 	LICENSE INFORMATION -

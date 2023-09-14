@@ -1,6 +1,6 @@
 /* * * * * * * *\
 	DIALOG.H -
-		Copyright (c) 2023 freedom7341, Vortesys
+		Copyright (c) 2023 Vortesys
 	DESCRIPTION -
 		Dialog function prototypes and related
 		common dialog functions.

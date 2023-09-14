@@ -1,6 +1,6 @@
 /* * * * * * * *\
 	GROUP.C -
-		Copyright (c) 2023 freedom7341, Vortesys
+		Copyright (c) 2023 Vortesys
 	DESCRIPTION -
 		Group window and program group/item functions.
 	LICENSE INFORMATION -

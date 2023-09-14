@@ -1,6 +1,6 @@
 /* * * * * * * *\
 	REGISTRY.H -
-		Copyright (c) 2023 freedom7341, Vortesys
+		Copyright (c) 2023 Vortesys
 	DESCRIPTION -
 		Program Manager's header file for registry related functions.
 	LICENSE INFORMATION -
