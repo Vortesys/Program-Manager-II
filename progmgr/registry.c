@@ -41,6 +41,7 @@ PWSTR pszSettings = L"Settings";
 // Settings Subkeys
 PWSTR pszSettingsWindow = L"Window";
 PWSTR pszSettingsMask = L"SettingsMask";
+// Permissions (Global)
 
 /* Functions */
 
@@ -51,7 +52,7 @@ PWSTR pszSettingsMask = L"SettingsMask";
 	RETURNS -
 		TRUE if successful, FALSE if unsuccessful.
 \* * * */
-BOOL InitializeRegistryKeys()
+BOOL InitializeRegistryKeys(VOID)
 {
 	if (!RegCreateKeyEx(HKEY_CURRENT_USER, PROGMGR_KEY, 0, szProgMgr, 0,
 		KEY_READ | KEY_WRITE, NULL, &hKeyProgramManager, NULL))
@@ -74,7 +75,7 @@ BOOL InitializeRegistryKeys()
 		TRUE if Program Manager is the default shell,
 		FALSE if otherwise or an error occurs.
 \* * * */
-BOOL IsProgMgrDefaultShell()
+BOOL IsProgMgrDefaultShell(VOID)
 {
 	HKEY hKeyWinlogon;
 	WCHAR szShell[HKEYMAXLEN] = L"";
@@ -139,18 +140,20 @@ DWORD SaveGroupToRegistry(_In_ PGROUP pg)
 	RETURNS -
 		RCE_* configuration error value
 \* * * */
-DWORD LoadGroupFromRegistry(_Inout_ PGROUP pg, _Out_ DWORD dwBufferSize)
+DWORD LoadGroupFromRegistry(_Inout_ PGROUP pg, _Out_ PDWORD pdwBufferSize)
 {
 	DWORD dwConfigStatus = RCE_SUCCESS;
 	DWORD dwType = REG_BINARY;
 
+	// TODO: rethink this
+
 	// If the pointer is invalid then fail out
-	if (pg == NULL)
+	if (pg == NULL | pdwBufferSize == NULL)
 		return RCE_FAILURE;
 
 	// Load group
 	if (!RegQueryValueEx(hKeyProgramGroups, pg->szName, 0, &dwType,
-		(LPBYTE)pg, &dwBufferSize) == ERROR_SUCCESS)
+		(LPBYTE)pg, pdwBufferSize) == ERROR_SUCCESS)
 		dwConfigStatus = dwConfigStatus && RCE_POSITION;
 
 	return dwConfigStatus;

@@ -45,7 +45,7 @@ HWND CreateListView(HWND hWndParent, RECT rc);
 	RETURNS -
 		True if successful, false if unsuccessful.
 \* * * */
-BOOL CreateDesktopWindow()
+BOOL CreateDesktopWindow(VOID)
 {
 	MSG msg = { 0 };
 	WNDCLASSEX wc = { 0 };

@@ -217,7 +217,7 @@ VOID UpdateChecks(BOOL bVarMenu, UINT uSubMenu, UINT uID)
 	RETURNS -
 		Nothing!
 \* * * */
-VOID UpdateWindowTitle()
+VOID UpdateWindowTitle(VOID)
 {
 	WCHAR szUsername[UNLEN + 1] = L"";
 	DWORD dwUsernameLen = UNLEN;

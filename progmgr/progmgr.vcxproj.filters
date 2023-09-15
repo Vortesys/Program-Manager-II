@@ -36,9 +36,6 @@
     <ClInclude Include="dialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="perms.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="progmgr.c">

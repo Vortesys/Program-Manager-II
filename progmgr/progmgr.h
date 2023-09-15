@@ -46,7 +46,7 @@ extern WCHAR		szClass[16];
 
 /* Function Prototypes */
 // DESKTOP.C
-BOOL CreateDesktopWindow();// SYSINT.C
+BOOL CreateDesktopWindow(VOID);// SYSINT.C
 // SYSINT.C
 BOOL RunFileDlg(HWND hWndOwner, HICON hIcon, LPWSTR lpszDir, LPWSTR lpszTitle, LPWSTR lpszDesc, DWORD dwFlags);
 BOOL ExitWindowsDialog(HWND hWndOwner);
@@ -55,4 +55,4 @@ BOOL SetShellWindow(HWND hWndShell);
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam);
 VOID UpdateChecks(BOOL bVarMenu, UINT uSubMenu, UINT uID);
-VOID UpdateWindowTitle();
+VOID UpdateWindowTitle(VOID);

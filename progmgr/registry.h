@@ -45,13 +45,18 @@ extern BOOL bTopMost;
 extern BOOL bShowUsername;
 extern BOOL bSaveSettings;
 extern RECT rcMainWindow;
+// Permissions
+extern BOOL bPermAdmin; // Has Administrator permissions
+extern BOOL bPermGuest; // Has Guest permissions
+extern BOOL bPermPower; // Has power option permissions
 
 /* Function Prototypes */
 BOOL InitializeRegistryKeys(VOID);
 BOOL IsProgMgrDefaultShell(VOID);
 // Groups
 DWORD SaveGroupToRegistry(_In_ PGROUP pg);
-DWORD LoadGroupFromRegistry(_Inout_ PGROUP pg, _Out_ DWORD dwBufferSize);
+DWORD LoadGroupFromRegistry(_Inout_ PGROUP pg, _Out_ PDWORD pdwBufferSize);
 // Settings
 DWORD SaveConfig(BOOL bSettings, BOOL bPos, BOOL bGroups);
 DWORD LoadConfig(BOOL bSettings, BOOL bPos, BOOL bGroups);
+// Permissions
