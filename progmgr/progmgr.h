@@ -43,8 +43,13 @@ extern WCHAR		szAppTitle[64];
 extern WCHAR		szProgMgr[];
 extern WCHAR		szWebsite[64];
 extern WCHAR		szClass[16];
+// Permissions
+extern BOOL bPermAdmin; // Has Administrator permissions
+extern BOOL bPermGuest; // Has Guest permissions
+extern BOOL bPermPower; // Has power option permissions
 
 /* Function Prototypes */
+BOOL UpdatePermissions(VOID);
 // DESKTOP.C
 BOOL CreateDesktopWindow(VOID);// SYSINT.C
 // SYSINT.C

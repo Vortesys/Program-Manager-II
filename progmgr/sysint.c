@@ -2,7 +2,7 @@
 	SYSINT.C -
 		Copyright (c) 2023 Vortesys
 	DESCRIPTION -
-		Program Manager's system interface functions.
+		Program Manager's system export functions.
 	LICENSE INFORMATION -
 		MIT License, see LICENSE.txt in the root folder
 \* * * * * * * */

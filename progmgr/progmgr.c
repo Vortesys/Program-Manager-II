@@ -36,8 +36,28 @@ WCHAR		szAppTitle[64];
 WCHAR		szProgMgr[] = L"progmgr";
 WCHAR		szWebsite[64];
 WCHAR		szClass[16];
+// Permissions
+BOOL		bPermAdmin; // Has Administrator permissions
+BOOL		bPermGuest; // Has Guest permissions
+BOOL		bPermPower; // Has power option permissions
 
 /* Functions */
+
+/* * * *\
+	UpdatePermissions -
+		Update the permissions for the user based
+		on account settings.
+	RETURNS -
+		TRUE if permissions are found successfully.
+		FALSE if otherwise.
+\* * * */
+BOOL UpdatePermissions(VOID)
+{
+	bPermAdmin = SE_SHUTDOWN_NAME;
+	bPermGuest = SE_SHUTDOWN_NAME;
+	bPermPower = SE_SHUTDOWN_NAME;
+	return FALSE;
+}
 
 /* * * *\
 	wWinMain -
