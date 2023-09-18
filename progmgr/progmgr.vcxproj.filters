@@ -59,6 +59,9 @@
     <ClCompile Include="dialog.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="desktop2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">

@@ -174,6 +174,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="desktop.c" />
+    <ClCompile Include="desktop2.c" />
     <ClCompile Include="dialog.c" />
     <ClCompile Include="progmgr.c" />
     <ClCompile Include="registry.c" />
