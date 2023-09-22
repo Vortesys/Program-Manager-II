@@ -53,9 +53,10 @@ BOOL		bPermPower; // Has power option permissions
 \* * * */
 BOOL UpdatePermissions(VOID)
 {
-	bPermAdmin = SE_SHUTDOWN_NAME;
-	bPermGuest = SE_SHUTDOWN_NAME;
-	bPermPower = SE_SHUTDOWN_NAME;
+	// SE_SHUTDOWN_NAME
+	bPermAdmin = FALSE;
+	bPermGuest = FALSE;
+	bPermPower = FALSE;
 	return FALSE;
 }
 

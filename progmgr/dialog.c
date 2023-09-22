@@ -88,6 +88,9 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 		// Disable the OK button since we're starting with no text in the box.
 		EnableWindow(GetDlgItem(hWndDlg, IDD_OK), bOKEnabled);
 
+		// Enable the common group checkbox if perms are good
+		EnableWindow(GetDlgItem(hWndDlg, IDD_COMMGROUP), bPermAdmin);
+
 		break;
 
 	case WM_COMMAND:

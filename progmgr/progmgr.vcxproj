@@ -168,6 +168,7 @@
     <ClInclude Include="dialog.h" />
     <ClInclude Include="group.h" />
     <ClInclude Include="grpupdat.h" />
+    <ClInclude Include="memmgmt.h" />
     <ClInclude Include="progmgr.h" />
     <ClInclude Include="registry.h" />
     <ClInclude Include="resource.h" />
@@ -176,6 +177,7 @@
     <ClCompile Include="desktop.c" />
     <ClCompile Include="desktop2.c" />
     <ClCompile Include="dialog.c" />
+    <ClCompile Include="memmgmt.c" />
     <ClCompile Include="progmgr.c" />
     <ClCompile Include="registry.c" />
     <ClCompile Include="group.c" />

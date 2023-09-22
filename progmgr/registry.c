@@ -148,7 +148,7 @@ DWORD LoadGroupFromRegistry(_Inout_ PGROUP pg, _Out_ PDWORD pdwBufferSize)
 	// TODO: rethink this
 
 	// If the pointer is invalid then fail out
-	if (pg == NULL | pdwBufferSize == NULL)
+	if ((pg == NULL) | (pdwBufferSize == NULL))
 		return RCE_FAILURE;
 
 	// Load group

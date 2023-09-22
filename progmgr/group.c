@@ -97,6 +97,7 @@ HWND CreateGroupWindow(GROUP grp)
 	// of group pointers in PGARRAY, then pass this to
 	// the group window in that little pointer thing :D
 
+
 	// Get group minimized/maximized flags
 
 	mcs.szClass = szGrpClass;
