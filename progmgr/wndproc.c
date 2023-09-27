@@ -239,14 +239,3 @@ VOID UpdateWindowTitle(VOID)
 
 	return;
 }
-
-/* * * *\
-	ChildWndProc -
-		Program Manager's window procedure.
-	RETURNS -
-		Zero if nothing, otherwise returns the good stuff.
-\* * * */
-LRESULT CALLBACK ChildWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	return FALSE;
-}
