@@ -95,7 +95,7 @@ LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	{
 
 	case IDM_SHUTDOWN:
-		ExitWindowsDialog(hWnd);
+		DialogBox(hAppInstance, MAKEINTRESOURCE(DLG_POWER), hWnd, (DLGPROC)ShutdownDlgProc);
 		break;
 
 	case IDM_FILE_NEW_GROUP:

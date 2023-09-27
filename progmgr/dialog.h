@@ -14,3 +14,4 @@
 /* Function Prototypes */
 BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK ShutdownDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam);
