@@ -20,7 +20,6 @@
 /* Variables */
 WNDCLASSEX wcGrp;
 WCHAR szGrpClass[16];
-PGROUP pgArray[];
 HWND hWndMDIClient = NULL;
 
 /* Functions */
@@ -81,7 +80,7 @@ BOOL InitializeGroups()
 	CreateGroupWindow -
 		Create an MDI window from a group structure
 	RETURNS -
-		Pointer to the new group window
+		Handle to the new group window
 		or NULL on failure
 \* * * */
 HWND CreateGroupWindow(GROUP grp)
@@ -92,11 +91,15 @@ HWND CreateGroupWindow(GROUP grp)
 	HICON hIconTemp = NULL;
 	HWND hWndGroup = NULL;
 	HWND hWndListView = NULL;
+	HANDLE hGroupHeap = NULL;
 
 	// TODO: allocate memory for the group in the array
 	// of group pointers in PGARRAY, then pass this to
 	// the group window in that little pointer thing :D
-
+	// Unless... this just works a different way and I don't have to
+	// keep track of all these stupid little pointers... since I can
+	// just associate this with the appropriate window.
+	hGroupHeap = HeapCreate(HEAP_GENERATE_EXCEPTIONS, sizeof(grp), 0);
 
 	// Get group minimized/maximized flags
 
@@ -120,6 +123,9 @@ HWND CreateGroupWindow(GROUP grp)
 	if ((hWndGroup = (HWND)SendMessage(hWndMDIClient, WM_MDICREATE, 0, (LPARAM)(LPTSTR)&mcs)) == NULL)
 		return NULL;
 
+	// Associate the group structure heap handle to the group window
+	SetWindowLongPtr(hWndGroup, GWLP_USERDATA, hGroupHeap);
+
 	// Load the group icon
 	if (ExtractIconEx(grp.szIconPath, grp.iIconIndex, &hIconLarge, &hIconSmall, 1))
 	{
@@ -142,6 +148,30 @@ HWND CreateGroupWindow(GROUP grp)
 
 	return hWndGroup;
 }
+
+/* * * *\
+	RemoveGroupWindow -
+		Removes and cleans up a group window
+	RETURNS -
+		TRUE if cleanup is successful,
+		FALSE otherwise.
+\* * * */
+BOOL RemoveGroupWindow(HWND hWndGroup)
+{
+	HANDLE hGroupHeap = NULL;
+
+	// TODO: do I handle group deletion from registry in here as well?
+	// should group deletion be "abstracted" here or should i handle windows
+	// and groups separately?
+
+	if ((hGroupHeap = GetWindowLongPtr(hWndGroup, GWLP_USERDATA)) != NULL)
+	{
+		if (HeapDestroy(hGroupHeap))
+			return TRUE;
+	}
+	return FALSE;
+}
+
 
 /* * * *\
 	SaveGroup -

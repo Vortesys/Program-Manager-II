@@ -72,5 +72,6 @@ BOOL InitializeGroups();
 // Group Window
 LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 HWND CreateGroupWindow(GROUP grp);
+BOOL RemoveGroupWindow(HWND hWndGroup);
 // Import/export functions
 GROUP SaveGroup(PGROUP pg);
