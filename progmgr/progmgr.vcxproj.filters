@@ -36,9 +36,6 @@
     <ClInclude Include="dialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="memmgmt.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="progmgr.c">
@@ -63,9 +60,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="desktop2.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="memmgmt.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
