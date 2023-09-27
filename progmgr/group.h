@@ -30,15 +30,15 @@
 // Item Structure
 typedef struct _ITEM {
 	// Item executable and name
-	WCHAR szName[MAX_TITLE_LENGTH];
-	WCHAR szExecPath[MAX_PATH]; // Path of the executable
-	WCHAR szWorkPath[MAX_PATH]; // Working directory
+	WCHAR szName[MAX_TITLE_LENGTH + 1];
+	WCHAR szExecPath[MAX_PATH + 1]; // Path of the executable
+	WCHAR szWorkPath[MAX_PATH + 1]; // Working directory
 	// Item flags
 	DWORD dwFlags; // Use with ITM_FLAG_* values.
 	UINT uiHotkeyModifiers;
 	UINT uiHotkeyVirtualKey;
 	// Icon
-	WCHAR szIconPath[MAX_PATH];
+	WCHAR szIconPath[MAX_PATH + 1];
 	INT iIconIndex;
 } ITEM, * PITEM;
 
@@ -49,13 +49,13 @@ typedef struct _GROUP {
 	WORD wVersion; // Group format version
 	WORD wChecksum;
 	// Group information
-	WCHAR szName[MAX_TITLE_LENGTH];
+	WCHAR szName[MAX_TITLE_LENGTH + 1];
 	DWORD dwFlags; // Use with GRP_FLAG_* values.
 	FILETIME ftLastWrite;
 	// Window information
 	RECT rcGroup;
 	// Icon
-	WCHAR szIconPath[MAX_PATH];
+	WCHAR szIconPath[MAX_PATH + 1];
 	INT iIconIndex;
 	// Items
 	WORD cItems; // Number of items
