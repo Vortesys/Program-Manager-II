@@ -372,3 +372,32 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 
 	return TRUE;
 }
+
+/* * * *\
+	ShutdownDlgProc -
+		Dialog procedure for powering off the computer.
+	RETURNS -
+		TRUE if message is handled, FALSE otherwise.
+\* * * */
+BOOL CALLBACK ShutdownDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	HICON hIconDlg = NULL;
+
+	switch (message)
+	{
+
+	case WM_INITDIALOG:
+		break;
+
+	case WM_COMMAND:
+		break;
+
+	default:
+		// Cleanup
+		if (hIconDlg)
+			DestroyIcon(hIconDlg);
+
+		return FALSE;
+	}
+	return TRUE;
+}

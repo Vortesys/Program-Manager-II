@@ -35,5 +35,10 @@ BOOL CreateDesktopWindow2(VOID)
 	// color the window invisible, get list of running
 	// programs and then draw them all and capture their
 	// system menus as context menus for each icon.
+
+	// FUNCTIONS TODO:
+	// QueryRunningPrograms()
+	// DrawProgramIcon(DWORD dwFlags)
+	// 
 	return TRUE;
 }
