@@ -41,8 +41,8 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 		.ftLastWrite = 0,
 		.szIconPath = L"",
 		.iIconIndex = 0,
-		.cItems = 0,
-		.iItems = NULL
+		.cItemArray = 0,
+		.pItemArray = NULL
 	};
 	BOOL bOKEnabled = FALSE;
 	WCHAR szBuffer[MAX_TITLE_LENGTH] = { L"\0" };
@@ -64,8 +64,8 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 		grp.wVersion = GRP_VERSION;
 		grp.wChecksum = 0;
 		grp.dwFlags = 0;
-		grp.cItems = 0;
-		grp.iItems = NULL;
+		grp.cItemArray = 0;
+		grp.pItemArray = NULL;
 
 		// Set the window title
 		LoadString(hAppInstance, IDS_DLT_GRP_NEW, szDlgTitle, ARRAYSIZE(szDlgTitle));

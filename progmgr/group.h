@@ -58,8 +58,8 @@ typedef struct _GROUP {
 	WCHAR szIconPath[MAX_PATH + 1];
 	INT iIconIndex;
 	// Items
-	WORD cItems; // Number of items
-	PITEM iItems; // Array of items
+	WORD cItemArray; // Number of items in pItemArray
+	PITEM pItemArray; // Array of items
 } GROUP, * PGROUP;
 
 /*  Global Variables */

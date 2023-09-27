@@ -127,8 +127,9 @@ DWORD SaveGroupToRegistry(_In_ PGROUP pg)
 		return RCE_FAILURE;
 
 	// Save group
+	// TODO: save items properly
 	if (!RegSetValueEx(hKeyProgramGroups, pg->szName, 0, REG_BINARY,
-		(const BYTE*)pg, (sizeof(*pg) + sizeof(ITEM) * pg->cItems)) == ERROR_SUCCESS)
+		(const BYTE*)pg, (sizeof(*pg) + sizeof(ITEM) * pg->cItemArray)) == ERROR_SUCCESS)
 		dwConfigStatus = dwConfigStatus && RCE_GROUPS;
 
 	return dwConfigStatus;

@@ -91,7 +91,7 @@ HWND CreateGroupWindow(GROUP grp)
 	HICON hIconTemp = NULL;
 	HWND hWndGroup = NULL;
 	HWND hWndListView = NULL;
-	HANDLE hGroupHeap = NULL;
+	PGROUP pGroup = NULL;
 
 	// TODO: allocate memory for the group in the array
 	// of group pointers in PGARRAY, then pass this to
@@ -99,7 +99,7 @@ HWND CreateGroupWindow(GROUP grp)
 	// Unless... this just works a different way and I don't have to
 	// keep track of all these stupid little pointers... since I can
 	// just associate this with the appropriate window.
-	hGroupHeap = HeapCreate(HEAP_GENERATE_EXCEPTIONS, sizeof(grp), 0);
+	pGroup = (PGROUP)malloc(sizeof(grp) + sizeof(ITEM) * grp.cItemArray);
 
 	// Get group minimized/maximized flags
 
@@ -123,8 +123,8 @@ HWND CreateGroupWindow(GROUP grp)
 	if ((hWndGroup = (HWND)SendMessage(hWndMDIClient, WM_MDICREATE, 0, (LPARAM)(LPTSTR)&mcs)) == NULL)
 		return NULL;
 
-	// Associate the group structure heap handle to the group window
-	SetWindowLongPtr(hWndGroup, GWLP_USERDATA, hGroupHeap);
+	// Associate the group structure pointer to the group window
+	SetWindowLongPtr(hWndGroup, GWLP_USERDATA, pGroup);
 
 	// Load the group icon
 	if (ExtractIconEx(grp.szIconPath, grp.iIconIndex, &hIconLarge, &hIconSmall, 1))
@@ -194,8 +194,8 @@ GROUP SaveGroup(PGROUP pg)
 		.szName = L"",
 		.dwFlags = 0,
 		.ftLastWrite = 0,
-		.cItems = 0,
-		.iItems = NULL
+		.cItemArray = 0,
+		.pItemArray = NULL
 	};
 	HWND hWndGrp = NULL;
 	WCHAR szGroupName[MAX_TITLE_LENGTH];
@@ -218,7 +218,7 @@ GROUP SaveGroup(PGROUP pg)
 	GetSystemTimeAsFileTime(&grp.ftLastWrite);
 
 	// Save items...
-	grp.cItems = 0;
+	grp.cItemArray = 0;
 	// TODO: iterate through listview to save items
 
 	return grp;
