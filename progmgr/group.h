@@ -13,10 +13,10 @@
 /* Definitions */
 #define MAX_GROUPS 512
 #define MAX_ITEMS 512
-#define MAX_TITLE_LENGTH MAX_PATH
+#define MAX_TITLE_LENGTH 255 // Same as the registry key name max length
 // Group Format Definitions
 #define GRP_SIGNATURE 0x47324D50L // PM2G
-#define GRP_VERSION 1 // Increment for breaking changes
+#define GRP_VERSION 2 // Increment for breaking changes, format version
 // Group Flag Values (DWORD)
 #define GRP_FLAG_COMMON 0x00000001
 #define GRP_FLAG_READONLY 0x00000002

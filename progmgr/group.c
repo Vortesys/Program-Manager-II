@@ -99,7 +99,7 @@ HWND CreateGroupWindow(GROUP grp)
 	// Unless... this just works a different way and I don't have to
 	// keep track of all these stupid little pointers... since I can
 	// just associate this with the appropriate window.
-	pGroup = (PGROUP)malloc(sizeof(grp) + sizeof(ITEM) * grp.cItemArray);
+	pGroup = (PGROUP)malloc(sizeof(grp) + sizeof(ITEM) * (grp.cItemArray + 1));
 
 	// Get group minimized/maximized flags
 
@@ -124,7 +124,7 @@ HWND CreateGroupWindow(GROUP grp)
 		return NULL;
 
 	// Associate the group structure pointer to the group window
-	SetWindowLongPtr(hWndGroup, GWLP_USERDATA, pGroup);
+	SetWindowLongPtr(hWndGroup, GWLP_USERDATA, (LONG_PTR)pGroup);
 
 	// Load the group icon
 	if (ExtractIconEx(grp.szIconPath, grp.iIconIndex, &hIconLarge, &hIconSmall, 1))
@@ -164,11 +164,6 @@ BOOL RemoveGroupWindow(HWND hWndGroup)
 	// should group deletion be "abstracted" here or should i handle windows
 	// and groups separately?
 
-	if ((hGroupHeap = GetWindowLongPtr(hWndGroup, GWLP_USERDATA)) != NULL)
-	{
-		if (HeapDestroy(hGroupHeap))
-			return TRUE;
-	}
 	return FALSE;
 }
 
