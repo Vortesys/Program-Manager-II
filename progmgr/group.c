@@ -118,7 +118,9 @@ HWND CreateGroupWindow(GROUP grp)
 		mcs.cy = grp.rcGroup.bottom - grp.rcGroup.top;
 	}
 	mcs.style = WS_VISIBLE;
-	mcs.lParam = (LPARAM)&grp;
+	// TODO: should I pass the pointer to the group through here
+	// or is it better and easier to just do it with GWLP_USERDATA?
+	mcs.lParam = (LPARAM)NULL;
 
 	if ((hWndGroup = (HWND)SendMessage(hWndMDIClient, WM_MDICREATE, 0, (LPARAM)(LPTSTR)&mcs)) == NULL)
 		return NULL;
@@ -232,7 +234,14 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 
 	case WM_CREATE:
 	{
-		break;
+		CREATESTRUCT* pCreateStruct;
+		MDICREATESTRUCT* pMDICreateStruct;
+
+		// code borrowed from winprog
+		pCreateStruct = (CREATESTRUCT*)lParam;
+		pMDICreateStruct = (MDICREATESTRUCT*)pCreateStruct->lpCreateParams;
+
+		return TRUE;
 	}
 
 	case WM_CLOSE:
@@ -241,5 +250,6 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 	default:
 		return DefMDIChildProc(hWnd, message, wParam, lParam);
 	}
-	return 0;
+
+	return TRUE;
 }
