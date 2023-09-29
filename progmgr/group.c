@@ -235,6 +235,9 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 		break;
 	}
 
+	case WM_CLOSE:
+		return ShowWindow(hWnd, SW_MINIMIZE);
+
 	default:
 		return DefMDIChildProc(hWnd, message, wParam, lParam);
 	}
