@@ -321,12 +321,11 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 			}
 			else
 			{
-				// TODO: fix this lol
-				PathStripPath(szFileBuffer);
-				PathCchRemoveExtension(szFileBuffer, ARRAYSIZE(szFileBuffer));
+				PathStripPath(szBuffer);
+				PathCchRemoveExtension(szBuffer, ARRAYSIZE(szBuffer));
 			}
 
-			SetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)szFileBuffer);
+			SetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)szBuffer);
 
 			break;
 		}
