@@ -266,6 +266,8 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 		case IDD_BROWSE:
 		{
 			OPENFILENAME ofn;
+			WCHAR szAppName = TEXT("\0");
+			DWORD dwAppBuffer = 0;
 
 			GetDlgItemText(hWndDlg, IDD_PATH, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer));
 
@@ -287,6 +289,15 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 				SetDlgItemText(hWndDlg, IDD_PATH, (LPWSTR)&szBuffer);
 			}
 
+			// let's retrieve the application's friendly name too
+			dwAppBuffer = GetFileVersionInfoSize(&szBuffer, NULL);
+			if (dwAppBuffer != 0) {
+				GetFileVersionInfo(&szBuffer, NULL, dwAppBuffer, szAppName);
+				
+				MAX_TITLE_LENGTH;
+				SetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)&szBuffer);
+			}
+
 			break;
 		}
 
@@ -300,7 +311,7 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 			ZeroMemory(&ofn, sizeof(ofn));
 			ofn.lStructSize = sizeof(ofn);
 			ofn.hwndOwner = hWndDlg;
-			ofn.lpstrFilter = TEXT("Programs\0*.exe;*.bat;*.com;*.cmd;*.lnk\0All Files (*.*)\0*.*\0");
+			ofn.lpstrFilter = TEXT("Folders\0");
 			ofn.nFilterIndex = 1;
 			ofn.lpstrFile = (LPWSTR)&szBuffer;
 			// ofn.lpstrFile[0] = '\0';
