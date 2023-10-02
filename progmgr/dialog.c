@@ -325,10 +325,14 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 			SetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)szNameBuffer);
 
 			// let's get the icon now
-			if (ExtractIcon(hAppInstance, &szFileBuffer, -1) != 0)
+			if (ExtractIcon(hAppInstance, (LPWSTR)szFileBuffer, -1) != 0)
 			{
-				// file contains at least one icon
-				hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)&itm.szIconPath, itm.iIconIndex);
+				// file contains at least one icon, set the itm struct values
+				StringCchCopy(itm.szIconPath, ARRAYSIZE(itm.szIconPath), szFileBuffer);
+				itm.iIconIndex = 1;
+				
+				// update icon
+				hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)itm.szIconPath, itm.iIconIndex);
 				SendDlgItemMessage(hWndDlg, IDD_STAT_ICON, STM_SETICON, (WPARAM)hIconDlg, 0);
 			}
 
@@ -368,7 +372,7 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 			if (PickIconDlg(hWndDlg, (LPWSTR)&itm.szIconPath, ARRAYSIZE(itm.szIconPath), &itm.iIconIndex) == TRUE)
 			{
 				// Since we've got the new icon...
-				hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)&itm.szIconPath, itm.iIconIndex);
+				hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)itm.szIconPath, itm.iIconIndex);
 				SendDlgItemMessage(hWndDlg, IDD_STAT_ICON, STM_SETICON, (WPARAM)hIconDlg, 0);
 			}
 
