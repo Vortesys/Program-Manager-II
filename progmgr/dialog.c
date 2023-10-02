@@ -17,6 +17,7 @@
 #include <Windows.h>
 #include <pathcch.h>
 #include <Shlobj.h>
+#include <shlwapi.h>
 #include <strsafe.h>
 
 /* Variables */
@@ -266,10 +267,12 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 		case IDD_BROWSE:
 		{
 			OPENFILENAME ofn;
-			WCHAR szAppName = TEXT("\0");
-			DWORD dwAppBuffer = 0;
+			LPVOID lpData;
+			DWORD dwVerBuffer = 0;
+			UINT uiTitleLen = MAX_TITLE_LENGTH;
+			WCHAR szFileBuffer[MAX_PATH] = { L"\0" };
 
-			GetDlgItemText(hWndDlg, IDD_PATH, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer));
+			GetDlgItemText(hWndDlg, IDD_PATH, (LPWSTR)&szFileBuffer, ARRAYSIZE(szFileBuffer));
 
 			// Initialize the structure
 			ZeroMemory(&ofn, sizeof(ofn));
@@ -277,26 +280,53 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 			ofn.hwndOwner = hWndDlg;
 			ofn.lpstrFilter = TEXT("Programs\0*.exe;*.bat;*.com;*.cmd;*.lnk\0All Files (*.*)\0*.*\0");
 			ofn.nFilterIndex = 1;
-			ofn.lpstrFile = (LPWSTR)&szBuffer;
+			ofn.lpstrFile = (LPWSTR)&szFileBuffer;
 			// ofn.lpstrFile[0] = '\0';
-			ofn.nMaxFile = ARRAYSIZE(szBuffer);
+			ofn.nMaxFile = ARRAYSIZE(szFileBuffer);
 			ofn.lpstrFileTitle = NULL;
 			ofn.nMaxFileTitle = 0;
 			ofn.lpstrInitialDir = NULL;
 			ofn.Flags = OFN_FILEMUSTEXIST;
 
-			if (GetOpenFileName(&ofn) == TRUE) {
-				SetDlgItemText(hWndDlg, IDD_PATH, (LPWSTR)&szBuffer);
-			}
+			if (GetOpenFileName(&ofn) == TRUE)
+				SetDlgItemText(hWndDlg, IDD_PATH, (LPWSTR)&szFileBuffer);
+			else
+				break;
+
+			// copy the filename to a new buffer for later
+			StringCchCopy(szBuffer, ARRAYSIZE(szBuffer), szFileBuffer);
 
 			// let's retrieve the application's friendly name too
-			dwAppBuffer = GetFileVersionInfoSize(&szBuffer, NULL);
-			if (dwAppBuffer != 0) {
-				GetFileVersionInfo(&szBuffer, NULL, dwAppBuffer, szAppName);
+			dwVerBuffer = GetFileVersionInfoSize((LPCWSTR)szBuffer, NULL);
+			if (dwVerBuffer != 0) {
+				lpData = malloc(dwVerBuffer);
+
+				if (lpData != NULL)
+					GetFileVersionInfo((LPCWSTR)szBuffer, (DWORD)0, dwVerBuffer, lpData);
+				else
+					break;
 				
-				MAX_TITLE_LENGTH;
-				SetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)&szBuffer);
+				// TODO: this is hardcoded to english. make it dynamic later
+				// TODO: this is so busted lol, really make it dynamic so it works
+				if (VerQueryValue(lpData,
+					TEXT("\\StringFileInfo\\040904b0\\FileDescription"),
+					(LPVOID)szBuffer, &uiTitleLen) == 0)
+				{
+					// copy the filename back to the og buffer
+					StringCchCopy(szFileBuffer, ARRAYSIZE(szFileBuffer), szBuffer);
+				}
+
+				if (lpData)
+					free(lpData);
 			}
+			else
+			{
+				// TODO: fix this lol
+				PathStripPath(szFileBuffer);
+				PathCchRemoveExtension(szFileBuffer, ARRAYSIZE(szFileBuffer));
+			}
+
+			SetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)szFileBuffer);
 
 			break;
 		}
