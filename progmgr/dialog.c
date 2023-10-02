@@ -270,6 +270,7 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 			LPVOID lpData;
 			DWORD dwVerBuffer = 0;
 			UINT uiTitleLen = MAX_TITLE_LENGTH;
+			WCHAR szNameBuffer[MAX_TITLE_LENGTH] = { L"\0" };
 			WCHAR szFileBuffer[MAX_PATH] = { L"\0" };
 
 			GetDlgItemText(hWndDlg, IDD_PATH, (LPWSTR)&szFileBuffer, ARRAYSIZE(szFileBuffer));
@@ -294,38 +295,43 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 				break;
 
 			// copy the filename to a new buffer for later
-			StringCchCopy(szBuffer, ARRAYSIZE(szBuffer), szFileBuffer);
+			StringCchCopy(szNameBuffer, ARRAYSIZE(szNameBuffer), szFileBuffer);
 
 			// let's retrieve the application's friendly name too
-			dwVerBuffer = GetFileVersionInfoSize((LPCWSTR)szBuffer, NULL);
+			dwVerBuffer = GetFileVersionInfoSize((LPCWSTR)szNameBuffer, NULL);
 			if (dwVerBuffer != 0) {
 				lpData = malloc(dwVerBuffer);
 
 				if (lpData != NULL)
-					GetFileVersionInfo((LPCWSTR)szBuffer, (DWORD)0, dwVerBuffer, lpData);
+					GetFileVersionInfo((LPCWSTR)szNameBuffer, (DWORD)0, dwVerBuffer, lpData);
 				else
 					break;
 				
 				// TODO: this is hardcoded to english. make it dynamic later
 				// TODO: this is so busted lol, really make it dynamic so it works
-				if (VerQueryValue(lpData,
+				VerQueryValue(lpData,
 					TEXT("\\StringFileInfo\\040904b0\\FileDescription"),
-					(LPVOID)szBuffer, &uiTitleLen) == 0)
-				{
-					// copy the filename back to the og buffer
-					StringCchCopy(szFileBuffer, ARRAYSIZE(szFileBuffer), szBuffer);
-				}
+					(LPVOID)szNameBuffer, &uiTitleLen); // == 0
 
 				if (lpData)
 					free(lpData);
 			}
 			else
 			{
-				PathStripPath(szBuffer);
-				PathCchRemoveExtension(szBuffer, ARRAYSIZE(szBuffer));
+				PathStripPath(szNameBuffer);
+				PathCchRemoveExtension(szNameBuffer, ARRAYSIZE(szNameBuffer));
 			}
 
-			SetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)szBuffer);
+			SetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)szNameBuffer);
+
+			// let's get the icon now
+			if (ExtractIcon(hAppInstance, &szFileBuffer, -1) != 0)
+			{
+				// file contains at least one icon
+				hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)&itm.szIconPath, itm.iIconIndex);
+				SendDlgItemMessage(hWndDlg, IDD_STAT_ICON, STM_SETICON, (WPARAM)hIconDlg, 0);
+			}
+
 
 			break;
 		}
