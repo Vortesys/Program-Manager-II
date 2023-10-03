@@ -264,6 +264,7 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 
 		switch (GET_WM_COMMAND_ID(wParam, lParam))
 		{
+
 		case IDD_BROWSE:
 		{
 			OPENFILENAME ofn;
@@ -335,7 +336,6 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 				hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)itm.szIconPath, itm.iIconIndex);
 				SendDlgItemMessage(hWndDlg, IDD_STAT_ICON, STM_SETICON, (WPARAM)hIconDlg, 0);
 			}
-
 
 			break;
 		}
@@ -440,6 +440,20 @@ BOOL CALLBACK ShutdownDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 		break;
 
 	case WM_COMMAND:
+		switch (GET_WM_COMMAND_ID(wParam, lParam))
+		{
+
+		case IDD_OK:
+		{
+		}
+
+		case IDD_CANCEL:
+			EndDialog(hWndDlg, FALSE);
+			break;
+
+		default:
+			break;
+		}
 		break;
 
 	default:
