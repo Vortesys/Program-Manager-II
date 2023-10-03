@@ -329,7 +329,7 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 			{
 				// file contains at least one icon, set the itm struct values
 				StringCchCopy(itm.szIconPath, ARRAYSIZE(itm.szIconPath), szFileBuffer);
-				itm.iIconIndex = 1;
+				itm.iIconIndex = 0;
 				
 				// update icon
 				hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)itm.szIconPath, itm.iIconIndex);
