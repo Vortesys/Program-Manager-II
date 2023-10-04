@@ -52,7 +52,7 @@ extern BOOL bPermPower; // Has power option permissions
 /* Function Prototypes */
 BOOL UpdatePermissions(VOID);
 // DESKTOP.C
-BOOL CreateDesktopWindow(VOID);// SYSINT.C
+BOOL CreateDesktopWindow(VOID);
 // SYSINT.C
 BOOL RunFileDlg(HWND hWndOwner, HICON hIcon, LPWSTR lpszDir, LPWSTR lpszTitle, LPWSTR lpszDesc, DWORD dwFlags);
 BOOL ExitWindowsDialog(HWND hWndOwner);
