@@ -83,7 +83,7 @@ BOOL InitializeGroups(VOID)
 		Handle to the new group window
 		or NULL on failure
 \* * * */
-HWND CreateGroup(_In_ GROUP grp)
+HWND CreateGroup(_In_ PGROUP pgrp)
 {
 	MDICREATESTRUCT mcs = { NULL };
 	HICON hIconLarge = NULL;
@@ -93,30 +93,27 @@ HWND CreateGroup(_In_ GROUP grp)
 	HWND hWndListView = NULL;
 	PGROUP pGroup = NULL;
 
-	// TODO: allocate memory for the group in the array
-	// of group pointers in PGARRAY, then pass this to
-	// the group window in that little pointer thing :D
-	// Unless... this just works a different way and I don't have to
-	// keep track of all these stupid little pointers... since I can
-	// just associate this with the appropriate window.
-	// calculate necessary group memory and create it
-	pGroup = (PGROUP)malloc(CalculateGroupMemory(&grp, 0));
+	if (pgrp == NULL)
+		return NULL;
+
+	// allocate memory for a new group
+	pGroup = (PGROUP)malloc(CalculateGroupMemory(pgrp, 0));
 
 	// Get group minimized/maximized flags
 
 	mcs.szClass = szGrpClass;
-	mcs.szTitle = grp.szName;
+	mcs.szTitle = pgrp->szName;
 	mcs.hOwner = hAppInstance;
-	if ((grp.rcGroup.left == CW_USEDEFAULT) & (grp.rcGroup.right == CW_USEDEFAULT))
+	if ((pgrp->rcGroup.left == CW_USEDEFAULT) & (pgrp->rcGroup.right == CW_USEDEFAULT))
 	{
 		mcs.x = mcs.y = mcs.cx = mcs.cy = CW_USEDEFAULT;
 	}
 	else
 	{
-		mcs.x = grp.rcGroup.left;
-		mcs.y = grp.rcGroup.top;
-		mcs.cx = grp.rcGroup.right - grp.rcGroup.left;
-		mcs.cy = grp.rcGroup.bottom - grp.rcGroup.top;
+		mcs.x = pgrp->rcGroup.left;
+		mcs.y = pgrp->rcGroup.top;
+		mcs.cx = pgrp->rcGroup.right - pgrp->rcGroup.left;
+		mcs.cy = pgrp->rcGroup.bottom - pgrp->rcGroup.top;
 	}
 	mcs.style = WS_VISIBLE;
 	// TODO: should I pass the pointer to the group through here
@@ -130,7 +127,7 @@ HWND CreateGroup(_In_ GROUP grp)
 	SetWindowLongPtr(hWndGroup, GWLP_USERDATA, (LONG_PTR)pGroup);
 
 	// Load the group icon
-	if (ExtractIconEx(grp.szIconPath, grp.iIconIndex, &hIconLarge, &hIconSmall, 1))
+	if (ExtractIconEx(pgrp->szIconPath, pgrp->iIconIndex, &hIconLarge, &hIconSmall, 1))
 	{
 		if (hIconTemp = (HICON)SendMessage(hWndGroup, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall))
 			DestroyIcon(hIconTemp);
@@ -163,10 +160,6 @@ BOOL RemoveGroup(_In_ HWND hWndGroup, _In_ BOOL bEliminate)
 {
 	PGROUP pGroup = NULL;
 	BOOL bReturn = TRUE;
-
-	// TODO: do I handle group deletion from registry in here as well?
-	// should group deletion be "abstracted" here or should i handle windows
-	// and groups separately?
 
 	// TODO: do i have to delete the titlebar icons?
 
@@ -229,6 +222,8 @@ GROUP SaveGroup(_In_ PGROUP pg)
 
 	grp.dwFlags = GRP_FLAG_MAXIMIZED;// GetGroupFlags(pgw);
 
+
+	// Set FILETIME
 	GetSystemTimeAsFileTime(&grp.ftLastWrite);
 
 	// Save items...

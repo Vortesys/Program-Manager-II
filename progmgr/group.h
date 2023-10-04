@@ -70,7 +70,7 @@ extern HWND			hWndMDIClient;
 /* Function Prototypes */
 BOOL InitializeGroups(VOID);
 // Group Management
-HWND CreateGroup(_In_ GROUP grp);
+HWND CreateGroup(_In_ PGROUP pgrp);
 BOOL RemoveGroup(_In_ HWND hWndGroup, _In_ BOOL bEliminate);
 // Import/export functions
 GROUP SaveGroup(_In_ PGROUP pg);
