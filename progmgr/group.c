@@ -71,7 +71,7 @@ BOOL InitializeGroups(VOID)
 	if (!RegisterClassEx(&wce))
 		return FALSE;
 
-	// CreateGroupWindow(NULL);
+	// CreateGroup(NULL);
 
 	return TRUE;
 }
