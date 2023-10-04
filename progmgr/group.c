@@ -92,7 +92,6 @@ HWND CreateGroup(_In_ GROUP grp)
 	HWND hWndGroup = NULL;
 	HWND hWndListView = NULL;
 	PGROUP pGroup = NULL;
-	UINT cbGroup = 0;
 
 	// TODO: allocate memory for the group in the array
 	// of group pointers in PGARRAY, then pass this to
@@ -101,8 +100,7 @@ HWND CreateGroup(_In_ GROUP grp)
 	// keep track of all these stupid little pointers... since I can
 	// just associate this with the appropriate window.
 	// calculate necessary group memory and create it
-	cbGroup = CalculateGroupMemory(&grp, 0);
-	pGroup = (PGROUP)malloc(cbGroup);
+	pGroup = (PGROUP)malloc(CalculateGroupMemory(&grp, 0));
 
 	// Get group minimized/maximized flags
 
