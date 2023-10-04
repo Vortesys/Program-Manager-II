@@ -92,6 +92,7 @@ HWND CreateGroup(_In_ GROUP grp)
 	HWND hWndGroup = NULL;
 	HWND hWndListView = NULL;
 	PGROUP pGroup = NULL;
+	UINT cbGroup = 0;
 
 	// TODO: allocate memory for the group in the array
 	// of group pointers in PGARRAY, then pass this to
@@ -99,7 +100,9 @@ HWND CreateGroup(_In_ GROUP grp)
 	// Unless... this just works a different way and I don't have to
 	// keep track of all these stupid little pointers... since I can
 	// just associate this with the appropriate window.
-	pGroup = (PGROUP)malloc(CalculateGroupMemory(&grp, 0));
+	// calculate necessary group memory and create it
+	cbGroup = CalculateGroupMemory(&grp, 0);
+	pGroup = (PGROUP)malloc(cbGroup);
 
 	// Get group minimized/maximized flags
 
@@ -253,11 +256,14 @@ UINT CalculateGroupMemory(_In_ PGROUP pGroup, _In_ UINT cItems)
 	// first add the size of a group strucutre
 	cbGroupSize += sizeof(GROUP);
 
-	// calculate the total amount of items wanted
-	cItemBlock = pGroup->cItemArray + cItems;
+	// calculate the total amount of items wanted, set
+	// to 16 if there's less than 16 items so we always
+	// have some memory ready
+ 	cItemBlock = pGroup->cItemArray + cItems;
+	cItemBlock = cItemBlock > 16 ? cItemBlock : 16;
 
 	// round the amount of items to the nearest but highest 16
-	cItemBlock -= (cItems % 16) + 16;
+	cItemBlock = (cItemBlock / 16) * 16;
 
 	// finally calculate the total group size
 	cbGroupSize += cItemBlock * sizeof(ITEM);
