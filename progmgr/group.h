@@ -70,8 +70,11 @@ extern HWND			hWndMDIClient;
 /* Function Prototypes */
 BOOL InitializeGroups(VOID);
 // Group Management
-HWND CreateGroup(_In_ PGROUP pgrp);
+HWND CreateGroup(_In_ PGROUP pg);
 BOOL RemoveGroup(_In_ HWND hWndGroup, _In_ BOOL bEliminate);
+// Item Management
+PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi);
+BOOL RemoveItem(_In_ PITEM pi);
 // Import/export functions
 GROUP SaveGroup(_In_ PGROUP pg);
 // Helper functions

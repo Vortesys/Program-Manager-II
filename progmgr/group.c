@@ -83,7 +83,7 @@ BOOL InitializeGroups(VOID)
 		Handle to the new group window
 		or NULL on failure
 \* * * */
-HWND CreateGroup(_In_ PGROUP pgrp)
+HWND CreateGroup(_In_ PGROUP pg)
 {
 	MDICREATESTRUCT mcs = { NULL };
 	HICON hIconLarge = NULL;
@@ -93,27 +93,27 @@ HWND CreateGroup(_In_ PGROUP pgrp)
 	HWND hWndListView = NULL;
 	PGROUP pGroup = NULL;
 
-	if (pgrp == NULL)
+	if (pg == NULL)
 		return NULL;
 
 	// allocate memory for a new group
-	pGroup = (PGROUP)malloc(CalculateGroupMemory(pgrp, 0));
+	pGroup = (PGROUP)malloc(CalculateGroupMemory(pg, 0));
 
 	// TODO: get group minimized/maximized flags
 
 	mcs.szClass = szGrpClass;
-	mcs.szTitle = pgrp->szName;
+	mcs.szTitle = pg->szName;
 	mcs.hOwner = hAppInstance;
-	if ((pgrp->rcGroup.left == CW_USEDEFAULT) & (pgrp->rcGroup.right == CW_USEDEFAULT))
+	if ((pg->rcGroup.left == CW_USEDEFAULT) & (pg->rcGroup.right == CW_USEDEFAULT))
 	{
 		mcs.x = mcs.y = mcs.cx = mcs.cy = CW_USEDEFAULT;
 	}
 	else
 	{
-		mcs.x = pgrp->rcGroup.left;
-		mcs.y = pgrp->rcGroup.top;
-		mcs.cx = pgrp->rcGroup.right - pgrp->rcGroup.left;
-		mcs.cy = pgrp->rcGroup.bottom - pgrp->rcGroup.top;
+		mcs.x = pg->rcGroup.left;
+		mcs.y = pg->rcGroup.top;
+		mcs.cx = pg->rcGroup.right - pg->rcGroup.left;
+		mcs.cy = pg->rcGroup.bottom - pg->rcGroup.top;
 	}
 	mcs.style = WS_VISIBLE;
 	// TODO: should I pass the pointer to the group through here
@@ -127,7 +127,7 @@ HWND CreateGroup(_In_ PGROUP pgrp)
 	SetWindowLongPtr(hWndGroup, GWLP_USERDATA, (LONG_PTR)pGroup);
 
 	// Load the group icon
-	if (ExtractIconEx(pgrp->szIconPath, pgrp->iIconIndex, &hIconLarge, &hIconSmall, 1))
+	if (ExtractIconEx(pg->szIconPath, pg->iIconIndex, &hIconLarge, &hIconSmall, 1))
 	{
 		if (hIconTemp = (HICON)SendMessage(hWndGroup, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall))
 			DestroyIcon(hIconTemp);
@@ -179,6 +179,56 @@ BOOL RemoveGroup(_In_ HWND hWndGroup, _In_ BOOL bEliminate)
 	return bReturn;
 }
 
+/* * * *\
+	CreateItem -
+		Creates a new program item
+	RETURNS -
+		Pointer to the item if successful
+		NULL otherwise
+\* * * */
+PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
+{
+	PGROUP pGroup = NULL;
+	PITEM pItem = NULL;
+
+	// return NULL if we can't get to the group or item
+	if (hWndGroup == NULL)
+		return NULL;
+	if ((pGroup = (PGROUP)GetWindowLongPtr(hWndGroup, GWLP_USERDATA)) == NULL)
+		return NULL;
+	if (pi == NULL)
+		return NULL;
+
+	// compare group's existing memory to needed memory
+	// if needed, reallocate the group's memory
+	if (_msize(pGroup) != CalculateGroupMemory(pGroup, 1))
+		SetWindowLongPtr(hWndGroup, GWLP_USERDATA, (LONG_PTR)realloc(pGroup, CalculateGroupMemory(pGroup, 1)));
+	
+	// add the item
+	pItem = pGroup->pItemArray + pGroup->cItemArray;
+	*pItem = *pi;
+
+	// increment the item counter
+	pGroup->cItemArray++;
+
+	return pItem;
+}
+
+/* * * *\
+	RemoveItem -
+		Removes a program item
+	RETURNS -
+		TRUE if item was successfully removed
+		FALSE otherwise
+\* * * */
+BOOL RemoveItem(_In_ PITEM pi)
+{
+	// return NULL if we can't get to the group
+	if (pi == NULL)
+		return FALSE;
+
+	return FALSE;
+}
 
 /* * * *\
 	SaveGroup -
@@ -221,7 +271,6 @@ GROUP SaveGroup(_In_ PGROUP pg)
 	}
 
 	grp.dwFlags = GRP_FLAG_MAXIMIZED;// GetGroupFlags(pgw);
-
 
 	// Set FILETIME
 	GetSystemTimeAsFileTime(&grp.ftLastWrite);
