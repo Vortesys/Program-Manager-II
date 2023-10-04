@@ -173,7 +173,7 @@ BOOL RemoveGroup(_In_ HWND hWndGroup, _In_ BOOL bEliminate)
 	{
 		// TODO: remove group from registry
 		// if successful blah blah blah
-		bEliminate == TRUE;
+		bEliminate = TRUE;
 	}
 
 	// get the group struct pointer
