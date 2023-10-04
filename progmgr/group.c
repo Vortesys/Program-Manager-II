@@ -32,7 +32,7 @@ HWND hWndMDIClient = NULL;
 		TRUE if groups are successfully created.
 		FALSE if otherwise.
 \* * * */
-BOOL InitializeGroups()
+BOOL InitializeGroups(VOID)
 {
 	CLIENTCREATESTRUCT ccs = { 0 };
 	WNDCLASSEX wce = { 0 };
@@ -77,13 +77,13 @@ BOOL InitializeGroups()
 }
 
 /* * * *\
-	CreateGroupWindow -
+	CreateGroup -
 		Create an MDI window from a group structure
 	RETURNS -
 		Handle to the new group window
 		or NULL on failure
 \* * * */
-HWND CreateGroupWindow(GROUP grp)
+HWND CreateGroup(_In_ GROUP grp)
 {
 	MDICREATESTRUCT mcs = { NULL };
 	HICON hIconLarge = NULL;
@@ -99,7 +99,7 @@ HWND CreateGroupWindow(GROUP grp)
 	// Unless... this just works a different way and I don't have to
 	// keep track of all these stupid little pointers... since I can
 	// just associate this with the appropriate window.
-	pGroup = (PGROUP)malloc(sizeof(grp) + sizeof(ITEM) * (grp.cItemArray + 1));
+	pGroup = (PGROUP)malloc(CalculateGroupMemory(&grp, 0));
 
 	// Get group minimized/maximized flags
 
@@ -152,21 +152,37 @@ HWND CreateGroupWindow(GROUP grp)
 }
 
 /* * * *\
-	RemoveGroupWindow -
+	RemoveGroup -
 		Removes and cleans up a group window
 	RETURNS -
 		TRUE if cleanup is successful,
 		FALSE otherwise.
 \* * * */
-BOOL RemoveGroupWindow(HWND hWndGroup)
+BOOL RemoveGroup(_In_ HWND hWndGroup, _In_ BOOL bEliminate)
 {
-	HANDLE hGroupHeap = NULL;
+	PGROUP pGroup = NULL;
+	BOOL bReturn = TRUE;
 
 	// TODO: do I handle group deletion from registry in here as well?
 	// should group deletion be "abstracted" here or should i handle windows
 	// and groups separately?
 
-	return FALSE;
+	// TODO: do i have to delete the titlebar icons?
+
+	if (bEliminate == TRUE)
+	{
+		// TODO: remove group from registry
+		// if successful blah blah blah
+		bEliminate == TRUE;
+	}
+
+	// get the group struct pointer
+	if ((pGroup = (PGROUP)GetWindowLongPtr(hWndGroup, GWLP_USERDATA)) == NULL)
+		return FALSE;
+
+	free(pGroup);
+
+	return bReturn;
 }
 
 
@@ -182,7 +198,7 @@ BOOL RemoveGroupWindow(HWND hWndGroup)
 		Formatted GROUP structure.
 		Upon failure, wChecksum will be 0.
 \* * * */
-GROUP SaveGroup(PGROUP pg)
+GROUP SaveGroup(_In_ PGROUP pg)
 {
 	GROUP grp = {
 		.dwSignature = GRP_SIGNATURE,
@@ -219,6 +235,34 @@ GROUP SaveGroup(PGROUP pg)
 	// TODO: iterate through listview to save items
 
 	return grp;
+}
+
+/* * * *\
+	CalculateGroupMemory -
+		Calculates the memory needed by a group.
+		Takes a group structure pointer and the
+		number of desired items as input.
+	RETURNS -
+		Size in bytes that a group should take up.
+\* * * */
+UINT CalculateGroupMemory(_In_ PGROUP pGroup, _In_ UINT cItems)
+{
+	UINT cbGroupSize = 0;
+	UINT cItemBlock = 0;
+
+	// first add the size of a group strucutre
+	cbGroupSize += sizeof(GROUP);
+
+	// calculate the total amount of items wanted
+	cItemBlock = pGroup->cItemArray + cItems;
+
+	// round the amount of items to the nearest but highest 16
+	cItemBlock -= (cItems % 16) + 16;
+
+	// finally calculate the total group size
+	cbGroupSize += cItemBlock * sizeof(ITEM);
+
+	return cbGroupSize;
 }
 
 /* * * *\

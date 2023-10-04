@@ -68,10 +68,13 @@ extern HWND			hWndMDIClient;
 /*  Local Variables */
 
 /* Function Prototypes */
-BOOL InitializeGroups();
+BOOL InitializeGroups(VOID);
+// Group Management
+HWND CreateGroup(_In_ GROUP grp);
+BOOL RemoveGroup(_In_ HWND hWndGroup, _In_ BOOL bEliminate);
+// Import/export functions
+GROUP SaveGroup(_In_ PGROUP pg);
+// Helper functions
+UINT CalculateGroupMemory(_In_ PGROUP pGroup, _In_ UINT cItems);
 // Group Window
 LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-HWND CreateGroupWindow(GROUP grp);
-BOOL RemoveGroupWindow(HWND hWndGroup);
-// Import/export functions
-GROUP SaveGroup(PGROUP pg);
