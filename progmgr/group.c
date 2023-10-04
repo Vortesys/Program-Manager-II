@@ -99,7 +99,7 @@ HWND CreateGroup(_In_ PGROUP pgrp)
 	// allocate memory for a new group
 	pGroup = (PGROUP)malloc(CalculateGroupMemory(pgrp, 0));
 
-	// Get group minimized/maximized flags
+	// TODO: get group minimized/maximized flags
 
 	mcs.szClass = szGrpClass;
 	mcs.szTitle = pgrp->szName;
@@ -253,10 +253,9 @@ UINT CalculateGroupMemory(_In_ PGROUP pGroup, _In_ UINT cItems)
 	// to 16 if there's less than 16 items so we always
 	// have some memory ready
  	cItemBlock = pGroup->cItemArray + cItems;
-	cItemBlock = cItemBlock > 16 ? cItemBlock : 16;
 
 	// round the amount of items to the nearest but highest 16
-	cItemBlock = (cItemBlock / 16) * 16;
+	cItemBlock = ((cItemBlock + 16) / 16) * 16;
 
 	// finally calculate the total group size
 	cbGroupSize += cItemBlock * sizeof(ITEM);
