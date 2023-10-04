@@ -210,10 +210,8 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 
 	case WM_INITDIALOG:
 		// TODO:
-		// actually create an item and add it to the GROUP structure
-		// TODO:
 		// require a valid group to be selected or else the dialog won't
-		// let you press OK
+		// EVEN BE AVAILABLE!!! or let you press ok.
 		
 		// Reset the item structure
 		itm.dwFlags = 0;
@@ -399,7 +397,31 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 			break;
 
 		case IDD_OK:
-			SendDlgItemMessage(hWndDlg, IDD_WORKPATH, WM_CLEAR, 0, 0);
+			// Check that all the applicable fields are filled out,
+			// and if not then set the focus to the offending field
+			if (!(bOKEnabled = GetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer))))
+				SendDlgItemMessage(hWndDlg, IDD_NAME, EM_TAKEFOCUS, 0, 0);
+
+			// Enable or disable the OK button based on the information
+			EnableWindow(GetDlgItem(hWndDlg, IDD_OK), bOKEnabled);
+
+			if (bOKEnabled)
+			{
+				// Set the name of the item
+				StringCchCopy(itm.szName, ARRAYSIZE(szBuffer), szBuffer);
+
+				// Item's ready!
+				if (CreateItem((HWND)SendMessage(hWndMDIClient, WM_MDIGETACTIVE, 0, 0), &itm) != NULL)
+				{
+					EndDialog(hWndDlg, FALSE);
+					break;
+				}
+
+				// Failure!
+				EndDialog(hWndDlg, FALSE);
+				break;
+			}
+
 			break;
 
 		case IDD_CANCEL:
