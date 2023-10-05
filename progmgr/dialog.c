@@ -297,12 +297,13 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 			StringCchCopy(szNameBuffer, ARRAYSIZE(szNameBuffer), szFileBuffer);
 
 			// let's retrieve the application's friendly name too
-			dwVerBuffer = GetFileVersionInfoSize((LPCWSTR)szNameBuffer, NULL);
+			dwVerBuffer = GetFileVersionInfoSize((LPCWSTR)szFileBuffer, NULL);
 			if (dwVerBuffer != 0) {
 				lpData = malloc(dwVerBuffer);
+				// TODO: totally redo this it doesn't work
 
 				if (lpData != NULL)
-					GetFileVersionInfo((LPCWSTR)szNameBuffer, (DWORD)0, dwVerBuffer, lpData);
+					GetFileVersionInfo((LPCWSTR)szFileBuffer, (DWORD)0, dwVerBuffer, lpData);
 				else
 					break;
 				
@@ -310,7 +311,7 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 				// TODO: this is so busted lol, really make it dynamic so it works
 				VerQueryValue(lpData,
 					TEXT("\\StringFileInfo\\040904b0\\FileDescription"),
-					(LPVOID)szNameBuffer, &uiTitleLen); // == 0
+					(LPVOID)&szNameBuffer, &uiTitleLen); // == 0
 
 				if (lpData)
 					free(lpData);
