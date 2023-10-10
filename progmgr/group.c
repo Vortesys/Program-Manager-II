@@ -191,11 +191,15 @@ PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 	PGROUP pGroup = NULL;
 	PITEM pItem = NULL;
 
+	// we actually just want the group pointer lol
+	pGroup = (PGROUP)GetWindowLongPtr(hWndGroup, GWLP_USERDATA);
+
 	// return NULL if we can't get to the group or item
 	if (hWndGroup == NULL)
 		return NULL;
-	if ((pGroup = (PGROUP)GetWindowLongPtr(hWndGroup, GWLP_USERDATA)) == NULL)
+	if (pGroup == NULL)
 		return NULL;
+
 	if (pi == NULL)
 		return NULL;
 
