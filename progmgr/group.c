@@ -222,7 +222,7 @@ PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 	lvi.pszText = pItem->szName;
 	lvi.cchTextMax = ARRAYSIZE(pItem->szName);
 	// lvi.iImage = I_IMAGECALLBACK;
-	lvi.lParam = pItem;
+	lvi.lParam = (LPARAM)pItem;
 
 	// copy that bad boy into the listview
 	ListView_InsertItem(FindWindowEx(hWndGroup, NULL, TEXT("ListView"), NULL), &lvi);

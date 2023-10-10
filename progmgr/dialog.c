@@ -256,7 +256,7 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 					bOKEnabled = bOKEnabled && GetDlgItemText(hWndDlg, IDD_WORKPATH, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer));
 
 				// Check that we have selected an MDI child window as well
-				if (SendMessage(hWndMDIClient, WM_MDIGETACTIVE, 0, FALSE) == NULL)
+				if ((HWND)SendMessage(hWndMDIClient, WM_MDIGETACTIVE, 0, FALSE) == (HWND)NULL)
 					bOKEnabled = FALSE;
 
 				// Enable or disable the relevant controls based on the information
