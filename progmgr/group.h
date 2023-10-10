@@ -10,6 +10,9 @@
 /* Pragmas */
 #pragma once
 
+/* Includes */
+#include <CommCtrl.h>
+
 /* Definitions */
 #define MAX_GROUPS 512
 #define MAX_ITEMS 512

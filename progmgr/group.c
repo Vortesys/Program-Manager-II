@@ -44,7 +44,7 @@ BOOL InitializeGroups(VOID)
 
 	GetClientRect(hWndProgMgr, &rcFrame);
 
-	if (!(hWndMDIClient = CreateWindowEx(WS_EX_COMPOSITED, L"MDIClient",
+	if (!(hWndMDIClient = CreateWindowEx(WS_EX_COMPOSITED, TEXT("MDIClient"),
 		NULL, WS_CLIPCHILDREN | WS_CHILD | WS_VSCROLL | WS_HSCROLL | WS_VISIBLE,
 		rcFrame.left, rcFrame.top, rcFrame.right, rcFrame.bottom,
 		hWndProgMgr, (HMENU)1, hAppInstance, (LPWSTR)&ccs)))
@@ -90,7 +90,6 @@ HWND CreateGroup(_In_ PGROUP pg)
 	HICON hIconSmall = NULL;
 	HICON hIconTemp = NULL;
 	HWND hWndGroup = NULL;
-	HWND hWndListView = NULL;
 	PGROUP pGroup = NULL;
 
 	if (pg == NULL)
@@ -136,12 +135,12 @@ HWND CreateGroup(_In_ PGROUP pg)
 	}
 
 	// Create the group window ListView control
-	if ((hWndListView = CreateWindowEx(WS_EX_LEFT, WC_LISTVIEW, L"ListView",
+	if (CreateWindowEx(WS_EX_LEFT, WC_LISTVIEW, TEXT("ListView"),
 		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
 		| LVS_ICON | ((LVS_AUTOARRANGE & bAutoArrange) * LVS_AUTOARRANGE) | LVS_NOSORTHEADER,
 		mcs.x, mcs.y, mcs.cx, mcs.cy,
 		hWndGroup, NULL, hAppInstance,
-		NULL)) == NULL)
+		NULL) == NULL)
 		return NULL;
 
 	// TODO: make sure the groups delete their icons upon destruction!
@@ -188,6 +187,7 @@ BOOL RemoveGroup(_In_ HWND hWndGroup, _In_ BOOL bEliminate)
 \* * * */
 PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 {
+	LVITEM lvi = { 0 };
 	PGROUP pGroup = NULL;
 	PITEM pItem = NULL;
 
@@ -214,6 +214,20 @@ PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 
 	// increment the item counter
 	pGroup->cItemArray++;
+
+	// populate the listview with the relevant information
+	lvi.mask = LVIF_TEXT; // | LVIF_IMAGE;
+	lvi.iItem = 0;
+	lvi.iSubItem = 0;
+	lvi.pszText = pItem->szName;
+	lvi.cchTextMax = ARRAYSIZE(pItem->szName);
+	// lvi.iImage = I_IMAGECALLBACK;
+	lvi.lParam = pItem;
+
+	// copy that bad boy into the listview
+	ListView_InsertItem(FindWindowEx(hWndGroup, NULL, TEXT("ListView"), NULL), &lvi);
+
+	// TODO: fail if the listview item isn't added
 
 	return pItem;
 }
@@ -252,7 +266,7 @@ GROUP SaveGroup(_In_ PGROUP pg)
 		.dwSignature = GRP_SIGNATURE,
 		.wVersion = GRP_VERSION,
 		.wChecksum = 0,
-		.szName = L"",
+		.szName = TEXT(""),
 		.dwFlags = 0,
 		.ftLastWrite = 0,
 		.cItemArray = 0,
