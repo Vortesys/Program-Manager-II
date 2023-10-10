@@ -36,11 +36,11 @@ DWORD dwSettingsMask = {
 };
 RECT rcMainWindow;
 // Registry Subkeys
-PWSTR pszProgramGroups = L"Program Groups";
-PWSTR pszSettings = L"Settings";
+PWSTR pszProgramGroups = TEXT("Program Groups");
+PWSTR pszSettings = TEXT("Settings");
 // Settings Subkeys
-PWSTR pszSettingsWindow = L"Window";
-PWSTR pszSettingsMask = L"SettingsMask";
+PWSTR pszSettingsWindow = TEXT("Window");
+PWSTR pszSettingsMask = TEXT("SettingsMask");
 // Permissions (Global)
 
 /* Functions */
@@ -78,14 +78,14 @@ BOOL InitializeRegistryKeys(VOID)
 BOOL IsProgMgrDefaultShell(VOID)
 {
 	HKEY hKeyWinlogon;
-	WCHAR szShell[HKEYMAXLEN] = L"";
+	WCHAR szShell[HKEYMAXLEN] = TEXT("");
 	DWORD dwType;
 	DWORD dwBufferSize = sizeof(szShell);
 
 	if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, WINLOGON_KEY,
 		0, KEY_READ, &hKeyWinlogon) == ERROR_SUCCESS)
 	{
-		if (RegQueryValueEx(hKeyWinlogon, L"Shell", 0, &dwType,
+		if (RegQueryValueEx(hKeyWinlogon, TEXT("Shell"), 0, &dwType,
 			(LPBYTE)szShell, &dwBufferSize) == ERROR_SUCCESS)
 		{
 			if (StrStr(szShell, szProgMgr))

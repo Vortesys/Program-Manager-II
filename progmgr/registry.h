@@ -16,10 +16,10 @@
 /* Defines */
 #define HKEYMAXLEN 261
 // Key Paths
-#define WINLOGON_KEY  L"Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon"
-// #define PROGMAN_KEY  L"Software\\Microsoft\\Windows NT\\CurrentVersion\\Program Manager"
-// #define WINDOWS_KEY  L"Software\\Microsoft\\Windows NT\\CurrentVersion\\Windows"
-#define PROGMGR_KEY  L"Software\\Vortesys\\Program Manager II"
+#define WINLOGON_KEY  TEXT("Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon")
+// #define PROGMAN_KEY  TEXT("Software\\Microsoft\\Windows NT\\CurrentVersion\\Program Manager")
+// #define WINDOWS_KEY  TEXT("Software\\Microsoft\\Windows NT\\CurrentVersion\\Windows")
+#define PROGMGR_KEY  TEXT("Software\\Vortesys\\Program Manager II")
 // Registry configuration error values (DWORD)
 #define RCE_SUCCESS 0x0000000
 #define RCE_FAILURE 0x0000001

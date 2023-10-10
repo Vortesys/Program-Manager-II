@@ -37,16 +37,16 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 		.dwSignature = GRP_SIGNATURE,
 		.wVersion = GRP_VERSION,
 		.wChecksum = 0,
-		.szName = L"",
+		.szName = TEXT(""),
 		.dwFlags = 0,
 		.ftLastWrite = 0,
-		.szIconPath = L"",
+		.szIconPath = TEXT(""),
 		.iIconIndex = 0,
 		.cItemArray = 0,
 		.pItemArray = NULL
 	};
 	BOOL bOKEnabled = FALSE;
-	WCHAR szBuffer[MAX_TITLE_LENGTH] = { L"\0" };
+	WCHAR szBuffer[MAX_TITLE_LENGTH] = { TEXT("\0") };
 	HICON hIconDef = NULL;
 	HICON hIconDlg = NULL;
 
@@ -190,18 +190,18 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	static ITEM itm = {
-		.szName = L"",
-		.szExecPath = L"",
-		.szWorkPath = L"",
+		.szName = TEXT(""),
+		.szExecPath = TEXT(""),
+		.szWorkPath = TEXT(""),
 		.dwFlags = 0,
 		.uiHotkeyModifiers = 0,
 		.uiHotkeyVirtualKey = 0,
-		.szIconPath = L"",
+		.szIconPath = TEXT(""),
 		.iIconIndex = 0,
 	};
 	BOOL bOKEnabled = FALSE;
 	BOOL bWorkPath = FALSE;
-	WCHAR szBuffer[MAX_TITLE_LENGTH] = { L"\0" };
+	WCHAR szBuffer[MAX_TITLE_LENGTH] = { TEXT("\0") };
 	HICON hIconDef = NULL;
 	HICON hIconDlg = NULL;
 
@@ -255,6 +255,10 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 				if (bWorkPath)
 					bOKEnabled = bOKEnabled && GetDlgItemText(hWndDlg, IDD_WORKPATH, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer));
 
+				// Check that we have selected an MDI child window as well
+				if (SendMessage(hWndMDIClient, WM_MDIGETACTIVE, 0, FALSE) == NULL)
+					bOKEnabled = FALSE;
+
 				// Enable or disable the relevant controls based on the information
 				EnableWindow(GetDlgItem(hWndDlg, IDD_OK), bOKEnabled);
 			}
@@ -269,8 +273,8 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 			LPVOID lpData;
 			DWORD dwVerBuffer = 0;
 			UINT uiTitleLen = MAX_TITLE_LENGTH;
-			WCHAR szNameBuffer[MAX_TITLE_LENGTH] = { L"\0" };
-			WCHAR szFileBuffer[MAX_PATH] = { L"\0" };
+			WCHAR szNameBuffer[MAX_TITLE_LENGTH] = { TEXT("\0") };
+			WCHAR szFileBuffer[MAX_PATH] = { TEXT("\0") };
 
 			GetDlgItemText(hWndDlg, IDD_PATH, (LPWSTR)&szFileBuffer, ARRAYSIZE(szFileBuffer));
 

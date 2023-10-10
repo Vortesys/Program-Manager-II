@@ -27,7 +27,7 @@ BOOL RunFileDlg(HWND hWndOwner,
 	LPWSTR	lpszDesc,
 	DWORD	dwFlags)
 {
-	HMODULE hLib = LoadLibrary(L"shell32.dll");
+	HMODULE hLib = LoadLibrary(TEXT("shell32.dll"));
 
 	if (hLib)
 	{
@@ -50,7 +50,7 @@ BOOL RunFileDlg(HWND hWndOwner,
 \* * * */
 BOOL ExitWindowsDialog(HWND hWndOwner)
 {
-	HMODULE hLib = LoadLibrary(L"shell32.dll");
+	HMODULE hLib = LoadLibrary(TEXT("shell32.dll"));
 
 	if (hLib)
 	{
@@ -73,7 +73,7 @@ BOOL ExitWindowsDialog(HWND hWndOwner)
 \* * * */
 BOOL SetShellWindow(HWND hWndShell)
 {
-	HMODULE hLib = GetModuleHandle(L"user32.dll");
+	HMODULE hLib = GetModuleHandle(TEXT("user32.dll"));
 
 	if (hLib)
 	{

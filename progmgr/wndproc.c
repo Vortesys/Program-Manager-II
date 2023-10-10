@@ -44,7 +44,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			if (wParam == IDM_TASKMGR)
 			{
-				ShellExecute(hWndProgMgr, L"open", L"TASKMGR.EXE", NULL, NULL, SW_NORMAL);
+				ShellExecute(hWndProgMgr, TEXT("open"), TEXT("TASKMGR.EXE"), NULL, NULL, SW_NORMAL);
 				return 0;
 			}
 
@@ -163,7 +163,7 @@ LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case IDM_HELP_INDEX:
-		ShellExecute(NULL, L"open", szWebsite, NULL, NULL, SW_SHOWNORMAL);
+		ShellExecute(NULL, TEXT("open"), szWebsite, NULL, NULL, SW_SHOWNORMAL);
 		break;
 
 	case IDM_HELP_ABOUT:
@@ -219,9 +219,9 @@ VOID UpdateChecks(BOOL bVarMenu, UINT uSubMenu, UINT uID)
 \* * * */
 VOID UpdateWindowTitle(VOID)
 {
-	WCHAR szUsername[UNLEN + 1] = L"";
+	WCHAR szUsername[UNLEN + 1] = TEXT("");
 	DWORD dwUsernameLen = UNLEN;
-	WCHAR szWindowTitle[UNLEN + ARRAYSIZE(szAppTitle) + 4] = L"";
+	WCHAR szWindowTitle[UNLEN + ARRAYSIZE(szAppTitle) + 4] = TEXT("");
 
 	// Get user and domain name
 	GetUserNameEx(NameSamCompatible, szUsername, &dwUsernameLen);
@@ -231,7 +231,7 @@ VOID UpdateWindowTitle(VOID)
 
 	if (bShowUsername)
 	{
-		StringCchCat(szWindowTitle, ARRAYSIZE(szWindowTitle), L" - ");
+		StringCchCat(szWindowTitle, ARRAYSIZE(szWindowTitle), TEXT(" - "));
 		StringCchCat(szWindowTitle, ARRAYSIZE(szWindowTitle), szUsername);
 	}
 

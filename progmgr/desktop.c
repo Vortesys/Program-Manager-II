@@ -173,10 +173,10 @@ HWND CreateListView(HWND hWndParent, RECT rc)
 {
 	HWND hWndListView;
 	LVITEM lviTestItem;
-	WCHAR szTestItem[] = L"Test Item";
+	WCHAR szTestItem[] = TEXT("Test Item");
 
 	// Create the ListView
-	hWndListView = CreateWindowEx(WS_EX_LEFT, WC_LISTVIEW, L"",
+	hWndListView = CreateWindowEx(WS_EX_LEFT, WC_LISTVIEW, TEXT(""),
 		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		LVS_ICON | LVS_SINGLESEL,
 		rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top,

@@ -33,7 +33,7 @@ HICON		hProgMgrIcon = NULL;
 HICON		hGroupIcon = NULL;
 // Global Strings
 WCHAR		szAppTitle[64];
-WCHAR		szProgMgr[] = L"progmgr";
+WCHAR		szProgMgr[] = TEXT("progmgr");
 WCHAR		szWebsite[64];
 WCHAR		szClass[16];
 // Permissions
