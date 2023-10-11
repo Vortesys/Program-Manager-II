@@ -44,10 +44,10 @@ BOOL InitializeGroups(VOID)
 
 	GetClientRect(hWndProgMgr, &rcFrame);
 
-	if (!(hWndMDIClient = CreateWindowEx(WS_EX_COMPOSITED, TEXT("MDIClient"),
+	if ((hWndMDIClient = CreateWindowEx(WS_EX_COMPOSITED, TEXT("MDIClient"),
 		NULL, WS_CLIPCHILDREN | WS_CHILD | WS_VSCROLL | WS_HSCROLL | WS_VISIBLE,
 		rcFrame.left, rcFrame.top, rcFrame.right, rcFrame.bottom,
-		hWndProgMgr, (HMENU)1, hAppInstance, (LPWSTR)&ccs)))
+		hWndProgMgr, (HMENU)1, hAppInstance, (LPWSTR)&ccs)) == NULL)
 	{
 		return FALSE;
 	}
@@ -55,7 +55,7 @@ BOOL InitializeGroups(VOID)
 	// Load the group class string
 	LoadString(hAppInstance, IDS_GRPCLASS, szGrpClass, ARRAYSIZE(szGrpClass));
 
-	// Register the group window Class
+	// Register the group window class
 	wce.cbSize = sizeof(WNDCLASSEX);
 	wce.lpfnWndProc = GroupWndProc;
 	wce.cbClsExtra = 0;
@@ -192,6 +192,9 @@ BOOL RemoveGroup(_In_ HWND hWndGroup, _In_ BOOL bEliminate)
 
 	free(pGroup);
 
+	// close the group window
+	DestroyWindow(hWndGroup);
+
 	return bReturn;
 }
 
@@ -245,11 +248,9 @@ PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 	pGroup->cItemArray++;
 
 	// populate the listview with the relevant information
-	lvi.mask = LVIF_STATE | LVIF_TEXT; // | LVIF_IMAGE;
-	lvi.iItem = 0;
+	lvi.mask = LVIF_TEXT; // | LVIF_IMAGE;
+	lvi.iItem = pGroup->cItemArray;
 	lvi.iSubItem = 0;
-	lvi.state = 0;
-	lvi.stateMask = 0;
 	lvi.pszText = pItem->szName;
 	lvi.cchTextMax = ARRAYSIZE(pItem->szName);
 	// lvi.iImage = I_IMAGECALLBACK;
@@ -386,6 +387,29 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 
 	case WM_CLOSE:
 		return ShowWindow(hWnd, SW_MINIMIZE);
+
+	case WM_SIZE:
+	{
+		HWND hWndListView = NULL;
+		RECT rcGroupWindow = { 0 };
+
+		// get the group window rect
+		GetClientRect(hWnd, &rcGroupWindow);
+		
+		// find the listview control
+		hWndListView = FindWindowEx(hWnd, NULL, WC_LISTVIEW, NULL);
+		if (hWndListView == NULL)
+			break;
+		
+		// resize it to fit the window
+		if ((rcGroupWindow.left != rcGroupWindow.right) && (rcGroupWindow.top != rcGroupWindow.bottom))
+			SetWindowPos(hWndListView, NULL,
+				rcGroupWindow.left, rcGroupWindow.top,
+				rcGroupWindow.right - rcGroupWindow.left,
+				rcGroupWindow.bottom - rcGroupWindow.top, SWP_NOZORDER);
+
+		break;
+	}
 
 	default:
 		return DefMDIChildProc(hWnd, message, wParam, lParam);
