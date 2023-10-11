@@ -33,6 +33,7 @@ WCHAR		szDlgTitle[64];
 \* * * */
 BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	// TODO: warning C4047: 'initializing': 'WCHAR' differs in levels of indirection from 'void *'
 	static GROUP grp = {
 		.dwSignature = GRP_SIGNATURE,
 		.wVersion = GRP_VERSION,
@@ -66,7 +67,7 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 		grp.wChecksum = 0;
 		grp.dwFlags = 0;
 		grp.cItemArray = 0;
-		grp.pItemArray = NULL;
+		// grp.pItemArray = 0; TODO: idk make sure this ain't all screwed up
 
 		// Set the window title
 		LoadString(hAppInstance, IDS_DLT_GRP_NEW, szDlgTitle, ARRAYSIZE(szDlgTitle));

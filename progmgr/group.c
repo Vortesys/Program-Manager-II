@@ -224,7 +224,7 @@ PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 	}
 	
 	// add the item
-	pItem = pGroup->pItemArray + pGroup->cItemArray;
+	pItem = &pGroup->pItemArray + pGroup->cItemArray;
 	*pItem = *pi;
 
 	// increment the item counter
@@ -281,7 +281,7 @@ GROUP SaveGroup(_In_ PGROUP pg)
 		.dwSignature = GRP_SIGNATURE,
 		.wVersion = GRP_VERSION,
 		.wChecksum = 0,
-		.szName = TEXT(""),
+		.szName = (VOID *)TEXT(""),
 		.dwFlags = 0,
 		.ftLastWrite = 0,
 		.cItemArray = 0,
