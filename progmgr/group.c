@@ -16,6 +16,7 @@
 #include <Windows.h>
 #include <CommCtrl.h>
 #include <strsafe.h>
+#include <uxtheme.h>
 
 /* Variables */
 WNDCLASSEX wcGrp;
@@ -163,6 +164,9 @@ HWND CreateGroup(_In_ PGROUP pg)
 		rcGroupWindow.left, rcGroupWindow.top,
 		rcGroupWindow.right - rcGroupWindow.left,
 		rcGroupWindow.bottom - rcGroupWindow.top, SWP_NOZORDER);
+
+	// add the explorer style because it looks good
+	SetWindowTheme(hWndListView, TEXT("Explorer"), NULL);
 
 	// create a ListView name column
 	lvc.mask = LVCF_FMT | LVCF_WIDTH;
