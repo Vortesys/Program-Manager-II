@@ -33,7 +33,6 @@ WCHAR		szDlgTitle[64];
 \* * * */
 BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	// TODO: warning C4047: 'initializing': 'WCHAR' differs in levels of indirection from 'void *'
 	static GROUP grp = {
 		.dwSignature = GRP_SIGNATURE,
 		.wVersion = GRP_VERSION,
@@ -44,7 +43,7 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 		.szIconPath = TEXT(""),
 		.iIconIndex = 0,
 		.cItemArray = 0,
-		.pItemArray = NULL
+		.pItemArray = 0
 	};
 	BOOL bOKEnabled = FALSE;
 	WCHAR szBuffer[MAX_TITLE_LENGTH] = { TEXT("\0") };

@@ -245,7 +245,7 @@ PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 	pGroup->cItemArray++;
 
 	// populate the listview with the relevant information
-	lvi.mask = LVIF_TEXT; // | LVIF_IMAGE;
+	lvi.mask = LVIF_STATE | LVIF_TEXT; // | LVIF_IMAGE;
 	lvi.iItem = 0;
 	lvi.iSubItem = 0;
 	lvi.state = 0;
@@ -301,7 +301,7 @@ GROUP SaveGroup(_In_ PGROUP pg)
 		.dwFlags = 0,
 		.ftLastWrite = 0,
 		.cItemArray = 0,
-		.pItemArray = NULL
+		.pItemArray = 0
 	};
 	HWND hWndGrp = NULL;
 	WCHAR szGroupName[MAX_TITLE_LENGTH];
