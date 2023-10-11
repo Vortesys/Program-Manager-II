@@ -380,6 +380,10 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 {
 	switch (message)
 	{
+		HWND hWndListView = NULL;
+
+		// find the listview control
+		hWndListView = FindWindowEx(hWnd, NULL, WC_LISTVIEW, NULL);
 
 	case WM_CREATE:
 	{
@@ -393,6 +397,17 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 		return TRUE;
 	}
 
+	case WM_CONTEXTMENU:
+	{
+		POINT pt = { NULL, NULL };
+		HMENU hMenu = NULL;
+		BOOL bPopup = NULL;
+
+		pt.x = GET_X_LPARAM(lParam);
+		pt.y = GET_Y_LPARAM(lParam);
+		break;
+	}
+
 	case WM_CLOSE:
 		return ShowWindow(hWnd, SW_MINIMIZE);
 
@@ -403,9 +418,6 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 
 		// get the group window rect
 		GetClientRect(hWnd, &rcGroupWindow);
-		
-		// find the listview control
-		hWndListView = FindWindowEx(hWnd, NULL, WC_LISTVIEW, NULL);
 		if (hWndListView == NULL)
 			break;
 		
