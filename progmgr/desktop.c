@@ -32,7 +32,7 @@ typedef struct _mrp
 
 /* Variables */
 HWND hWndDesktop;
-HWND hWndListView;
+HWND hWndDesktopListView;
 RECT rcRoot;
 
 /* Functions */
@@ -171,22 +171,22 @@ LRESULT CALLBACK DeskWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 \* * * */
 HWND CreateListView(HWND hWndParent, RECT rc)
 {
-	HWND hWndListView;
+	HWND hWndDesktopListView;
 	LVITEM lviTestItem;
 	WCHAR szTestItem[] = TEXT("Test Item");
 
 	// Create the ListView
-	hWndListView = CreateWindowEx(WS_EX_LEFT, WC_LISTVIEW, TEXT(""),
+	hWndDesktopListView = CreateWindowEx(WS_EX_LEFT, WC_LISTVIEW, TEXT(""),
 		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		LVS_ICON | LVS_SINGLESEL,
 		rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top,
 		hWndParent, (HMENU)ID_LISTVIEW, hAppInstance,
 		NULL);
 
-	if(hWndListView == NULL)
+	if(hWndDesktopListView == NULL)
 		return NULL;
 
-	ListView_SetBkColor(hWndListView, CLR_NONE);
+	ListView_SetBkColor(hWndDesktopListView, CLR_NONE);
 
 	lviTestItem.mask = LVIF_STATE | LVIF_TEXT;
 	lviTestItem.iItem = 0;
@@ -197,7 +197,7 @@ HWND CreateListView(HWND hWndParent, RECT rc)
 	lviTestItem.cchTextMax = MAXTITLELEN;
 	// lviTestItem.iImage = 1;
 
-	ListView_InsertItem(hWndListView, &lviTestItem);
+	ListView_InsertItem(hWndDesktopListView, &lviTestItem);
 
-	return hWndListView;
+	return hWndDesktopListView;
 }
