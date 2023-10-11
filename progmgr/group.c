@@ -168,12 +168,6 @@ HWND CreateGroup(_In_ PGROUP pg)
 	// add the explorer style because it looks good
 	SetWindowTheme(hWndListView, TEXT("Explorer"), NULL);
 
-	// create a ListView name column
-	lvc.mask = LVCF_FMT | LVCF_WIDTH;
-	lvc.fmt = LVCFMT_LEFT;
-	lvc.cx = 100;
-	ListView_InsertColumn(hWndListView, 0, &lvc);
-
 	// TODO: make sure the groups delete their icons upon destruction!
 
 	return hWndGroup;
