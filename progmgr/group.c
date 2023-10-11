@@ -92,6 +92,7 @@ HWND CreateGroup(_In_ PGROUP pg)
 	HICON hIconTemp = NULL;
 	HWND hWndGroup = NULL;
 	HWND hWndListView = NULL;
+	RECT rcGroupWindow = { 0 };
 	LVCOLUMN lvc = { 0 };
 
 	if (pg == NULL)
@@ -145,6 +146,9 @@ HWND CreateGroup(_In_ PGROUP pg)
 			DestroyIcon(hIconTemp);
 	}
 
+	// get the group window rect
+	GetClientRect(hWndGroup, &rcGroupWindow);
+
 	// Create the group window ListView control
 	if ((hWndListView = CreateWindowEx(WS_EX_LEFT, WC_LISTVIEW, TEXT("ListView"),
 		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
@@ -153,6 +157,12 @@ HWND CreateGroup(_In_ PGROUP pg)
 		hWndGroup, NULL, hAppInstance,
 		NULL)) == NULL)
 		return NULL;
+
+	// resize it to fit the window
+	SetWindowPos(hWndListView, NULL,
+		rcGroupWindow.left, rcGroupWindow.top,
+		rcGroupWindow.right - rcGroupWindow.left,
+		rcGroupWindow.bottom - rcGroupWindow.top, SWP_NOZORDER);
 
 	// create a ListView name column
 	lvc.mask = LVCF_FMT | LVCF_WIDTH;
@@ -402,11 +412,10 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 			break;
 		
 		// resize it to fit the window
-		if ((rcGroupWindow.left != rcGroupWindow.right) && (rcGroupWindow.top != rcGroupWindow.bottom))
-			SetWindowPos(hWndListView, NULL,
-				rcGroupWindow.left, rcGroupWindow.top,
-				rcGroupWindow.right - rcGroupWindow.left,
-				rcGroupWindow.bottom - rcGroupWindow.top, SWP_NOZORDER);
+		SetWindowPos(hWndListView, NULL,
+			rcGroupWindow.left, rcGroupWindow.top,
+			rcGroupWindow.right - rcGroupWindow.left,
+			rcGroupWindow.bottom - rcGroupWindow.top, SWP_NOZORDER);
 
 		break;
 	}
