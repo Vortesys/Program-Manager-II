@@ -297,7 +297,7 @@ GROUP SaveGroup(_In_ PGROUP pg)
 		.dwSignature = GRP_SIGNATURE,
 		.wVersion = GRP_VERSION,
 		.wChecksum = 0,
-		.szName = (VOID *)TEXT(""),
+		.szName = TEXT(""),
 		.dwFlags = 0,
 		.ftLastWrite = 0,
 		.cItemArray = 0,
