@@ -86,11 +86,13 @@ BOOL InitializeGroups(VOID)
 HWND CreateGroup(_In_ PGROUP pg)
 {
 	MDICREATESTRUCT mcs = { NULL };
+	PGROUP pGroup = NULL;
 	HICON hIconLarge = NULL;
 	HICON hIconSmall = NULL;
 	HICON hIconTemp = NULL;
 	HWND hWndGroup = NULL;
-	PGROUP pGroup = NULL;
+	HWND hWndListView = NULL;
+	LVCOLUMN lvc = { 0 };
 
 	if (pg == NULL)
 		return NULL;
@@ -144,13 +146,19 @@ HWND CreateGroup(_In_ PGROUP pg)
 	}
 
 	// Create the group window ListView control
-	if (CreateWindowEx(WS_EX_LEFT, WC_LISTVIEW, TEXT("ListView"),
+	if ((hWndListView = CreateWindowEx(WS_EX_LEFT, WC_LISTVIEW, TEXT("ListView"),
 		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
 		| LVS_ICON | ((LVS_AUTOARRANGE & bAutoArrange) * LVS_AUTOARRANGE) | LVS_NOSORTHEADER,
 		mcs.x, mcs.y, mcs.cx, mcs.cy,
 		hWndGroup, NULL, hAppInstance,
-		NULL) == NULL)
+		NULL)) == NULL)
 		return NULL;
+
+	// create a ListView name column
+	lvc.mask = LVCF_FMT | LVCF_WIDTH;
+	lvc.fmt = LVCFMT_LEFT;
+	lvc.cx = 100;
+	ListView_InsertColumn(hWndListView, 0, &lvc);
 
 	// TODO: make sure the groups delete their icons upon destruction!
 
