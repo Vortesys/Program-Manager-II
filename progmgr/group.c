@@ -98,6 +98,15 @@ HWND CreateGroup(_In_ PGROUP pg)
 	// allocate memory for a new group
 	pGroup = (PGROUP)malloc(CalculateGroupMemory(pg, 0));
 
+	if (pGroup == NULL)
+		return NULL;
+
+	// clean up the memory if it's valid
+	ZeroMemory(pGroup, CalculateGroupMemory(pg, 0));
+
+	// copy over the group structure
+	*pGroup = *pg;
+
 	// TODO: get group minimized/maximized flags
 
 	mcs.szClass = szGrpClass;
@@ -190,23 +199,29 @@ PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 	LVITEM lvi = { 0 };
 	PGROUP pGroup = NULL;
 	PITEM pItem = NULL;
+	UINT uiTest = 0;
 
 	// we actually just want the group pointer lol
 	pGroup = (PGROUP)GetWindowLongPtr(hWndGroup, GWLP_USERDATA);
+
+	uiTest = pGroup->cItemArray;
 
 	// return NULL if we can't get to the group or item
 	if (hWndGroup == NULL)
 		return NULL;
 	if (pGroup == NULL)
 		return NULL;
-
 	if (pi == NULL)
 		return NULL;
 
 	// compare group's existing memory to needed memory
 	// if needed, reallocate the group's memory
 	if (_msize(pGroup) != CalculateGroupMemory(pGroup, 1))
-		SetWindowLongPtr(hWndGroup, GWLP_USERDATA, (LONG_PTR)realloc(pGroup, CalculateGroupMemory(pGroup, 1)));
+	{
+		// if we reallocate memory then send the new pointer in
+		if (realloc(pGroup, CalculateGroupMemory(pGroup, 1)) != NULL)
+			SetWindowLongPtr(hWndGroup, GWLP_USERDATA, (LONG_PTR)pGroup);
+	}
 	
 	// add the item
 	pItem = pGroup->pItemArray + pGroup->cItemArray;
