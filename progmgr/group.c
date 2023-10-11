@@ -200,6 +200,7 @@ PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 	PGROUP pGroup = NULL;
 	PITEM pItem = NULL;
 	UINT uiTest = 0;
+	HWND hWndListView = NULL;
 
 	// we actually just want the group pointer lol
 	pGroup = (PGROUP)GetWindowLongPtr(hWndGroup, GWLP_USERDATA);
@@ -212,6 +213,11 @@ PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 	if (pGroup == NULL)
 		return NULL;
 	if (pi == NULL)
+		return NULL;
+
+	// get the listview window
+	hWndListView = FindWindowEx(hWndGroup, NULL, WC_LISTVIEW, NULL);
+	if (hWndListView == NULL)
 		return NULL;
 
 	// compare group's existing memory to needed memory
@@ -234,13 +240,15 @@ PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 	lvi.mask = LVIF_TEXT; // | LVIF_IMAGE;
 	lvi.iItem = 0;
 	lvi.iSubItem = 0;
+	lvi.state = 0;
+	lvi.stateMask = 0;
 	lvi.pszText = pItem->szName;
 	lvi.cchTextMax = ARRAYSIZE(pItem->szName);
 	// lvi.iImage = I_IMAGECALLBACK;
 	lvi.lParam = (LPARAM)pItem;
 
 	// copy that bad boy into the listview
-	ListView_InsertItem(FindWindowEx(hWndGroup, NULL, TEXT("ListView"), NULL), &lvi);
+	ListView_InsertItem(hWndListView, &lvi);
 
 	// TODO: fail if the listview item isn't added
 
