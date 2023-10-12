@@ -16,6 +16,7 @@
 #include <Windows.h>
 #include <windowsx.h>
 #include <CommCtrl.h>
+#include <shlwapi.h>
 #include <strsafe.h>
 #include <uxtheme.h>
 
@@ -46,8 +47,9 @@ BOOL InitializeGroups(VOID)
 
 	GetClientRect(hWndProgMgr, &rcFrame);
 
-	if ((hWndMDIClient = CreateWindowEx(WS_EX_COMPOSITED, TEXT("MDIClient"),
-		NULL, WS_CLIPCHILDREN | WS_CHILD | WS_VSCROLL | WS_HSCROLL | WS_VISIBLE,
+	if ((hWndMDIClient = CreateWindowEx(WS_EX_COMPOSITED,
+		TEXT("MDIClient"), NULL, WS_CLIPCHILDREN | WS_CHILD |
+		WS_VSCROLL | WS_HSCROLL | WS_VISIBLE,
 		rcFrame.left, rcFrame.top, rcFrame.right, rcFrame.bottom,
 		hWndProgMgr, (HMENU)1, hAppInstance, (LPWSTR)&ccs)) == NULL)
 	{
@@ -55,15 +57,18 @@ BOOL InitializeGroups(VOID)
 	}
 
 	// Load the group class string
-	LoadString(hAppInstance, IDS_GRPCLASS, szGrpClass, ARRAYSIZE(szGrpClass));
+	LoadString(hAppInstance, IDS_GRPCLASS,
+		szGrpClass, ARRAYSIZE(szGrpClass));
 
 	// Register the group window class
 	wce.cbSize = sizeof(WNDCLASSEX);
+	wce.style = CS_DBLCLKS;
 	wce.lpfnWndProc = GroupWndProc;
 	wce.cbClsExtra = 0;
 	wce.cbWndExtra = 0;
 	wce.hInstance = hAppInstance;
-	wce.hIcon = hGroupIcon = LoadImage(hAppInstance, MAKEINTRESOURCE(IDI_PROGGRP), IMAGE_ICON,
+	wce.hIcon = hGroupIcon = LoadImage(hAppInstance,
+		MAKEINTRESOURCE(IDI_PROGGRP), IMAGE_ICON,
 		0, 0, LR_DEFAULTSIZE | LR_SHARED);
 	wce.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wce.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
@@ -73,7 +78,7 @@ BOOL InitializeGroups(VOID)
 	if (!RegisterClassEx(&wce))
 		return FALSE;
 
-	// CreateGroup(NULL);
+	// TODO: go thru registry and load all saved groups here
 
 	return TRUE;
 }
@@ -134,7 +139,8 @@ HWND CreateGroup(_In_ PGROUP pg)
 	// or is it better and easier to just do it with GWLP_USERDATA?
 	mcs.lParam = (LPARAM)NULL;
 
-	if ((hWndGroup = (HWND)SendMessage(hWndMDIClient, WM_MDICREATE, 0, (LPARAM)(LPTSTR)&mcs)) == NULL)
+	if ((hWndGroup = (HWND)SendMessage(hWndMDIClient, WM_MDICREATE, 0,
+		(LPARAM)(LPTSTR)&mcs)) == NULL)
 		return NULL;
 
 	// Associate the group structure pointer to the group window
@@ -143,9 +149,11 @@ HWND CreateGroup(_In_ PGROUP pg)
 	// Load the group icon
 	if (ExtractIconEx(pg->szIconPath, pg->iIconIndex, &hIconLarge, &hIconSmall, 1))
 	{
-		if (hIconTemp = (HICON)SendMessage(hWndGroup, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall))
+		if (hIconTemp = (HICON)SendMessage(hWndGroup, WM_SETICON,
+			ICON_SMALL, (LPARAM)hIconSmall))
 			DestroyIcon(hIconTemp);
-		if (hIconTemp = (HICON)SendMessage(hWndGroup, WM_SETICON, ICON_BIG, (LPARAM)hIconLarge))
+		if (hIconTemp = (HICON)SendMessage(hWndGroup, WM_SETICON,
+			ICON_BIG, (LPARAM)hIconLarge))
 			DestroyIcon(hIconTemp);
 	}
 
@@ -153,13 +161,16 @@ HWND CreateGroup(_In_ PGROUP pg)
 	GetClientRect(hWndGroup, &rcGroupWindow);
 
 	// Create the group window ListView control
-	if ((hWndListView = CreateWindowEx(WS_EX_LEFT, WC_LISTVIEW, TEXT("ListView"),
-		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
-		| LVS_ICON | ((LVS_AUTOARRANGE & bAutoArrange) * LVS_AUTOARRANGE) | LVS_SINGLESEL,
+	if ((hWndListView = CreateWindowEx(WS_EX_LEFT, WC_LISTVIEW,
+		TEXT("ListView"),
+		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		LVS_ICON | LVS_SINGLESEL | LVS_AUTOARRANGE,
 		mcs.x, mcs.y, mcs.cx, mcs.cy,
 		hWndGroup, NULL, hAppInstance,
 		NULL)) == NULL)
 		return NULL;
+
+	// ((LVS_AUTOARRANGE & bAutoArrange) * LVS_AUTOARRANGE)
 
 	// resize it to fit the window
 	SetWindowPos(hWndListView, NULL,
@@ -171,12 +182,14 @@ HWND CreateGroup(_In_ PGROUP pg)
 	SetWindowTheme(hWndListView, TEXT("Explorer"), NULL);
 
 	// get this bad boy an image list
-	hImageList = ImageList_Create(SM_CXICON, SM_CYICON, ILC_COLOR32, 0, 1);
+	// TODO: if cxicon/cyicon change make sure we handle that
+	// don't require a program restart
+	hImageList = ImageList_Create(GetSystemMetrics(SM_CXICON),
+		GetSystemMetrics(SM_CYICON), ILC_COLOR32, 0, 1);
 	ListView_SetImageList(hWndListView, hImageList, LVSIL_NORMAL);
 
 	// TODO: make sure the groups delete their icons upon destruction!
-	// AND IMAGE LIST!!!!!!!!
-
+	// AND IMAGE LIST!!!!!!!!? i think it's nuked w/ listview though
 	return hWndGroup;
 }
 
@@ -256,7 +269,7 @@ PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 		if (realloc(pGroup, CalculateGroupMemory(pGroup, 1)) != NULL)
 			SetWindowLongPtr(hWndGroup, GWLP_USERDATA, (LONG_PTR)pGroup);
 	}
-	
+
 	// add the item
 	pItem = &pGroup->pItemArray + pGroup->cItemArray;
 	*pItem = *pi;
@@ -302,6 +315,29 @@ BOOL RemoveItem(_In_ PITEM pi)
 	if (pi == NULL)
 		return FALSE;
 
+	return FALSE;
+}
+
+/* * * *\
+	ExecuteItem -
+		Runs a program item
+	RETURNS -
+		TRUE if item was successfully ran
+		FALSE otherwise
+\* * * */
+BOOL ExecuteItem(_In_ PITEM pi)
+{
+	// TODO: nCmdShow from program item flags
+	ShellExecute(hWndProgMgr, NULL,
+		pi->szExecPath, NULL,
+		PathFileExists(pi->szWorkPath) ? pi->szWorkPath : NULL,
+		SW_NORMAL);
+
+	// TODO: if item has run as admin as a flag,
+	// run it as an admin
+
+	// TODO: make sure environment is
+	// refreshed before execution
 	return FALSE;
 }
 
@@ -412,14 +448,17 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 		pCreateStruct = (CREATESTRUCT*)lParam;
 		pMDICreateStruct = (MDICREATESTRUCT*)pCreateStruct->lpCreateParams;
 
-		return TRUE;
+		return 0;
 	}
 
 	case WM_CONTEXTMENU:
 	{
-		POINT pt = { 0, 0 };
+		POINT pt = { 0 };
 		HMENU hMenu = NULL;
 		BOOL bPopup = FALSE;
+
+		// LVHT_ONITEM
+		// LVHT_NOWHERE
 
 		pt.x = GET_X_LPARAM(lParam);
 		pt.y = GET_Y_LPARAM(lParam);
@@ -428,6 +467,102 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 
 	case WM_CLOSE:
 		return ShowWindow(hWnd, SW_MINIMIZE);
+
+	case WM_LBUTTONDBLCLK:
+	{
+		LVHITTESTINFO lvhti = { 0 };
+		LVITEM lvi = { 0 };
+		DWORD dwMessagePos = 0;
+		POINT pt = { 0 };
+
+		// TODO: wparam lets me do cool things
+		// if ctrl/shift/alt is held, maybe have
+		// separate but documented functionality?
+
+		// get mouse coordinates
+		dwMessagePos = GetMessagePos();
+		pt.x = GET_X_LPARAM(dwMessagePos);
+		pt.y = GET_Y_LPARAM(dwMessagePos);
+		ScreenToClient(hWnd, &pt);
+
+		// fill the structure
+		lvhti.pt = pt;
+		lvhti.flags = LVHT_ONITEM;
+		lvhti.iItem = 0;
+		lvhti.iSubItem = 0;
+		lvhti.iGroup = 0;
+
+		// run the hit test
+		ListView_HitTest(hWndListView, &lvhti);
+
+		// check we've selected an item
+		if (lvhti.iItem == -1)
+			return 0;
+
+		// since we have let's get the program item
+		ListView_GetItem(hWndListView, &lvi);
+
+		// verify...
+		if (lvi.lParam)
+		{
+			// and execute!
+			ExecuteItem((PITEM)lvi.lParam);
+		}
+
+		return 0;
+	}
+
+	case WM_NOTIFY:
+	{
+		LPNMHDR lpnmhdr = (LPNMHDR)lParam;
+
+		switch (lpnmhdr->code)
+		{
+
+		case NM_DBLCLK:
+		{
+			LVHITTESTINFO lvhti = { 0 };
+			LVITEM lvi = { 0 };
+			DWORD dwMessagePos = 0;
+			POINT pt = { 0 };
+
+			// get mouse coordinates
+			dwMessagePos = GetMessagePos();
+			pt.x = GET_X_LPARAM(dwMessagePos);
+			pt.y = GET_Y_LPARAM(dwMessagePos);
+			ScreenToClient(hWnd, &pt);
+
+			// fill the structure
+			lvhti.pt = pt;
+			lvhti.flags = LVHT_ONITEM;
+			lvhti.iItem = 0;
+			lvhti.iSubItem = 0;
+			lvhti.iGroup = 0;
+
+			// run the hit test
+			ListView_HitTest(hWndListView, &lvhti);
+
+			// check we've selected an item
+			if (lvhti.iItem == -1)
+				return 0;
+
+			// since we have let's get the program item
+			ListView_GetItem(hWndListView, &lvi);
+
+			// verify...
+			if (lvi.lParam)
+			{
+				// and execute!
+				ExecuteItem((PITEM)lvi.lParam);
+			}
+
+			break;
+		}
+
+			break;
+		}
+		return 0;
+	}
 
 	case WM_SIZE:
 	{
@@ -445,7 +580,7 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 			rcGroupWindow.right - rcGroupWindow.left,
 			rcGroupWindow.bottom - rcGroupWindow.top, SWP_NOZORDER);
 
-		break;
+		return DefMDIChildProc(hWnd, message, wParam, lParam);
 	}
 		
 	default:
