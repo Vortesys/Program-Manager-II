@@ -172,9 +172,10 @@ HWND CreateGroup(_In_ PGROUP pg)
 
 	// get this bad boy an image list
 	hImageList = ImageList_Create(SM_CXICON, SM_CYICON, ILC_COLOR32, 0, 1);
-	SetWindowLongPtr(hWndListView, GWLP_USERDATA, (LONG_PTR)hImageList);
+	ListView_SetImageList(hWndListView, hImageList, LVSIL_NORMAL);
 
 	// TODO: make sure the groups delete their icons upon destruction!
+	// AND IMAGE LIST!!!!!!!!
 
 	return hWndGroup;
 }
@@ -222,6 +223,8 @@ BOOL RemoveGroup(_In_ HWND hWndGroup, _In_ BOOL bEliminate)
 \* * * */
 PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 {
+	HIMAGELIST hImageList = NULL;
+	HICON hIcon = NULL;
 	LVITEM lvi = { 0 };
 	PGROUP pGroup = NULL;
 	PITEM pItem = NULL;
@@ -230,7 +233,6 @@ PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 
 	// we actually just want the group pointer lol
 	pGroup = (PGROUP)GetWindowLongPtr(hWndGroup, GWLP_USERDATA);
-
 	uiTest = pGroup->cItemArray;
 
 	// return NULL if we can't get to the group or item
@@ -262,20 +264,28 @@ PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 	// increment the item counter
 	pGroup->cItemArray++;
 
+	// then get the pointer to the group's image list
+	hImageList = ListView_GetImageList(hWndListView, LVSIL_NORMAL);
+
+	// extract that icon son!!
+	hIcon = ExtractIcon(hAppInstance, (LPWSTR)pItem->szIconPath, pItem->iIconIndex);
+
 	// populate the listview with the relevant information
 	lvi.mask = LVIF_TEXT | LVIF_IMAGE;
 	lvi.iItem = pGroup->cItemArray;
 	lvi.iSubItem = 0;
 	lvi.pszText = pItem->szName;
 	lvi.cchTextMax = ARRAYSIZE(pItem->szName);
-	lvi.iImage = I_IMAGECALLBACK;
+	lvi.iImage = ImageList_AddIcon(hImageList, hIcon);
 	lvi.lParam = (LPARAM)pItem;
 
 	// copy that bad boy into the listview
 	ListView_InsertItem(hWndListView, &lvi);
 
-	// TODO: fail if the listview item isn't added
+	// get that hicon outta here
+	DestroyIcon(hIcon);
 
+	// TODO: fail if the listview item isn't added
 	return pItem;
 }
 
@@ -385,12 +395,13 @@ UINT CalculateGroupMemory(_In_ PGROUP pGroup, _In_ UINT cItems)
 \* * * */
 LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	HWND hWndListView = NULL;
+
+	// find the listview control
+	hWndListView = FindWindowEx(hWnd, NULL, WC_LISTVIEW, NULL);
+
 	switch (message)
 	{
-		HWND hWndListView = NULL;
-
-		// find the listview control
-		hWndListView = FindWindowEx(hWnd, NULL, WC_LISTVIEW, NULL);
 
 	case WM_CREATE:
 	{
@@ -406,9 +417,9 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 
 	case WM_CONTEXTMENU:
 	{
-		POINT pt = { NULL, NULL };
+		POINT pt = { 0, 0 };
 		HMENU hMenu = NULL;
-		BOOL bPopup = NULL;
+		BOOL bPopup = FALSE;
 
 		pt.x = GET_X_LPARAM(lParam);
 		pt.y = GET_Y_LPARAM(lParam);
@@ -436,41 +447,7 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 
 		break;
 	}
-
-	case WM_NOTIFY:
-	{
-		switch (((LPNMHDR)lParam)->code)
-		{
-		case LVN_GETDISPINFO:
-		{
-			// TODO: error checking, verify stuff exists first
-			// before removing/adding/touching it
-			HIMAGELIST hImageList = NULL;
-			HICON hIcon = NULL;
-			PITEM pItem = NULL;
-			NMLVDISPINFO* plvdi = (NMLVDISPINFO*)lParam;
-
-			// first get our item's pointer
-			pItem = plvdi->item.lParam;
-
-			// then get the pointer to the group's image list
-			hImageList = (PGROUP)GetWindowLongPtr(hWnd, GWLP_USERDATA);
-
-			// extract that icon son!!
-			hIcon = ExtractIcon(hAppInstance, (LPWSTR)pItem->szIconPath, pItem->iIconIndex);
-
-			// this is the image
-			ImageList_AddIcon(hImageList, hIcon);
-			plvdi->item.iImage = 222;
-
-			DestroyIcon(hIcon);
-
-			return TRUE;
-		}
-		}
-	}
 		
-
 	default:
 		return DefMDIChildProc(hWnd, message, wParam, lParam);
 	}
