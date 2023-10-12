@@ -302,7 +302,9 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 
 			// let's retrieve the application's friendly name too
 			dwVerBuffer = GetFileVersionInfoSize((LPCWSTR)szFileBuffer, NULL);
-			if (dwVerBuffer != 0) {
+			// if (dwVerBuffer != 0)
+			if (NULL)
+			{
 				lpData = malloc(dwVerBuffer);
 				// TODO: totally redo this it doesn't work
 
