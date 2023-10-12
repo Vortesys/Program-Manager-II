@@ -14,6 +14,7 @@
 #include "registry.h"
 // #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#include <windowsx.h>
 #include <CommCtrl.h>
 #include <strsafe.h>
 #include <uxtheme.h>
@@ -92,6 +93,7 @@ HWND CreateGroup(_In_ PGROUP pg)
 	HICON hIconSmall = NULL;
 	HICON hIconTemp = NULL;
 	HWND hWndGroup = NULL;
+	HIMAGELIST hImageList = NULL;
 	HWND hWndListView = NULL;
 	RECT rcGroupWindow = { 0 };
 	LVCOLUMN lvc = { 0 };
@@ -168,6 +170,10 @@ HWND CreateGroup(_In_ PGROUP pg)
 	// add the explorer style because it looks good
 	SetWindowTheme(hWndListView, TEXT("Explorer"), NULL);
 
+	// get this bad boy an image list
+	hImageList = ImageList_Create(SM_CXICON, SM_CYICON, ILC_COLOR32, 0, 1);
+	SetWindowLongPtr(hWndListView, GWLP_USERDATA, (LONG_PTR)hImageList);
+
 	// TODO: make sure the groups delete their icons upon destruction!
 
 	return hWndGroup;
@@ -186,6 +192,7 @@ BOOL RemoveGroup(_In_ HWND hWndGroup, _In_ BOOL bEliminate)
 	BOOL bReturn = TRUE;
 
 	// TODO: do i have to delete the titlebar icons?
+	// TODO: cleanup the image list as well, IMAGELIST_DESTORY
 
 	if (bEliminate == TRUE)
 	{
@@ -256,12 +263,12 @@ PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 	pGroup->cItemArray++;
 
 	// populate the listview with the relevant information
-	lvi.mask = LVIF_TEXT; // | LVIF_IMAGE;
+	lvi.mask = LVIF_TEXT | LVIF_IMAGE;
 	lvi.iItem = pGroup->cItemArray;
 	lvi.iSubItem = 0;
 	lvi.pszText = pItem->szName;
 	lvi.cchTextMax = ARRAYSIZE(pItem->szName);
-	// lvi.iImage = I_IMAGECALLBACK;
+	lvi.iImage = I_IMAGECALLBACK;
 	lvi.lParam = (LPARAM)pItem;
 
 	// copy that bad boy into the listview
@@ -359,7 +366,7 @@ UINT CalculateGroupMemory(_In_ PGROUP pGroup, _In_ UINT cItems)
 	// calculate the total amount of items wanted, set
 	// to 16 if there's less than 16 items so we always
 	// have some memory ready
- 	cItemBlock = pGroup->cItemArray + cItems;
+	cItemBlock = pGroup->cItemArray + cItems;
 
 	// round the amount of items to the nearest but highest 16
 	cItemBlock = ((cItemBlock + 16) / 16) * 16;
@@ -429,6 +436,40 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 
 		break;
 	}
+
+	case WM_NOTIFY:
+	{
+		switch (((LPNMHDR)lParam)->code)
+		{
+		case LVN_GETDISPINFO:
+		{
+			// TODO: error checking, verify stuff exists first
+			// before removing/adding/touching it
+			HIMAGELIST hImageList = NULL;
+			HICON hIcon = NULL;
+			PITEM pItem = NULL;
+			NMLVDISPINFO* plvdi = (NMLVDISPINFO*)lParam;
+
+			// first get our item's pointer
+			pItem = plvdi->item.lParam;
+
+			// then get the pointer to the group's image list
+			hImageList = (PGROUP)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+
+			// extract that icon son!!
+			hIcon = ExtractIcon(hAppInstance, (LPWSTR)pItem->szIconPath, pItem->iIconIndex);
+
+			// this is the image
+			ImageList_AddIcon(hImageList, hIcon);
+			plvdi->item.iImage = 222;
+
+			DestroyIcon(hIcon);
+
+			return TRUE;
+		}
+		}
+	}
+		
 
 	default:
 		return DefMDIChildProc(hWnd, message, wParam, lParam);
