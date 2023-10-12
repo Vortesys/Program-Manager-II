@@ -155,7 +155,7 @@ HWND CreateGroup(_In_ PGROUP pg)
 	// Create the group window ListView control
 	if ((hWndListView = CreateWindowEx(WS_EX_LEFT, WC_LISTVIEW, TEXT("ListView"),
 		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
-		| LVS_ICON | ((LVS_AUTOARRANGE & bAutoArrange) * LVS_AUTOARRANGE) | LVS_NOSORTHEADER,
+		| LVS_ICON | ((LVS_AUTOARRANGE & bAutoArrange) * LVS_AUTOARRANGE) | LVS_SINGLESEL,
 		mcs.x, mcs.y, mcs.cx, mcs.cy,
 		hWndGroup, NULL, hAppInstance,
 		NULL)) == NULL)
