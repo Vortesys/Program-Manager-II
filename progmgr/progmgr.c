@@ -127,10 +127,11 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 	// Create main window with a default size
 	// TODO: i pulled 320x240 out of my ass, make this dynamic later
-	if (!(hWndProgMgr = CreateWindowW(wc.lpszClassName, szAppTitle, WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+	if ((hWndProgMgr = CreateWindowW(wc.lpszClassName, szAppTitle,
+		WS_OVERLAPPEDWINDOW | WS_VISIBLE,
 		rcRoot.left + ptOffset.x, rcRoot.top + ptOffset.y,
 		rcRoot.left + ptOffset.x + 320, rcRoot.top + ptOffset.y + 240,
-		0, 0, hAppInstance, NULL)))
+		0, 0, hAppInstance, NULL)) == NULL)
 		return 2;
 
 	// Set the window size from the registry, but only if the coords make sense
