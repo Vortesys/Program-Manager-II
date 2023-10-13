@@ -471,6 +471,7 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 	case WM_LBUTTONDBLCLK:
 	{
 		LVHITTESTINFO lvhti = { 0 };
+		LVFINDINFO lvfi = { 0 };
 		LVITEM lvi = { 0 };
 		DWORD dwMessagePos = 0;
 		POINT pt = { 0 };
@@ -522,6 +523,7 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 		case NM_DBLCLK:
 		{
 			LVHITTESTINFO lvhti = { 0 };
+			LVFINDINFO lvfi = { 0 };
 			LVITEM lvi = { 0 };
 			DWORD dwMessagePos = 0;
 			POINT pt = { 0 };
@@ -543,8 +545,12 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 			ListView_HitTest(hWndListView, &lvhti);
 
 			// check we've selected an item
-			if (lvhti.iItem == -1)
-				return 0;
+			//if (lvhti.iItem < 0)
+			//	return 0;
+
+			// we still have to get the listview item...
+			lvfi.flags = LVFI_NEARESTXY;
+			ListView_FindItem(hWndListView, 0, 0);
 
 			// since we have let's get the program item
 			ListView_GetItem(hWndListView, &lvi);
