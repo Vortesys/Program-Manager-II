@@ -16,7 +16,8 @@ if "%1" == "debug" (
     set LINK=/DEBUG
 ) else (
     set CL=/O1 /GS- /DUNICODE /DNDEBUG /DPROGMGR_RELEASE /DPROGMGR_GIT_HASH="%GIT_HASH%"
-    set LINK=/NODEFAULTLIB /OPT:REF /OPT:ICF
+    rem set LINK=/NODEFAULTLIB /OPT:REF /OPT:ICF
+    set LINK=/OPT:REF /OPT:ICF
 )
 
 pushd "%DIR_RELEASE%"
@@ -31,5 +32,6 @@ cl /nologo /W3 /WX /MP /Feprogmgr.exe ^
     /link /INCREMENTAL:NO /SUBSYSTEM:WINDOWS /FIXED /merge:_RDATA=.rdata ^
     /MANIFEST:EMBED /MANIFESTINPUT:%DIR_PROGMGR%\progmgr.exe.manifest ^
     kernel32.lib user32.lib gdi32.lib advapi32.lib shell32.lib ^
-    secur32.lib comdlg32.lib pathcch.lib shlwapi.lib
+    secur32.lib comdlg32.lib pathcch.lib shlwapi.lib version.lib ^
+    comctl32.lib uxtheme.lib
 popd

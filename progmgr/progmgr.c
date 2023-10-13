@@ -193,6 +193,12 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	return 0;
 }
 
+
+/*
+
+// NOTE(u130b8): We used to compile Release builds with /NODEFAULTLIB
+// but I've temporarily removed it so malloc and free works.
+
 // NOTE(u130b8): We're compiling without the C runtime by default in Release builds.
 // But in Debug builds, we need the C runtime, otherwise the address sanitizer and
 // MSVC debug tools break because they use the wWinMainCRTStartup entrypoint to initialize.
@@ -215,3 +221,5 @@ void __stdcall wWinMainCRTStartup() {
     ExitProcess(code);
 }
 #endif
+
+*/
