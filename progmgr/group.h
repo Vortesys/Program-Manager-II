@@ -17,6 +17,7 @@
 #define MAX_GROUPS 512
 #define MAX_ITEMS 512
 #define MAX_TITLE_LENGTH 255 // Same as the registry key name max length
+#define ITEM_BATCH_COUNT 8
 // Group Format Definitions
 #define GRP_SIGNATURE 0x47324D50L // PM2G
 #define GRP_VERSION 2 // Increment for breaking changes, format version
@@ -28,6 +29,7 @@
 // Item Flag Values (DWORD)
 #define ITM_FLAG_MINIMIZED 0x00000001
 #define ITM_FLAG_MAXIMIZED 0x00000002
+#define ITM_FLAG_PRIVILEGE 0x00000004
 
 /* Structures */
 // Item Structure

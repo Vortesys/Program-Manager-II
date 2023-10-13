@@ -417,8 +417,8 @@ UINT CalculateGroupMemory(_In_ PGROUP pGroup, _In_ UINT cItems)
 	// have some memory ready
 	cItemBlock = pGroup->cItemArray + cItems;
 
-	// round the amount of items to the nearest but highest 16
-	cItemBlock = ((cItemBlock + 16) / 16) * 16;
+	// round the amount of items to the nearest but highest ITEM_BATCH_COUNT
+	cItemBlock = ((cItemBlock + ITEM_BATCH_COUNT) / ITEM_BATCH_COUNT) * ITEM_BATCH_COUNT;
 
 	// finally calculate the total group size
 	cbGroupSize += cItemBlock * sizeof(ITEM);
