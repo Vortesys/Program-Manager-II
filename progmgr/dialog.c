@@ -202,6 +202,7 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 	BOOL bOKEnabled = FALSE;
 	BOOL bWorkPath = FALSE;
 	WCHAR szBuffer[MAX_TITLE_LENGTH] = { TEXT("\0") };
+	WCHAR szPathBuffer[MAX_PATH] = { TEXT("\0") };
 	HICON hIconDef = NULL;
 	HICON hIconDlg = NULL;
 
@@ -250,10 +251,10 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 			{
 				// A control has changed. See what's up...
 				bOKEnabled = GetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer));
-				bOKEnabled = bOKEnabled && GetDlgItemText(hWndDlg, IDD_PATH, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer));
+				bOKEnabled = bOKEnabled && GetDlgItemText(hWndDlg, IDD_PATH, (LPWSTR)&szPathBuffer, ARRAYSIZE(szPathBuffer));
 
 				if (bWorkPath)
-					bOKEnabled = bOKEnabled && GetDlgItemText(hWndDlg, IDD_WORKPATH, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer));
+					bOKEnabled = bOKEnabled && GetDlgItemText(hWndDlg, IDD_WORKPATH, (LPWSTR)&szPathBuffer, ARRAYSIZE(szPathBuffer));
 
 				// Check that we have selected an MDI child window as well
 				if ((HWND)SendMessage(hWndMDIClient, WM_MDIGETACTIVE, 0, FALSE) == (HWND)NULL)
@@ -349,7 +350,7 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 		{
 			OPENFILENAME ofn;
 
-			GetDlgItemText(hWndDlg, IDD_WORKPATH, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer));
+			GetDlgItemText(hWndDlg, IDD_WORKPATH, (LPWSTR)&szPathBuffer, ARRAYSIZE(szPathBuffer));
 
 			// Initialize the structure
 			ZeroMemory(&ofn, sizeof(ofn));
@@ -357,16 +358,16 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 			ofn.hwndOwner = hWndDlg;
 			ofn.lpstrFilter = TEXT("Folders\0");
 			ofn.nFilterIndex = 1;
-			ofn.lpstrFile = (LPWSTR)&szBuffer;
+			ofn.lpstrFile = (LPWSTR)&szPathBuffer;
 			// ofn.lpstrFile[0] = '\0';
-			ofn.nMaxFile = ARRAYSIZE(szBuffer);
+			ofn.nMaxFile = ARRAYSIZE(szPathBuffer);
 			ofn.lpstrFileTitle = NULL;
 			ofn.nMaxFileTitle = 0;
 			ofn.lpstrInitialDir = NULL;
 			ofn.Flags = OFN_FILEMUSTEXIST;
 
 			if (GetOpenFileName(&ofn) == TRUE) {
-				SetDlgItemText(hWndDlg, IDD_WORKPATH, (LPWSTR)&szBuffer);
+				SetDlgItemText(hWndDlg, IDD_WORKPATH, (LPWSTR)&szPathBuffer);
 			}
 
 			break;
@@ -388,9 +389,9 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 
 			if (bWorkPath)
 			{
-				GetDlgItemText(hWndDlg, IDD_PATH, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer));
-				PathCchRemoveFileSpec((PWSTR)&szBuffer, ARRAYSIZE(szBuffer));
-				SetDlgItemText(hWndDlg, IDD_WORKPATH, (LPWSTR)&szBuffer);
+				GetDlgItemText(hWndDlg, IDD_PATH, (LPWSTR)&szPathBuffer, ARRAYSIZE(szPathBuffer));
+				PathCchRemoveFileSpec((PWSTR)&szPathBuffer, ARRAYSIZE(szPathBuffer));
+				SetDlgItemText(hWndDlg, IDD_WORKPATH, (LPWSTR)&szPathBuffer);
 			}
 			else
 			{
@@ -408,7 +409,14 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 			// and if not then set the focus to the offending field
 			if (!(bOKEnabled = GetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer))))
 				SendDlgItemMessage(hWndDlg, IDD_NAME, EM_TAKEFOCUS, 0, 0);
-
+			if (!(bOKEnabled = GetDlgItemText(hWndDlg, IDD_PATH, (LPWSTR)&szPathBuffer, ARRAYSIZE(szPathBuffer))))
+				SendDlgItemMessage(hWndDlg, IDD_PATH, EM_TAKEFOCUS, 0, 0);
+			if (bWorkPath)
+			{
+				if (!(bOKEnabled = GetDlgItemText(hWndDlg, IDD_WORKPATH, (LPWSTR)&szPathBuffer, ARRAYSIZE(szPathBuffer))))
+					SendDlgItemMessage(hWndDlg, IDD_WORKPATH, EM_TAKEFOCUS, 0, 0);
+			}
+				
 			// Enable or disable the OK button based on the information
 			EnableWindow(GetDlgItem(hWndDlg, IDD_OK), bOKEnabled);
 
@@ -416,6 +424,12 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 			{
 				// Set the name of the item
 				StringCchCopy(itm.szName, ARRAYSIZE(szBuffer), szBuffer);
+
+				// And the paths...
+				GetDlgItemText(hWndDlg, IDD_PATH, (LPWSTR)&szPathBuffer, ARRAYSIZE(szPathBuffer));
+				StringCchCopy(itm.szExecPath, ARRAYSIZE(szPathBuffer), szPathBuffer);
+				GetDlgItemText(hWndDlg, IDD_WORKPATH, (LPWSTR)&szPathBuffer, ARRAYSIZE(szPathBuffer));
+				StringCchCopy(itm.szWorkPath, ARRAYSIZE(szPathBuffer), szPathBuffer);
 
 				// Item's ready!
 				if (CreateItem((HWND)SendMessage(hWndMDIClient, WM_MDIGETACTIVE, 0, 0), &itm) != NULL)
