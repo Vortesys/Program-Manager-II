@@ -206,7 +206,6 @@ BOOL RemoveGroup(_In_ HWND hWndGroup, _In_ BOOL bEliminate)
 	BOOL bReturn = TRUE;
 
 	// TODO: do i have to delete the titlebar icons?
-	// TODO: cleanup the image list as well, IMAGELIST_DESTORY
 
 	if (bEliminate == TRUE)
 	{
@@ -217,12 +216,12 @@ BOOL RemoveGroup(_In_ HWND hWndGroup, _In_ BOOL bEliminate)
 
 	// get the group struct pointer
 	if ((pGroup = (PGROUP)GetWindowLongPtr(hWndGroup, GWLP_USERDATA)) == NULL)
-		return FALSE;
-
-	free(pGroup);
+		bReturn = FALSE;
+	else
+		free(pGroup);
 
 	// close the group window
-	DestroyWindow(hWndGroup);
+	SendMessage(hWndMDIClient, WM_MDIDESTROY, (WPARAM)hWndGroup, 0);
 
 	return bReturn;
 }
@@ -346,17 +345,16 @@ BOOL ExecuteItem(_In_ PITEM pi)
 
 /* * * *\
 	SaveGroup -
-		Saves group from a group window
-		into a GROUP structure.
+		Updates group information to prepare
+		it for being saved.
 	ABSTRACT - 
-		This function will extract all of the
-		necessary information from a group window
-		in order to produce a group structure.
+		This function will update all of the
+		relevant structures in a group struct
+		in preparation for saving the group.
 	RETURNS -
-		Formatted GROUP structure.
-		Upon failure, wChecksum will be 0.
+		Nothing.
 \* * * */
-GROUP SaveGroup(_In_ PGROUP pg)
+VOID UpdateGroup(_In_ PGROUP pg)
 {
 	GROUP grp = {
 		.dwSignature = GRP_SIGNATURE,
@@ -368,32 +366,16 @@ GROUP SaveGroup(_In_ PGROUP pg)
 		.cItemArray = 0,
 		.pItemArray = 0
 	};
-	HWND hWndGrp = NULL;
-	WCHAR szGroupName[MAX_TITLE_LENGTH];
-
-	// Find the group and copy it
-	grp = *pg;
 
 	// Set the group checksum
-	grp.wChecksum = 1; // NOTE: implement this for real later lol
+	pg->wChecksum = 1; // NOTE: implement this for real later lol
 
-	// Copy group information
-	if (hWndGrp != NULL)
-	{
-		GetWindowText(hWndGrp, szGroupName, MAX_TITLE_LENGTH);
-		StringCchCopy(grp.szName, MAX_TITLE_LENGTH, szGroupName);
-	}
-
-	grp.dwFlags = GRP_FLAG_MAXIMIZED;// GetGroupFlags(pgw);
+	pg->dwFlags = GRP_FLAG_MAXIMIZED;// GetGroupFlags(pgw);
 
 	// Set FILETIME
-	GetSystemTimeAsFileTime(&grp.ftLastWrite);
+	GetSystemTimeAsFileTime(&pg->ftLastWrite);
 
-	// Save items...
-	grp.cItemArray = 0;
-	// TODO: iterate through listview to save items
-
-	return grp;
+	return;
 }
 
 /* * * *\

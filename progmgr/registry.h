@@ -50,8 +50,10 @@ extern RECT rcMainWindow;
 BOOL InitializeRegistryKeys(VOID);
 BOOL IsProgMgrDefaultShell(VOID);
 // Groups
-DWORD SaveGroupToRegistry(_In_ PGROUP pg);
-DWORD LoadGroupFromRegistry(_Inout_ PGROUP pg, _Out_ PDWORD pdwBufferSize);
+DWORD RegistrySaveGroup(_In_ PGROUP pg);
+DWORD RegistryLoadGroup(_Inout_ PGROUP pg, _Out_ PDWORD pdwBufferSize);
 // Settings
-DWORD SaveConfig(BOOL bSettings, BOOL bPos, BOOL bGroups);
-DWORD LoadConfig(BOOL bSettings, BOOL bPos, BOOL bGroups);
+DWORD SaveConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups, _In_ BOOL bExit);
+DWORD LoadConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups);
+// Miscellaneous
+BOOL CALLBACK SaveWindowEnumProc(HWND hWndGroup, LPARAM lParam);

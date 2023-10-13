@@ -81,8 +81,8 @@ BOOL RemoveGroup(_In_ HWND hWndGroup, _In_ BOOL bEliminate);
 PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi);
 BOOL RemoveItem(_In_ PITEM pi);
 BOOL ExecuteItem(_In_ PITEM pi);
-// Import/export functions
-GROUP SaveGroup(_In_ PGROUP pg);
+// Save/Load helper functions
+VOID UpdateGroup(_In_ PGROUP pg);
 // Helper functions
 UINT CalculateGroupMemory(_In_ PGROUP pGroup, _In_ UINT cItems);
 // Group Window

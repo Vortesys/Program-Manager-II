@@ -63,7 +63,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_CLOSE:
 		if (bSaveSettings)
-			SaveConfig(TRUE, TRUE, TRUE);
+			SaveConfig(TRUE, TRUE, TRUE, TRUE);
 
 		if (bIsDefaultShell && (GetShellWindow() != NULL))
 			SetShellWindow(0);
@@ -143,7 +143,7 @@ LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	case IDM_OPTIONS_SAVENOW:
 	SaveConfig:
-		SaveConfig(TRUE, TRUE, TRUE);
+		SaveConfig(TRUE, TRUE, TRUE, FALSE);
 		break;
 
 	case IDM_WINDOW_CASCADE:

@@ -118,7 +118,7 @@ BOOL IsProgMgrDefaultShell(VOID)
 	RETURNS -
 		RCE_* configuration error value
 \* * * */
-DWORD SaveGroupToRegistry(_In_ PGROUP pg)
+DWORD RegistrySaveGroup(_In_ PGROUP pg)
 {
 	DWORD dwConfigStatus = RCE_SUCCESS;
 
@@ -127,21 +127,21 @@ DWORD SaveGroupToRegistry(_In_ PGROUP pg)
 		return RCE_FAILURE;
 
 	// Save group
-	// TODO: save items properly
+	UpdateGroup(pg);
 	if (!RegSetValueEx(hKeyProgramGroups, pg->szName, 0, REG_BINARY,
-		(const BYTE*)pg, (sizeof(*pg) + sizeof(ITEM) * pg->cItemArray)) == ERROR_SUCCESS)
+		(const BYTE*)pg, CalculateGroupMemory(pg, 0)) == ERROR_SUCCESS)
 		dwConfigStatus = dwConfigStatus && RCE_GROUPS;
 
 	return dwConfigStatus;
 }
 
 /* * * *\
-	LoadGroupFromRegistry -
+	RegistryLoadGroup -
 		Loads a group structure from the registry.
 	RETURNS -
 		RCE_* configuration error value
 \* * * */
-DWORD LoadGroupFromRegistry(_Inout_ PGROUP pg, _Out_ PDWORD pdwBufferSize)
+DWORD RegistryLoadGroup(_Inout_ PGROUP pg, _Out_ PDWORD pdwBufferSize)
 {
 	DWORD dwConfigStatus = RCE_SUCCESS;
 	DWORD dwType = REG_BINARY;
@@ -167,7 +167,7 @@ DWORD LoadGroupFromRegistry(_Inout_ PGROUP pg, _Out_ PDWORD pdwBufferSize)
 	RETURNS -
 		RCE_* configuration error value
 \* * * */
-DWORD SaveConfig(BOOL bSettings, BOOL bPos, BOOL bGroups)
+DWORD SaveConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups, _In_ BOOL bExit)
 {
 	DWORD dwConfigStatus = RCE_SUCCESS;
 
@@ -205,13 +205,63 @@ DWORD SaveConfig(BOOL bSettings, BOOL bPos, BOOL bGroups)
 
 	if (bGroups)
 	{
+		HWND hWndGroup = NULL;
+
 		// TODO: Get list of groups, iterate through,
 		// save each one as an individual subkey based
 		// on the name of the group
-		dwConfigStatus = dwConfigStatus && RCE_GROUPS;
+
+		EnumChildWindows(hWndMDIClient, &SaveWindowEnumProc, bExit);
+
+		/*
+		while ((hWndGroup = (HWND)SendMessage(hWndMDIClient,
+			WM_MDIGETACTIVE, 0, (LPARAM)NULL)) != NULL)
+		{
+			// save it...
+			dwConfigStatus = dwConfigStatus &&
+				RegistrySaveGroup((PGROUP)GetWindowLongPtr(hWndGroup,
+					GWLP_USERDATA));
+
+			// close it...
+			if (!RemoveGroup(hWndGroup, FALSE))
+				dwConfigStatus = dwConfigStatus && RCE_GROUPS;
+		}
+		*/
 	}
 
 	return dwConfigStatus;
+}
+
+/* * * *\
+	SaveWindowEnumProc() -
+		Procedure for enumeration
+		of group windows to save
+		or close them
+	NOTES - 
+		lParam is a BOOL that determines
+		whether to close the group or not
+	RETURNS -
+		TRUE to continue
+		FALSE to stop
+\* * * */
+BOOL CALLBACK SaveWindowEnumProc(HWND hWndGroup, LPARAM lParam)
+{
+	if (hWndGroup == NULL)
+		return FALSE;
+
+	// save it...
+	if (RegistrySaveGroup((PGROUP)GetWindowLongPtr(hWndGroup,
+		GWLP_USERDATA)) != RCE_SUCCESS)
+		return FALSE;
+
+	// close it...
+	if ((BOOL)lParam == TRUE)
+	{
+		RemoveGroup(hWndGroup, FALSE);
+		return FALSE;
+	}
+
+	return TRUE;
 }
 
 /* * * *\
@@ -221,7 +271,7 @@ DWORD SaveConfig(BOOL bSettings, BOOL bPos, BOOL bGroups)
 	RETURNS -
 		RCE_* configuration error value
 \* * * */
-DWORD LoadConfig(BOOL bSettings, BOOL bPos, BOOL bGroups)
+DWORD LoadConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups)
 {
 	DWORD dwConfigStatus = RCE_SUCCESS;
 
