@@ -266,8 +266,11 @@ PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 	if (_msize(pGroup) != CalculateGroupMemory(pGroup, 1))
 	{
 		// if we reallocate memory then send the new pointer in
-		if (realloc(pGroup, CalculateGroupMemory(pGroup, 1)) != NULL)
+		PGROUP pNewGroup = realloc(pGroup, CalculateGroupMemory(pGroup, 1));
+		if (pNewGroup != NULL) {
+			pGroup = pNewGroup;
 			SetWindowLongPtr(hWndGroup, GWLP_USERDATA, (LONG_PTR)pGroup);
+		}
 	}
 
 	// add the item
