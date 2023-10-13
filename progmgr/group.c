@@ -284,7 +284,7 @@ PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 	hIcon = ExtractIcon(hAppInstance, (LPWSTR)pItem->szIconPath, pItem->iIconIndex);
 
 	// populate the listview with the relevant information
-	lvi.mask = LVIF_TEXT | LVIF_IMAGE;
+	lvi.mask = LVIF_TEXT | LVIF_IMAGE | LVIF_PARAM;
 	lvi.iItem = pGroup->cItemArray;
 	lvi.iSubItem = 0;
 	lvi.pszText = pItem->szName;
@@ -328,9 +328,9 @@ BOOL RemoveItem(_In_ PITEM pi)
 BOOL ExecuteItem(_In_ PITEM pi)
 {
 	// TODO: nCmdShow from program item flags
-	ShellExecute(hWndProgMgr, NULL,
+	ShellExecute(hWndProgMgr, TEXT("open"),
 		pi->szExecPath, NULL,
-		PathFileExists(pi->szWorkPath) ? pi->szWorkPath : NULL,
+		(pi->szWorkPath != TEXT("")) ? pi->szWorkPath : NULL,
 		SW_NORMAL);
 
 	// TODO: if item has run as admin as a flag,
@@ -468,51 +468,6 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 	case WM_CLOSE:
 		return ShowWindow(hWnd, SW_MINIMIZE);
 
-	case WM_LBUTTONDBLCLK:
-	{
-		LVHITTESTINFO lvhti = { 0 };
-		LVFINDINFO lvfi = { 0 };
-		LVITEM lvi = { 0 };
-		DWORD dwMessagePos = 0;
-		POINT pt = { 0 };
-
-		// TODO: wparam lets me do cool things
-		// if ctrl/shift/alt is held, maybe have
-		// separate but documented functionality?
-
-		// get mouse coordinates
-		dwMessagePos = GetMessagePos();
-		pt.x = GET_X_LPARAM(dwMessagePos);
-		pt.y = GET_Y_LPARAM(dwMessagePos);
-		ScreenToClient(hWnd, &pt);
-
-		// fill the structure
-		lvhti.pt = pt;
-		lvhti.flags = LVHT_ONITEM;
-		lvhti.iItem = 0;
-		lvhti.iSubItem = 0;
-		lvhti.iGroup = 0;
-
-		// run the hit test
-		ListView_HitTest(hWndListView, &lvhti);
-
-		// check we've selected an item
-		if (lvhti.iItem == -1)
-			return 0;
-
-		// since we have let's get the program item
-		ListView_GetItem(hWndListView, &lvi);
-
-		// verify...
-		if (lvi.lParam)
-		{
-			// and execute!
-			ExecuteItem((PITEM)lvi.lParam);
-		}
-
-		return 0;
-	}
-
 	case WM_NOTIFY:
 	{
 		LPNMHDR lpnmhdr = (LPNMHDR)lParam;
@@ -522,50 +477,29 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 
 		case NM_DBLCLK:
 		{
-			LVHITTESTINFO lvhti = { 0 };
-			LVFINDINFO lvfi = { 0 };
 			LVITEM lvi = { 0 };
-			DWORD dwMessagePos = 0;
-			POINT pt = { 0 };
+			PITEM pItem = NULL;
 
-			// get mouse coordinates
-			dwMessagePos = GetMessagePos();
-			pt.x = GET_X_LPARAM(dwMessagePos);
-			pt.y = GET_Y_LPARAM(dwMessagePos);
-			ScreenToClient(hWnd, &pt);
+			// what info do we want?
+			lvi.mask = LVIF_PARAM;
+			lvi.iItem = ((LPNMITEMACTIVATE)lParam)->iItem;
 
-			// fill the structure
-			lvhti.pt = pt;
-			lvhti.flags = LVHT_ONITEM;
-			lvhti.iItem = 0;
-			lvhti.iSubItem = 0;
-			lvhti.iGroup = 0;
-
-			// run the hit test
-			ListView_HitTest(hWndListView, &lvhti);
-
-			// check we've selected an item
-			//if (lvhti.iItem < 0)
-			//	return 0;
-
-			// we still have to get the listview item...
-			lvfi.flags = LVFI_NEARESTXY;
-			ListView_FindItem(hWndListView, 0, 0);
-
-			// since we have let's get the program item
+			// get the listview item
 			ListView_GetItem(hWndListView, &lvi);
 
+			// get the item pointer
+			pItem = (PITEM)lvi.lParam;
+
 			// verify...
-			if (lvi.lParam)
+			if (pItem)
 			{
 				// and execute!
-				ExecuteItem((PITEM)lvi.lParam);
+				ExecuteItem(pItem);
 			}
 
 			break;
 		}
 
-			break;
 		}
 		return 0;
 	}
