@@ -64,7 +64,7 @@ typedef struct _GROUP {
 	INT iIconIndex;
 	// Items
 	WORD cItemArray; // Number of items in pItemArray
-	ITEM pItemArray; // Array of items
+	ITEM pItemArray[1]; // Array of items
 } GROUP, * PGROUP;
 
 /*  Global Variables */

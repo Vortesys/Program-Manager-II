@@ -148,8 +148,10 @@ DWORD RegistryLoadGroup(_Inout_ PGROUP pg, _Out_ PDWORD pdwBufferSize)
 
 	// TODO: rethink this
 
-	// If the pointer is invalid then fail out
-	if ((pg == NULL) | (pdwBufferSize == NULL))
+	// If the pointers are invalid then fail out
+	if (pg == NULL)
+		return RCE_FAILURE;
+	if (pdwBufferSize == NULL)
 		return RCE_FAILURE;
 
 	// Load group
@@ -306,8 +308,32 @@ DWORD LoadConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups)
 
 	if (bGroups)
 	{
-		// TODO: this is unbearable
-		dwConfigStatus = dwConfigStatus && RCE_GROUPS;
+		DWORD dwBufferSize = sizeof(dwSettingsMask);
+		DWORD dwType = REG_BINARY;
+		PGROUP pgrp = NULL;
+		UINT cGroupKeys = 0;
+		UINT cGroupCycle = 0;
+
+		if (!RegQueryInfoKey(hKeyProgramGroups, NULL, NULL, NULL,
+			NULL, NULL, NULL, &cGroupKeys,
+			NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
+		{
+			dwConfigStatus = dwConfigStatus && RCE_SETTINGS;
+
+			// I can get away with returning here upon
+			// failure since this is the last one
+			return dwConfigStatus;
+		}
+
+		if (cGroupKeys < 1)
+		{
+			while (cGroupKeys >= cGroupCycle)
+			{
+				
+				// increment
+				cGroupCycle++;
+			}
+		}
 	}
 
 	return dwConfigStatus;
