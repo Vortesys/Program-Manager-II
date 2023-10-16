@@ -273,7 +273,7 @@ PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 	}
 
 	// add the item
-	pItem = &pGroup->pItemArray + pGroup->cItemArray;
+	pItem = pGroup->pItemArray + pGroup->cItemArray;
 	*pItem = *pi;
 
 	// increment the item counter
