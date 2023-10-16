@@ -52,14 +52,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				return 0;
 		}
 
-		goto WndProcDefault;
+		return DefFrameProc(hWnd, hWndMDIClient, message, wParam, lParam);
 	}
 
 	case WM_COMMAND:
 		if (CmdProc(hWnd, wParam, lParam))
 			return 0;
 
-		goto WndProcDefault;
+		return DefFrameProc(hWnd, hWndMDIClient, message, wParam, lParam);
 
 	case WM_CLOSE:
 		if (bSaveSettings)
@@ -76,7 +76,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 
 	default:
-	WndProcDefault:
 		return DefFrameProc(hWnd, hWndMDIClient, message, wParam, lParam);
 	}
 	return 0;

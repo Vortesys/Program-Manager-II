@@ -370,7 +370,8 @@ VOID UpdateGroup(_In_ PGROUP pg)
 	// Set the group checksum
 	pg->wChecksum = 1; // NOTE: implement this for real later lol
 
-	pg->dwFlags = GRP_FLAG_MAXIMIZED;// GetGroupFlags(pgw);
+	// TODO: set group flags
+	// pg->dwFlags = GRP_FLAG_MAXIMIZED;// GetGroupFlags(pgw);
 
 	// Set FILETIME
 	GetSystemTimeAsFileTime(&pg->ftLastWrite);
