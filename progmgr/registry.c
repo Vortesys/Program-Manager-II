@@ -113,7 +113,7 @@ BOOL IsProgMgrDefaultShell(VOID)
 }
 
 /* * * *\
-	SaveGroupToRegistry -
+	RegistrySaveGroup -
 		Saves a group structure to registry.
 	RETURNS -
 		RCE_* configuration error value
@@ -141,22 +141,22 @@ DWORD RegistrySaveGroup(_In_ PGROUP pg)
 	RETURNS -
 		RCE_* configuration error value
 \* * * */
-DWORD RegistryLoadGroup(_Inout_ PGROUP pg, _Out_ PDWORD pdwBufferSize)
+DWORD RegistryLoadGroup(_Inout_ PGROUP pg, _Out_ DWORD dwBufferSize)
 {
 	DWORD dwConfigStatus = RCE_SUCCESS;
 	DWORD dwType = REG_BINARY;
+
+	dwBufferSize = 0;
 
 	// TODO: rethink this
 
 	// If the pointers are invalid then fail out
 	if (pg == NULL)
 		return RCE_FAILURE;
-	if (pdwBufferSize == NULL)
-		return RCE_FAILURE;
 
 	// Load group
 	if (!RegQueryValueEx(hKeyProgramGroups, pg->szName, 0, &dwType,
-		(LPBYTE)pg, pdwBufferSize) == ERROR_SUCCESS)
+		(LPBYTE)pg, &dwBufferSize) == ERROR_SUCCESS)
 		dwConfigStatus = dwConfigStatus && RCE_POSITION;
 
 	return dwConfigStatus;
