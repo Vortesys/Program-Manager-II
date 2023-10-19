@@ -134,7 +134,7 @@ HWND CreateGroup(_In_ PGROUP pg)
 		mcs.cx = pg->rcGroup.right - pg->rcGroup.left;
 		mcs.cy = pg->rcGroup.bottom - pg->rcGroup.top;
 	}
-	mcs.style = WS_VISIBLE;
+	mcs.style = WS_VISIBLE | WS_THICKFRAME | WS_CAPTION | WS_BORDER | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
 	// TODO: should I pass the pointer to the group through here
 	// or is it better and easier to just do it with GWLP_USERDATA?
 	mcs.lParam = (LPARAM)NULL;
