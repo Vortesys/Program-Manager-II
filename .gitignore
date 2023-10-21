@@ -60,5 +60,7 @@ dkms.conf
 *.res
 *.suo
 *.user
+*.sdf
+*.opensdf
 
 release
