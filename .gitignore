@@ -59,5 +59,6 @@ dkms.conf
 *.zip
 *.res
 *.suo
+*.user
 
 release
