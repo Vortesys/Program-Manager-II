@@ -58,5 +58,6 @@ dkms.conf
 /bin.7z
 *.zip
 *.res
+*.suo
 
 release
