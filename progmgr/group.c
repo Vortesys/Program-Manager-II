@@ -239,6 +239,7 @@ PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 	HICON hIcon = NULL;
 	LVITEM lvi = { 0 };
 	PGROUP pGroup = NULL;
+	PGROUP pNewGroup = NULL;
 	PITEM pItem = NULL;
 	UINT uiTest = 0;
 	HWND hWndListView = NULL;
@@ -260,16 +261,12 @@ PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 	if (hWndListView == NULL)
 		return NULL;
 
-	// compare group's existing memory to needed memory
-	// if needed, reallocate the group's memory
-	if (_msize(pGroup) != CalculateGroupMemory(pGroup, 1))
+	// if we reallocate memory then send the new pointer in
+	pNewGroup = realloc(pGroup, CalculateGroupMemory(pGroup, 1));
+	if (pNewGroup != NULL)
 	{
-		// if we reallocate memory then send the new pointer in
-		PGROUP pNewGroup = realloc(pGroup, CalculateGroupMemory(pGroup, 1));
-		if (pNewGroup != NULL) {
-			pGroup = pNewGroup;
-			SetWindowLongPtr(hWndGroup, GWLP_USERDATA, (LONG_PTR)pGroup);
-		}
+		pGroup = pNewGroup;
+		SetWindowLongPtr(hWndGroup, GWLP_USERDATA, (LONG_PTR)pGroup);
 	}
 
 	// add the item
@@ -356,21 +353,15 @@ BOOL ExecuteItem(_In_ PITEM pi)
 \* * * */
 VOID UpdateGroup(_In_ PGROUP pg)
 {
-	GROUP grp = {
-		.dwSignature = GRP_SIGNATURE,
-		.wVersion = GRP_VERSION,
-		.wChecksum = 0,
-		.szName = TEXT(""),
-		.dwFlags = 0,
-		.ftLastWrite = 0,
-		.cItemArray = 0,
-		.pItemArray = 0
-	};
+	// Set the important flags
+	pg->dwSignature = GRP_SIGNATURE;
+	pg->wVersion = GRP_VERSION;
 
 	// Set the group checksum
 	pg->wChecksum = 1; // NOTE: implement this for real later lol
 
-	// TODO: set group flags
+	// TODO: set name and group flags
+	// pg->szName = GetWindowText(blah blah blah);
 	// pg->dwFlags = GRP_FLAG_MAXIMIZED;// GetGroupFlags(pgw);
 
 	// Set FILETIME

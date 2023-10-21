@@ -15,7 +15,7 @@
 #include "resource.h"
 // #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
-#include <pathcch.h>
+#include <Commctrl.h>
 #include <Shlobj.h>
 #include <shlwapi.h>
 #include <strsafe.h>

@@ -132,7 +132,6 @@ LRESULT CALLBACK DeskWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 		break;
 
 	case WM_ACTIVATE:
-	case WM_DPICHANGED:
 	case WM_DISPLAYCHANGE:
 	case WM_DEVICECHANGE:
 		// Get size of the root HWND
