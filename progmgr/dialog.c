@@ -33,18 +33,7 @@ WCHAR		szDlgTitle[64];
 \* * * */
 BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	static GROUP grp = {
-		.dwSignature = GRP_SIGNATURE,
-		.wVersion = GRP_VERSION,
-		.wChecksum = 0,
-		.szName = TEXT(""),
-		.dwFlags = 0,
-		.ftLastWrite = 0,
-		.szIconPath = TEXT(""),
-		.iIconIndex = 0,
-		.cItemArray = 0,
-		.pItemArray = 0
-	};
+	static GROUP grp = { 0 };
 	BOOL bOKEnabled = FALSE;
 	WCHAR szBuffer[MAX_TITLE_LENGTH] = { TEXT("\0") };
 	HICON hIconDef = NULL;
@@ -60,7 +49,7 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 		// TODO:
 		// fix minor GDI font/region leak
 
-		// Reset the group structure
+		// Reset the necessary parts of the group structure
 		grp.dwSignature = GRP_SIGNATURE;
 		grp.wVersion = GRP_VERSION;
 		grp.wChecksum = 0;
@@ -189,16 +178,7 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 \* * * */
 BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	static ITEM itm = {
-		.szName = TEXT(""),
-		.szExecPath = TEXT(""),
-		.szWorkPath = TEXT(""),
-		.dwFlags = 0,
-		.uiHotkeyModifiers = 0,
-		.uiHotkeyVirtualKey = 0,
-		.szIconPath = TEXT(""),
-		.iIconIndex = 0,
-	};
+	static ITEM itm = { 0 };
 	BOOL bOKEnabled = FALSE;
 	BOOL bWorkPath = FALSE;
 	WCHAR szBuffer[MAX_TITLE_LENGTH] = { TEXT("\0") };
@@ -214,7 +194,7 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 		// require a valid group to be selected or else the dialog won't
 		// EVEN BE AVAILABLE!!! or let you press ok.
 		
-		// Reset the item structure
+		// Reset the necessary parts of the item structure
 		itm.dwFlags = 0;
 		itm.uiHotkeyModifiers = 0;
 		itm.uiHotkeyVirtualKey = 0;
