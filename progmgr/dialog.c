@@ -305,8 +305,8 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 			}
 			else
 			{
-				PathStripPath(szNameBuffer);
-				PathCchRemoveExtension(szNameBuffer, ARRAYSIZE(szNameBuffer));
+				PathStripPath((LPWSTR)&szNameBuffer);
+				PathRemoveExtension((LPWSTR)&szNameBuffer);
 			}
 
 			SetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)szNameBuffer);
@@ -370,7 +370,7 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 			if (bWorkPath)
 			{
 				GetDlgItemText(hWndDlg, IDD_PATH, (LPWSTR)&szPathBuffer, ARRAYSIZE(szPathBuffer));
-				PathCchRemoveFileSpec((PWSTR)&szPathBuffer, ARRAYSIZE(szPathBuffer));
+				PathRemoveFileSpec((LPWSTR)&szPathBuffer);
 				SetDlgItemText(hWndDlg, IDD_WORKPATH, (LPWSTR)&szPathBuffer);
 			}
 			else
@@ -388,15 +388,12 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 			// Check that all the applicable fields are filled out,
 			// and if not then set the focus to the offending field
 			if (!(bOKEnabled = GetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer))))
-				// SendDlgItemMessage(hWndDlg, IDD_NAME, EM_TAKEFOCUS, 0, 0);
 				SetFocus(GetDlgItem(hWndDlg, IDD_NAME));
 			if (!(bOKEnabled = GetDlgItemText(hWndDlg, IDD_PATH, (LPWSTR)&szPathBuffer, ARRAYSIZE(szPathBuffer))))
-				// SendDlgItemMessage(hWndDlg, IDD_PATH, EM_TAKEFOCUS, 0, 0);
 				SetFocus(GetDlgItem(hWndDlg, IDD_PATH));
 			if (bWorkPath)
 			{
 				if (!(bOKEnabled = GetDlgItemText(hWndDlg, IDD_WORKPATH, (LPWSTR)&szPathBuffer, ARRAYSIZE(szPathBuffer))))
-					// SendDlgItemMessage(hWndDlg, IDD_WORKPATH, EM_TAKEFOCUS, 0, 0);
 					SetFocus(GetDlgItem(hWndDlg, IDD_WORKPATH));
 			}
 				
