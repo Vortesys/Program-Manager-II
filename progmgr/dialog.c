@@ -114,7 +114,7 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 			// Check that all the applicable fields are filled out,
 			// and if not then set the focus to the offending field
 			if (!(bOKEnabled = GetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)&szBuffer, ARRAYSIZE(szBuffer))))
-				SendDlgItemMessage(hWndDlg, IDD_NAME, EM_TAKEFOCUS, 0, 0);
+				SetFocus(GetDlgItem(hWndDlg, IDD_NAME));
 
 			// Enable or disable the OK button based on the information
 			EnableWindow(GetDlgItem(hWndDlg, IDD_OK), bOKEnabled);
