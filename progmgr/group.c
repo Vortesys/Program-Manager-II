@@ -106,14 +106,19 @@ HWND CreateGroup(_In_ PGROUP pg)
 	if (pg == NULL)
 		return NULL;
 
+	// error checking, if we get trash don't try to
+	// make a group out of it
+	if (pg->dwSignature != GRP_SIGNATURE)
+		return NULL;
+
 	// allocate memory for a new group
-	pGroup = (PGROUP)malloc(CalculateGroupMemory(pg, 0));
+	pGroup = (PGROUP)malloc(CalculateGroupMemory(pg, 0, 0));
 
 	if (pGroup == NULL)
 		return NULL;
 
 	// clean up the memory if it's valid
-	ZeroMemory(pGroup, CalculateGroupMemory(pg, 0));
+	ZeroMemory(pGroup, sizeof(*pGroup));
 
 	// copy over the group structure
 	*pGroup = *pg;
@@ -157,7 +162,7 @@ HWND CreateGroup(_In_ PGROUP pg)
 			DestroyIcon(hIconTemp);
 	}
 
-	// get the group window rect
+	// Get the group window rect
 	GetClientRect(hWndGroup, &rcGroupWindow);
 
 	// Create the group window ListView control
@@ -172,18 +177,18 @@ HWND CreateGroup(_In_ PGROUP pg)
 
 	// ((LVS_AUTOARRANGE & bAutoArrange) * LVS_AUTOARRANGE)
 
-	// resize it to fit the window
+	// Resize it to fit the window
 	SetWindowPos(hWndListView, NULL,
 		rcGroupWindow.left, rcGroupWindow.top,
 		rcGroupWindow.right - rcGroupWindow.left,
 		rcGroupWindow.bottom - rcGroupWindow.top, SWP_NOZORDER);
 
-	// add the explorer style because it looks good
+	// Add the explorer style because it looks good
 	SetWindowTheme(hWndListView, TEXT("Explorer"), NULL);
 
-	// get this bad boy an image list
+	// Get this bad boy an image list
 	// TODO: if cxicon/cyicon change make sure we handle that
-	// don't require a program restart
+	// don't require a program restart, DPI!!!
 	hImageList = ImageList_Create(GetSystemMetrics(SM_CXICON),
 		GetSystemMetrics(SM_CYICON), ILC_COLOR32, 0, 1);
 	ListView_SetImageList(hWndListView, hImageList, LVSIL_NORMAL);
@@ -262,7 +267,7 @@ PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 		return NULL;
 
 	// if we reallocate memory then send the new pointer in
-	pNewGroup = realloc(pGroup, CalculateGroupMemory(pGroup, 1));
+	pNewGroup = realloc(pGroup, CalculateGroupMemory(pGroup, 1, 0));
 	if (pNewGroup != NULL)
 	{
 		pGroup = pNewGroup;
@@ -341,7 +346,7 @@ BOOL ExecuteItem(_In_ PITEM pi)
 }
 
 /* * * *\
-	SaveGroup -
+	UpdateGroup -
 		Updates group information to prepare
 		it for being saved.
 	ABSTRACT - 
@@ -378,7 +383,7 @@ VOID UpdateGroup(_In_ PGROUP pg)
 	RETURNS -
 		Size in bytes that a group should take up.
 \* * * */
-UINT CalculateGroupMemory(_In_ PGROUP pGroup, _In_ UINT cItems)
+UINT CalculateGroupMemory(_In_ PGROUP pGroup, _In_ UINT cItems, _In_ BOOL bLean)
 {
 	UINT cbGroupSize = 0;
 	UINT cItemBlock = 0;
@@ -391,8 +396,9 @@ UINT CalculateGroupMemory(_In_ PGROUP pGroup, _In_ UINT cItems)
 	// have some memory ready
 	cItemBlock = pGroup->cItemArray + cItems;
 
-	// round the amount of items to the nearest but highest ITEM_BATCH_COUNT
-	cItemBlock = ((cItemBlock + ITEM_BATCH_COUNT) / ITEM_BATCH_COUNT) * ITEM_BATCH_COUNT;
+	if (!bLean)
+		// round the amount of items to the nearest but highest ITEM_BATCH_COUNT
+		cItemBlock = ((cItemBlock + ITEM_BATCH_COUNT) / ITEM_BATCH_COUNT) * ITEM_BATCH_COUNT;
 
 	// finally calculate the total group size
 	cbGroupSize += cItemBlock * sizeof(ITEM);

@@ -35,6 +35,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_CREATE:
 	{
+		// Now we can create the groups
+		if(LoadConfig(FALSE, FALSE, TRUE) != RCE_SUCCESS)
+			return FALSE;
+
+		// TODO: if loading groups fails, throw an error
+
 		return TRUE;
 	}
 

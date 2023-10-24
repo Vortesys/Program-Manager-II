@@ -129,7 +129,7 @@ DWORD RegistrySaveGroup(_In_ PGROUP pg)
 	// Save group
 	UpdateGroup(pg);
 	if (!RegSetValueEx(hKeyProgramGroups, pg->szName, 0, REG_BINARY,
-		(const BYTE*)pg, CalculateGroupMemory(pg, 0)) == ERROR_SUCCESS)
+		(const BYTE*)pg, sizeof(*pg)) == ERROR_SUCCESS)
 		dwConfigStatus = dwConfigStatus && RCE_GROUPS;
 
 	return dwConfigStatus;
@@ -213,22 +213,7 @@ DWORD SaveConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups, _In_ BO
 		// save each one as an individual subkey based
 		// on the name of the group
 
-		EnumChildWindows(hWndMDIClient, &SaveWindowEnumProc, bExit);
-
-		/*
-		while ((hWndGroup = (HWND)SendMessage(hWndMDIClient,
-			WM_MDIGETACTIVE, 0, (LPARAM)NULL)) != NULL)
-		{
-			// save it...
-			dwConfigStatus = dwConfigStatus &&
-				RegistrySaveGroup((PGROUP)GetWindowLongPtr(hWndGroup,
-					GWLP_USERDATA));
-
-			// close it...
-			if (!RemoveGroup(hWndGroup, FALSE))
-				dwConfigStatus = dwConfigStatus && RCE_GROUPS;
-		}
-		*/
+		EnumChildWindows(hWndMDIClient, &SaveWindowEnumProc, (LPARAM)bExit);
 	}
 
 	return dwConfigStatus;
@@ -248,12 +233,27 @@ DWORD SaveConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups, _In_ BO
 \* * * */
 BOOL CALLBACK SaveWindowEnumProc(HWND hWndGroup, LPARAM lParam)
 {
+	PGROUP pNewGroup = NULL;
+	PGROUP pGroup = NULL;
+
 	if (hWndGroup == NULL)
 		return FALSE;
 
+	pGroup = (PGROUP)GetWindowLongPtr(hWndGroup, GWLP_USERDATA);
+
+	if (pGroup == NULL)
+		return FALSE;
+
+	// lean it...
+	pNewGroup = realloc(pGroup, CalculateGroupMemory(pGroup, 1, 1));
+	if (pNewGroup != NULL)
+	{
+		pGroup = pNewGroup;
+		SetWindowLongPtr(hWndGroup, GWLP_USERDATA, (LONG_PTR)pGroup);
+	}
+
 	// save it...
-	if (RegistrySaveGroup((PGROUP)GetWindowLongPtr(hWndGroup,
-		GWLP_USERDATA)) != RCE_SUCCESS)
+	if (RegistrySaveGroup(pGroup) != RCE_SUCCESS)
 		return FALSE;
 
 	// close it...
@@ -310,13 +310,14 @@ DWORD LoadConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups)
 	{
 		DWORD dwBufferSize = sizeof(dwSettingsMask);
 		DWORD dwType = REG_BINARY;
-		PGROUP pgrp = NULL;
+		PGROUP pGroup = NULL;
+		UINT cbGroup = 0;
 		UINT cGroupKeys = 0;
-		UINT cGroupCycle = 0;
+		UINT cGroupIndex = 0;
 
-		if (!RegQueryInfoKey(hKeyProgramGroups, NULL, NULL, NULL,
+		if (!(RegQueryInfoKey(hKeyProgramGroups, NULL, NULL, NULL,
 			NULL, NULL, NULL, &cGroupKeys,
-			NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
+			NULL, NULL, NULL, NULL) == ERROR_SUCCESS))
 		{
 			dwConfigStatus = dwConfigStatus && RCE_SETTINGS;
 
@@ -325,13 +326,37 @@ DWORD LoadConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups)
 			return dwConfigStatus;
 		}
 
-		if (cGroupKeys < 1)
+		if (cGroupKeys > 0)
 		{
-			while (cGroupKeys >= cGroupCycle)
+			while (cGroupKeys >= cGroupIndex)
 			{
-				
+				WCHAR szValueName[MAX_TITLE_LENGTH] = TEXT("");
+				UINT cbValueName = 0;
+
+				// TODO: figure out where i'm really going to store the
+				// group name, if not in the group structure then in
+				// the name of the registry key (val 3 here)
+
+				// get the size of the group
+				RegEnumValue(hKeyProgramGroups, cGroupIndex, (LPWSTR)&szValueName,
+					&cbValueName, NULL, NULL, NULL, &cbGroup);
+
+				// allocate memory for the group
+				pGroup = malloc(cbGroup);
+
+				// get the group
+				RegQueryValueEx(hKeyProgramGroups, (LPWSTR)&szValueName, NULL, NULL,
+					(LPBYTE)pGroup, &cbGroup);
+
+				// load the group
+				CreateGroup(pGroup);
+
+				// free memory
+				if (pGroup)
+					free(pGroup);
+
 				// increment
-				cGroupCycle++;
+				cGroupIndex++;
 			}
 		}
 	}

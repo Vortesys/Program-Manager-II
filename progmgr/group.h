@@ -85,6 +85,6 @@ BOOL ExecuteItem(_In_ PITEM pi);
 // Save/Load helper functions
 VOID UpdateGroup(_In_ PGROUP pg);
 // Helper functions
-UINT CalculateGroupMemory(_In_ PGROUP pGroup, _In_ UINT cItems);
+UINT CalculateGroupMemory(_In_ PGROUP pGroup, _In_ UINT cItems, _In_ BOOL bLean);
 // Group Window
 LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
