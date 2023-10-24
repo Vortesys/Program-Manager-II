@@ -21,7 +21,7 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 
 /* Icon Library */
 // Primary
-#ifndef _DEBUG
+#ifdef NDEBUG
 IDI_PROGMGR		ICON	icons\progmgr.ico
 #else
 IDI_PROGMGR		ICON	icons\progmgrd.ico
