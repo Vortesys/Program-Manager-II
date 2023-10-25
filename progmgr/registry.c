@@ -315,9 +315,9 @@ DWORD LoadConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups)
 		UINT cGroupKeys = 0;
 		UINT cGroupIndex = 0;
 
-		if (!(RegQueryInfoKey(hKeyProgramGroups, NULL, NULL, NULL,
+		if (!RegQueryInfoKey(hKeyProgramGroups, NULL, NULL, NULL,
 			NULL, NULL, NULL, &cGroupKeys,
-			NULL, NULL, NULL, NULL) == ERROR_SUCCESS))
+			NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
 		{
 			dwConfigStatus = dwConfigStatus && RCE_SETTINGS;
 
@@ -338,22 +338,31 @@ DWORD LoadConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups)
 				// the name of the registry key (val 3 here)
 
 				// get the size of the group
-				RegEnumValue(hKeyProgramGroups, cGroupIndex, (LPWSTR)&szValueName,
-					&cbValueName, NULL, NULL, NULL, &cbGroup);
+				RegEnumValue(hKeyProgramGroups, cGroupIndex, (LPWSTR)szValueName,
+					&cbValueName, NULL, &dwType, NULL, &cbGroup);
 
-				// allocate memory for the group
+				// allocate and zero memory for the group
 				pGroup = malloc(cbGroup);
+				ZeroMemory(pGroup, cbGroup);
 
 				// get the group
-				RegQueryValueEx(hKeyProgramGroups, (LPWSTR)&szValueName, NULL, NULL,
-					(LPBYTE)pGroup, &cbGroup);
+				RegQueryValueEx(hKeyProgramGroups, (LPWSTR)szValueName, NULL,
+					&dwType, (LPBYTE)pGroup, &cbGroup);
+				/*
+				RegGetValue(hKeyProgramGroups, NULL, (LPWSTR)szValueName,
+					RRF_RT_REG_BINARY, &dwType, (LPBYTE)pGroup, &cbGroup);
+				*/
 
-				// load the group
-				CreateGroup(pGroup);
+				// verify part of the group is valid
+				// TODO: use checksums instead of/alongside signatures
+				if (pGroup->dwSignature == GRP_SIGNATURE)
+				{
+					// load the group
+					CreateGroup(pGroup);
 
-				// free memory
-				if (pGroup)
+					// free memory
 					free(pGroup);
+				}
 
 				// increment
 				cGroupIndex++;
