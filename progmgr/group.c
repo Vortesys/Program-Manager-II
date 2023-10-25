@@ -116,8 +116,7 @@ HWND CreateGroup(_In_ PGROUP pg)
 		return NULL;
 
 	// allocate memory for a new group
-	pGroup = (PGROUP)malloc(CalculateGroupMemory(pg, 0, 0));
-
+	pGroup = (PGROUP)malloc(CalculateGroupMemory(pg, 1, 0));
 	if (pGroup == NULL)
 		return NULL;
 
@@ -175,8 +174,7 @@ HWND CreateGroup(_In_ PGROUP pg)
 		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		LVS_ICON | LVS_SINGLESEL | LVS_AUTOARRANGE,
 		mcs.x, mcs.y, mcs.cx, mcs.cy,
-		hWndGroup, NULL, hAppInstance,
-		NULL)) == NULL)
+		hWndGroup, NULL, hAppInstance, NULL)) == NULL)
 		return NULL;
 
 	// ((LVS_AUTOARRANGE & bAutoArrange) * LVS_AUTOARRANGE)
@@ -196,6 +194,10 @@ HWND CreateGroup(_In_ PGROUP pg)
 	hImageList = ImageList_Create(GetSystemMetrics(SM_CXICON),
 		GetSystemMetrics(SM_CYICON), ILC_COLOR32, 0, 1);
 	ListView_SetImageList(hWndListView, hImageList, LVSIL_NORMAL);
+
+	// since the list is viewing we can load items if applicable
+	if (pGroup->cItemArray > 0)
+		LoadItems(hWndGroup);
 
 	// TODO: make sure the groups delete their icons upon destruction!
 	// AND IMAGE LIST!!!!!!!!? i think it's nuked w/ listview though
@@ -244,18 +246,16 @@ BOOL RemoveGroup(_In_ HWND hWndGroup, _In_ BOOL bEliminate)
 \* * * */
 PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 {
-	HIMAGELIST hImageList = NULL;
-	HICON hIcon = NULL;
-	LVITEM lvi = { 0 };
 	PGROUP pGroup = NULL;
 	PGROUP pNewGroup = NULL;
 	PITEM pItem = NULL;
-	UINT uiTest = 0;
 	HWND hWndListView = NULL;
+	HIMAGELIST hImageList = NULL;
+	HICON hIcon = NULL;
+	LVITEM lvi = { 0 };
 
 	// we actually just want the group pointer lol
 	pGroup = (PGROUP)GetWindowLongPtr(hWndGroup, GWLP_USERDATA);
-	uiTest = pGroup->cItemArray;
 
 	// return NULL if we can't get to the group or item
 	if (hWndGroup == NULL)
@@ -311,6 +311,79 @@ PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 }
 
 /* * * *\
+	LoadItems -
+		Loads all of the items in a group structure
+	RETURNS -
+		TRUE if successful
+		FALSE otherwise
+\* * * */
+BOOL LoadItems(_In_ HWND hWndGroup)
+{
+	PGROUP pGroup = NULL;
+	PGROUP pNewGroup = NULL;
+	PITEM pItem = NULL;
+	HWND hWndListView = NULL;
+	HIMAGELIST hImageList = NULL;
+	LVITEM lvi = { 0 };
+	UINT cItemIndex = 0;
+	HICON hIcon = NULL;
+
+	// return NULL if we can't get to the group
+	if (hWndGroup == NULL)
+		return FALSE;
+
+	// retrieve the group pointer
+	pGroup = (PGROUP)GetWindowLongPtr(hWndGroup, GWLP_USERDATA);
+	if (pGroup == NULL)
+		return FALSE;
+	
+	// get the listview window
+	hWndListView = FindWindowEx(hWndGroup, NULL, WC_LISTVIEW, NULL);
+	if (hWndListView == NULL)
+		return FALSE;
+
+	// make sure we have enough memory for the items
+	pNewGroup = realloc(pGroup, CalculateGroupMemory(pGroup, 0, 1));
+	if (pNewGroup != NULL)
+	{
+		pGroup = pNewGroup;
+		SetWindowLongPtr(hWndGroup, GWLP_USERDATA, (LONG_PTR)pGroup);
+	}
+	
+	// then get the pointer to the group's image list
+	hImageList = ListView_GetImageList(hWndListView, LVSIL_NORMAL);
+
+	while (pGroup->cItemArray > cItemIndex)
+	{
+		pItem = pGroup->pItemArray + cItemIndex;
+
+		// extract that icon son!!
+		hIcon = ExtractIcon(hAppInstance, (LPWSTR)pItem->szIconPath, pItem->iIconIndex);
+
+		// populate the listview with the relevant information
+		lvi.mask = LVIF_TEXT | LVIF_IMAGE | LVIF_PARAM;
+		lvi.iItem = cItemIndex;
+		lvi.iSubItem = 0;
+		lvi.pszText = pItem->szName;
+		lvi.cchTextMax = ARRAYSIZE(pItem->szName);
+		lvi.iImage = ImageList_AddIcon(hImageList, hIcon);
+		lvi.lParam = (LPARAM)pItem;
+
+		// copy that bad boy into the listview
+		ListView_InsertItem(hWndListView, &lvi);
+
+		cItemIndex++;
+	}
+	
+	if (hIcon)
+		// get that hicon outta here
+		DestroyIcon(hIcon);
+
+	// TODO: fail if the listview item isn't added
+	return TRUE;
+}
+
+/* * * *\
 	RemoveItem -
 		Removes a program item
 	RETURNS -
@@ -362,6 +435,7 @@ BOOL ExecuteItem(_In_ PITEM pi)
 \* * * */
 VOID UpdateGroup(_In_ PGROUP pg)
 {
+	DWORD dwFlags = 0;
 	// Set the important flags
 	pg->dwSignature = GRP_SIGNATURE;
 	pg->wVersion = GRP_VERSION;
@@ -375,6 +449,9 @@ VOID UpdateGroup(_In_ PGROUP pg)
 
 	// Set FILETIME
 	GetSystemTimeAsFileTime(&pg->ftLastWrite);
+	
+	// Get the group window rect
+	// GetClientRect(hWndGroup, &rcGroupWindow);
 
 	return;
 }
