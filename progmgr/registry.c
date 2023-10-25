@@ -331,14 +331,15 @@ DWORD LoadConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups)
 			while (cGroupKeys >= cGroupIndex)
 			{
 				WCHAR szValueName[MAX_TITLE_LENGTH] = TEXT("");
-				UINT cbValueName = 0;
+				UINT cbValueName = sizeof(szValueName);
+				DWORD dwTemp = 0;
 
 				// TODO: figure out where i'm really going to store the
 				// group name, if not in the group structure then in
 				// the name of the registry key (val 3 here)
 
 				// get the size of the group
-				RegEnumValue(hKeyProgramGroups, cGroupIndex, (LPWSTR)szValueName,
+				RegEnumValue(hKeyProgramGroups, cGroupIndex, szValueName,
 					&cbValueName, NULL, &dwType, NULL, &cbGroup);
 
 				// allocate and zero memory for the group
@@ -346,12 +347,8 @@ DWORD LoadConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups)
 				ZeroMemory(pGroup, cbGroup);
 
 				// get the group
-				RegQueryValueEx(hKeyProgramGroups, (LPWSTR)szValueName, NULL,
-					&dwType, (LPBYTE)pGroup, &cbGroup);
-				/*
-				RegGetValue(hKeyProgramGroups, NULL, (LPWSTR)szValueName,
-					RRF_RT_REG_BINARY, &dwType, (LPBYTE)pGroup, &cbGroup);
-				*/
+				dwTemp = RegQueryValueEx(hKeyProgramGroups, szValueName, NULL,
+					&dwType, pGroup, &cbGroup);
 
 				// verify part of the group is valid
 				// TODO: use checksums instead of/alongside signatures

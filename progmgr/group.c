@@ -77,8 +77,12 @@ BOOL InitializeGroups(VOID)
 
 	if (!RegisterClassEx(&wce))
 		return FALSE;
+	
+	// Now we can create the groups
+	if(LoadConfig(FALSE, FALSE, TRUE) != RCE_SUCCESS)
+		return FALSE;
 
-	// TODO: go thru registry and load all saved groups here
+	// TODO: if loading groups fails, throw an error
 
 	return TRUE;
 }
