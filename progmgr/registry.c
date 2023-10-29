@@ -129,7 +129,7 @@ DWORD RegistrySaveGroup(_In_ PGROUP pg)
 	// Save group
 	UpdateGroup(pg);
 	if (!RegSetValueEx(hKeyProgramGroups, pg->szName, 0, REG_BINARY,
-		(const BYTE*)pg, sizeof(*pg)) == ERROR_SUCCESS)
+		(LPBYTE)pg, CalculateGroupMemory(pg, 0, 1)) == ERROR_SUCCESS)
 		dwConfigStatus = dwConfigStatus && RCE_GROUPS;
 
 	return dwConfigStatus;
@@ -147,8 +147,6 @@ DWORD RegistryLoadGroup(_Inout_ PGROUP pg, _Out_ DWORD dwBufferSize)
 	DWORD dwType = REG_BINARY;
 
 	dwBufferSize = 0;
-
-	// TODO: rethink this
 
 	// If the pointers are invalid then fail out
 	if (pg == NULL)
@@ -209,10 +207,7 @@ DWORD SaveConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups, _In_ BO
 	{
 		HWND hWndGroup = NULL;
 
-		// TODO: Get list of groups, iterate through,
-		// save each one as an individual subkey based
-		// on the name of the group
-
+		// Save each group that exists as a window
 		EnumChildWindows(hWndMDIClient, &SaveWindowEnumProc, (LPARAM)bExit);
 	}
 
@@ -348,7 +343,7 @@ DWORD LoadConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups)
 
 				// get the group
 				dwTemp = RegQueryValueEx(hKeyProgramGroups, szValueName, NULL,
-					&dwType, pGroup, &cbGroup);
+					&dwType, (LPBYTE)pGroup, &cbGroup);
 
 				// verify part of the group is valid
 				// TODO: use checksums instead of/alongside signatures

@@ -392,6 +392,7 @@ BOOL LoadItems(_In_ HWND hWndGroup)
 \* * * */
 BOOL RemoveItem(_In_ PITEM pi)
 {
+	// TODO: implement this
 	// return NULL if we can't get to the group
 	if (pi == NULL)
 		return FALSE;
@@ -457,6 +458,40 @@ VOID UpdateGroup(_In_ PGROUP pg)
 }
 
 /* * * *\
+	VerifyGroup -
+		Verifies that a group contains the
+		correct information about itself.
+	ABSTRACT - 
+		This function will check the checksum,
+		verify the number of items, check other
+		parts of the strucutre. If requested,
+		it will repair the group if it is damaged.
+	RETURNS -
+		TRUE if group appears to be fine
+		FALSE if the group is damaged
+\* * * */
+BOOL VerifyGroup(_In_ PGROUP pg, _In_ BOOL bRepair)
+{
+	if (pg->dwSignature != GRP_SIGNATURE)
+		return FALSE;
+
+	// if (pg->wVersion != GRP_VERSION)
+	// some sort of version difference handling
+
+	if (pg->wChecksum == 1234)
+		// TODO: calculate checksum function
+		return FALSE;
+
+	// TODO: use ftlastwrite to throw an error
+	// if system clock is in the future
+
+	// calculate the size of the group based on item of numbers
+
+	// TODO: change to return a dword error value
+	return TRUE;
+}
+
+/* * * *\
 	CalculateGroupMemory -
 		Calculates the memory needed by a group.
 		Takes a group structure pointer and the
@@ -472,9 +507,7 @@ UINT CalculateGroupMemory(_In_ PGROUP pGroup, _In_ UINT cItems, _In_ BOOL bLean)
 	// first add the size of a group strucutre
 	cbGroupSize += sizeof(GROUP);
 
-	// calculate the total amount of items wanted, set
-	// to 16 if there's less than 16 items so we always
-	// have some memory ready
+	// calculate the total amount of items wanted
 	cItemBlock = pGroup->cItemArray + cItems;
 
 	if (!bLean)
