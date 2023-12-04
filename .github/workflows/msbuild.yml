@@ -48,7 +48,7 @@ jobs:
     
     - name: Set Date Environment Variable
         env:
-          BUILDATE: BUILDATE=%DATE:~10,4%-%DATE:~4,2%-%DATE:~7,2%
+          BUILDATE: %DATE:~10,4%-%DATE:~4,2%-%DATE:~7,2%
     
     - name: Create Release
         id: auto-build
