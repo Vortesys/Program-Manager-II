@@ -80,10 +80,12 @@ HWND CreateGroup(_In_ PGROUP pg);
 BOOL RemoveGroup(_In_ HWND hWndGroup, _In_ BOOL bEliminate);
 // Item Management
 PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi);
+BOOL LoadItems(_In_ HWND hWndGroup);
 BOOL RemoveItem(_In_ PITEM pi);
 BOOL ExecuteItem(_In_ PITEM pi);
 // Save/Load helper functions
 VOID UpdateGroup(_In_ PGROUP pg);
+BOOL VerifyGroup(_In_ PGROUP pg, _In_ BOOL bRepair);
 // Helper functions
 UINT CalculateGroupMemory(_In_ PGROUP pGroup, _In_ UINT cItems, _In_ BOOL bLean);
 // Group Window
