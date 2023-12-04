@@ -51,7 +51,7 @@ jobs:
         uses: actions/create-release@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-          BUILDATE: %DATE:~10,4%-%DATE:~4,2%-%DATE:~7,2%
+          BUILDATE: ${{ %DATE:~10,4%-%DATE:~4,2%-%DATE:~7,2% }}
         with:
           tag_name: ${{ env.BUILDATE }}
           release_name: Auto-Build ${{ github.ref }}
