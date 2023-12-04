@@ -136,33 +136,6 @@ DWORD RegistrySaveGroup(_In_ PGROUP pg)
 }
 
 /* * * *\
-	RegistryLoadGroup -
-		Loads a group structure from the registry.
-	RETURNS -
-		RCE_* configuration error value
-\* * * */
-DWORD RegistryLoadGroup(_Inout_ PGROUP pg, _Out_ DWORD dwBufferSize)
-{
-	DWORD dwConfigStatus = RCE_SUCCESS;
-	DWORD dwType = REG_BINARY;
-
-	dwBufferSize = 0;
-
-	// TODO: rethink this
-
-	// If the pointers are invalid then fail out
-	if (pg == NULL)
-		return RCE_FAILURE;
-
-	// Load group
-	if (!RegQueryValueEx(hKeyProgramGroups, pg->szName, 0, &dwType,
-		(LPBYTE)pg, &dwBufferSize) == ERROR_SUCCESS)
-		dwConfigStatus = dwConfigStatus && RCE_POSITION;
-
-	return dwConfigStatus;
-}
-
-/* * * *\
 	SaveConfig -
 		Finds and collapses all settings
 		and saves them to the registry.
@@ -192,7 +165,7 @@ DWORD SaveConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups, _In_ BO
 
 	if (bPos)
 	{
-		WINDOWPLACEMENT wpProgMgr;
+		WINDOWPLACEMENT wpProgMgr = { 0 };
 		RECT rcWindow;
 
 		// Get and save window position
@@ -208,10 +181,6 @@ DWORD SaveConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups, _In_ BO
 	if (bGroups)
 	{
 		HWND hWndGroup = NULL;
-
-		// TODO: Get list of groups, iterate through,
-		// save each one as an individual subkey based
-		// on the name of the group
 
 		EnumChildWindows(hWndMDIClient, &SaveWindowEnumProc, (LPARAM)bExit);
 	}
@@ -349,11 +318,13 @@ DWORD LoadConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups)
 					(LPBYTE)pGroup, &cbGroup);
 
 				// load the group
-				CreateGroup(pGroup);
-
-				// free memory
 				if (pGroup)
+				{
+					CreateGroup(pGroup);
+
+					// free memory
 					free(pGroup);
+				}
 
 				// increment
 				cGroupIndex++;
