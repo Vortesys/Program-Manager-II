@@ -29,9 +29,8 @@ jobs:
   build:
     strategy:
       matrix:
-        include:
-          BUILD_CONFIGURATION: [Release, Debug]
-          BUILD_PLATFORM: [x64, Win32]
+        BUILD_CONFIGURATION: [Release, Debug]
+        BUILD_PLATFORM: [x64, Win32]
 
     runs-on: windows-latest
 
