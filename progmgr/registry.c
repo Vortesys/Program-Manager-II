@@ -214,12 +214,12 @@ BOOL CALLBACK SaveWindowEnumProc(HWND hWndGroup, LPARAM lParam)
 		return FALSE;
 
 	// lean it...
-	pNewGroup = realloc(pGroup, CalculateGroupMemory(pGroup, 1, 1));
+	/*pNewGroup = realloc(pGroup, CalculateGroupMemory(pGroup, 1, 1));
 	if (pNewGroup != NULL)
 	{
 		pGroup = pNewGroup;
 		SetWindowLongPtr(hWndGroup, GWLP_USERDATA, (LONG_PTR)pGroup);
-	}
+	}*/
 
 	// save it...
 	if (RegistrySaveGroup(pGroup) != RCE_SUCCESS)
@@ -312,6 +312,14 @@ DWORD LoadConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups)
 
 				// allocate memory for the group
 				pGroup = malloc(cbGroup);
+				
+				if (pGroup == NULL)
+				{
+					dwConfigStatus = dwConfigStatus && RCE_GROUPS;
+					return dwConfigStatus;
+				}
+
+				ZeroMemory(pGroup, cbGroup);
 
 				// get the group
 				RegQueryValueEx(hKeyProgramGroups, (LPWSTR)&szValueName, NULL, NULL,
@@ -325,10 +333,10 @@ DWORD LoadConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups)
 					// free memory
 					free(pGroup);
 				}
-
-				// increment
-				cGroupIndex++;
 			}
+
+			// increment
+			cGroupIndex++;
 		}
 	}
 
