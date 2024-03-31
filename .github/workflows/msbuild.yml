@@ -47,5 +47,5 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4.3.1
       with:
-        name: progmgr-binary
+        name: progmgr-${{matrix.BUILD_CONFIGURATION}}-${{matrix.BUILD_PLATFORM}}
         path: ${{env.SOLUTION_FILE_PATH}}/bin
