@@ -3,13 +3,16 @@
 ![Progmgr banner](/misc/pman2.png)
 
 ## What is Program Manager?
-Program Manager was the shell that shipped with Microsoft Windows by default from Windows 3.0/NT 3.1 to 3.11/NT 3.51. The Program Manager shell was included with Windows as an option until Windows 2000. The new Program Manager is a shell that aims to mimic the original desktop metaphor that the original Program Manager was designed for while adding modern amenities.
+Program Manager was the default shell for Windows (NT) 3.x. The Program Manager shell was included as an optional component in Windows until Windows 2000. It contained a basic task manager, a group-based program launcher and a shutdown dialog.
+
+## So, Program Manager II?
+Program Manager II is a shell designed to supercede the original Microsoft Program Manager with better compatibility, stability, and ease of usage. It's currently in alpha and doesn't contain all of the necessary functionality, but progress is being made.
 
 ## What does it run on?
-Program Manager should run on ~~every AMD64 version of Windows and every 32-bit version back to 2000. The ultimate goal is to run on NT 3.51 just as well as it can run on Windows 11~~ Windows Vista and above.
+Program Manager II will run on Windows Vista and above with no problem. Support for XP and older is not guaranteed, nor will it be ported to 9x.
 
 ## Where do I get it?
-The [releases page](https://github.com/Vortesys/Program-Manager-II/releases) will contain the latest version of Program Manager.
+The [releases page](https://github.com/Vortesys/Program-Manager-II/releases) will contain the latest "stable" version of Program Manager II. Build artifacts can be found for most commits made since April and contain pre-release builds.
 
 ## How can I help?
 Submitting [issues](https://github.com/Vortesys/Program-Manager-II/issues) with bug reports, suggestions or comments always helps. If you're able to, contributing with a [pull request](https://github.com/Vortesys/Program-Manager-II/pulls) is much appreciated.
