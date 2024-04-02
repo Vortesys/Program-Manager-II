@@ -306,6 +306,10 @@ PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 	// get that hicon outta here
 	DestroyIcon(hIcon);
 
+	// this is all terrible i'm gonna rewrite this whole file
+	// why is the listview even touched here just... omg...
+	// BAD!! bad functions
+
 	// TODO: fail if the listview item isn't added
 	return pItem;
 }
