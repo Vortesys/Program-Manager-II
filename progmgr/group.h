@@ -1,6 +1,6 @@
 /* * * * * * * *\
 	GROUP.H -
-		Copyright (c) 2023 Vortesys
+		Copyright (c) 2024 Vortesys, Brady McDermott
 	DESCRIPTION -
 		Program group/item structures, functions and definitons
 	LICENSE INFORMATION -

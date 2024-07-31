@@ -1,6 +1,6 @@
 /* * * * * * * *\
 	GRPUPDAT.H -
-		Copyright (c) 2023 Vortesys
+		Copyright (c) 2024 Vortesys, Brady McDermott
 	DESCRIPTION -
 		Header containing classic program group structures
 		in order to facilitate conversion to the new format.

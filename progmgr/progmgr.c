@@ -1,6 +1,6 @@
 /* * * * * * * *\
 	PROGMGR.C -
-		Copyright (c) 2023 Vortesys
+		Copyright (c) 2024 Vortesys, Brady McDermott
 	DESCRIPTION -
 		Program Manager's main file, now with extra wWinMain!
 	LICENSE INFORMATION -

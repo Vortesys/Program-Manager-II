@@ -1,6 +1,6 @@
 /* * * * * * * *\
 	RESOURCE.H -
-		Copyright (c) 2023 Vortesys
+		Copyright (c) 2024 Vortesys, Brady McDermott
 	DESCRIPTION -
 		Program Manager's resource collection.
 		** NO DEPENDENCIES **
