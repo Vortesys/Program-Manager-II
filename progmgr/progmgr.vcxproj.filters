@@ -16,6 +16,9 @@
     <Filter Include="Language Resources">
       <UniqueIdentifier>{71dbbd6d-c82a-4fac-a0ff-74be88190f82}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\en-US">
+      <UniqueIdentifier>{2a11d118-5a5c-4681-86dc-31de4f0251ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="progmgr.h">
@@ -44,9 +47,6 @@
     <ClCompile Include="registry.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="desktop.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="sysint.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -59,19 +59,16 @@
     <ClCompile Include="dialog.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="desktop2.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
-    <ResourceCompile Include="lang\dlg_en-US.rc">
-      <Filter>Language Resources</Filter>
-    </ResourceCompile>
     <ResourceCompile Include="lang\res_en-US.rc">
-      <Filter>Language Resources</Filter>
+      <Filter>Resource Files\en-US</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="lang\dlg_en-US.rc">
+      <Filter>Resource Files\en-US</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
