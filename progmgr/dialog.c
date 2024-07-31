@@ -9,16 +9,18 @@
 \* * * * * * * */
 
 /* Headers */
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#include <Commctrl.h>
+#include <Commdlg.h>
+#include <Shlobj.h>
+#include <shlwapi.h>
+#include <shellapi.h>
+#include <strsafe.h>
 #include "progmgr.h"
 #include "dialog.h"
 #include "group.h"
 #include "resource.h"
-// #define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#include <Commctrl.h>
-#include <Shlobj.h>
-#include <shlwapi.h>
-#include <strsafe.h>
 
 /* Variables */
 WCHAR		szDlgTitle[64];

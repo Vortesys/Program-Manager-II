@@ -8,13 +8,13 @@
 \* * * * * * * */
 
 /* Headers */
-#include "progmgr.h"
-#include "group.h"
-#include "registry.h"
-// #define WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <shlwapi.h>
 #include <strsafe.h>
+#include "progmgr.h"
+#include "group.h"
+#include "registry.h"
 
 /* Variables */
 // Global HKEYs

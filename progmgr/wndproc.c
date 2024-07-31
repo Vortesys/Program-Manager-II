@@ -8,17 +8,18 @@
 \* * * * * * * */
 
 /* Headers */
+#define WIN32_LEAN_AND_MEAN
+#define SECURITY_WIN32
+#include <Windows.h>
+#include <strsafe.h>
+#include <shellapi.h>
+#include <Lmcons.h>
+#include <security.h>
 #include "progmgr.h"
 #include "dialog.h"
 #include "group.h"
 #include "resource.h"
 #include "registry.h"
-// #define WIN32_LEAN_AND_MEAN
-#define SECURITY_WIN32
-#include <Windows.h>
-#include <strsafe.h>
-#include <Lmcons.h>
-#include <security.h>
 
 /* Functions */
 

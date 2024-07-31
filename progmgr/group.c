@@ -8,17 +8,18 @@
 \* * * * * * * */
 
 /* Headers */
-#include "progmgr.h"
-#include "group.h"
-#include "resource.h"
-#include "registry.h"
-// #define WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <windowsx.h>
 #include <CommCtrl.h>
 #include <shlwapi.h>
+#include <shellapi.h>
 #include <strsafe.h>
 #include <uxtheme.h>
+#include "progmgr.h"
+#include "group.h"
+#include "resource.h"
+#include "registry.h"
 
 /* Variables */
 WNDCLASSEX wcGrp;

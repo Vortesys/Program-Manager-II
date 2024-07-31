@@ -9,8 +9,8 @@
 \* * * * * * * */
 
 /* Headers */
-#include "progmgr.h"
 #include <Windows.h>
+#include "progmgr.h"
 
 /* Structures */
 typedef struct _DPI

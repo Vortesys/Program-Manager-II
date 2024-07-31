@@ -8,13 +8,13 @@
 \* * * * * * * */
 
 /* Headers */
+#define WIN32_LEAN_AND_MEAN
+#define SECURITY_WIN32
+#include <Windows.h>
 #include "progmgr.h"
 #include "group.h"
 #include "resource.h"
 #include "registry.h"
-// #define WIN32_LEAN_AND_MEAN
-#define SECURITY_WIN32
-#include <Windows.h>
 
 /* Variables */
 // Global

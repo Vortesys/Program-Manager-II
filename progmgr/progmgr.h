@@ -11,12 +11,10 @@
 #pragma once
 #pragma comment(lib, "ComCtl32.lib")
 #pragma comment(lib, "Shlwapi.lib")
+#pragma comment(lib, "Shell32.lib")
 #pragma comment(lib, "Secur32.lib")
 #pragma comment(lib, "UxTheme.lib")
 #pragma comment(lib, "Version.lib")
-
-/* Includes */
-#include <wtypes.h>
 
 /* Macros and Defines */
 #define GET_WM_COMMAND_ID(wParam, lParam) LOWORD(wParam)

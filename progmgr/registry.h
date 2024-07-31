@@ -10,9 +10,6 @@
 /* Pragmas */
 #pragma once
 
-/* Includes */
-#include <wtypes.h>
-
 /* Defines */
 #define HKEYMAXLEN 261
 // Key Paths
