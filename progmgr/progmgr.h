@@ -15,6 +15,7 @@
 #pragma comment(lib, "Secur32.lib")
 #pragma comment(lib, "UxTheme.lib")
 #pragma comment(lib, "Version.lib")
+#pragma comment(lib, "Winmm.lib")
 
 /* Macros and Defines */
 #define GET_WM_COMMAND_ID(wParam, lParam) LOWORD(wParam)
@@ -30,23 +31,23 @@
 #define RF_RETRY            0x0002	// Cancel the operation, but leave the dialog open
 
 /* Global Variables */
-extern BOOL			bIsDefaultShell;
+extern BOOL			g_bIsDefaultShell;
 // Handles
-extern HINSTANCE	hAppInstance;
-extern HANDLE		hAppHeap;
-extern HWND			hWndProgMgr;
+extern HINSTANCE	g_hAppInstance;
+extern HANDLE		g_hAppHeap;
+extern HWND			g_hWndProgMgr;
 // Icons
-extern HICON		hProgMgrIcon;
-extern HICON		hGroupIcon;
+extern HICON		g_hProgMgrIcon;
+extern HICON		g_hGroupIcon;
 // Strings
-extern WCHAR		szAppTitle[64];
-extern WCHAR		szProgMgr[];
-extern WCHAR		szWebsite[64];
-extern WCHAR		szClass[16];
+extern WCHAR		g_szAppTitle[64];
+extern WCHAR		g_szProgMgr[];
+extern WCHAR		g_szWebsite[64];
+extern WCHAR		g_szClass[16];
 // Permissions
-extern BOOL bPermAdmin; // Has Administrator permissions
-extern BOOL bPermGuest; // Has Guest permissions
-extern BOOL bPermPower; // Has power option permissions
+extern BOOL g_bPermAdmin; // Has Administrator permissions
+extern BOOL g_bPermGuest; // Has Guest permissions
+extern BOOL g_bPermPower; // Has power option permissions
 
 /* Function Prototypes */
 BOOL UpdatePermissions(VOID);

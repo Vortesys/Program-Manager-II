@@ -19,27 +19,27 @@
 /* Variables */
 // Global
 #ifdef _DEBUG
-BOOL		bIsDebugBuild = TRUE;
+BOOL		g_bIsDebugBuild = TRUE;
 #else
-BOOL		bIsDebugBuild = FALSE;
+BOOL		g_bIsDebugBuild = FALSE;
 #endif
-BOOL		bIsDefaultShell = FALSE;
+BOOL		g_bIsDefaultShell = FALSE;
 // Handles
-HINSTANCE	hAppInstance;
-HANDLE		hAppHeap;
-HWND		hWndProgMgr = NULL;
+HINSTANCE	g_hAppInstance;
+HANDLE		g_hAppHeap;
+HWND		g_hWndProgMgr = NULL;
 // Icons
-HICON		hProgMgrIcon = NULL;
-HICON		hGroupIcon = NULL;
+HICON		g_hProgMgrIcon = NULL;
+HICON		g_hGroupIcon = NULL;
 // Global Strings
-WCHAR		szAppTitle[64];
-WCHAR		szProgMgr[] = TEXT("progmgr");
-WCHAR		szWebsite[64];
-WCHAR		szClass[16];
+WCHAR		g_szAppTitle[64];
+WCHAR		g_szProgMgr[] = TEXT("progmgr");
+WCHAR		g_szWebsite[64];
+WCHAR		g_szClass[16];
 // Permissions
-BOOL		bPermAdmin; // Has Administrator permissions
-BOOL		bPermGuest; // Has Guest permissions
-BOOL		bPermPower; // Has power option permissions
+BOOL		g_bPermAdmin; // Has Administrator permissions
+BOOL		g_bPermGuest; // Has Guest permissions
+BOOL		g_bPermPower; // Has power option permissions
 
 /* Functions */
 
@@ -54,9 +54,9 @@ BOOL		bPermPower; // Has power option permissions
 BOOL UpdatePermissions(VOID)
 {
 	// SE_SHUTDOWN_NAME
-	bPermAdmin = FALSE;
-	bPermGuest = FALSE;
-	bPermPower = FALSE;
+	g_bPermAdmin = FALSE;
+	g_bPermGuest = FALSE;
+	g_bPermPower = FALSE;
 	return FALSE;
 }
 
@@ -76,35 +76,35 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	POINT ptOffset = { 0 };
 
 	// Initialize the instance
-	hAppInstance = hInstance;
+	g_hAppInstance = hInstance;
 
 	// Create our global heap handle
-	hAppHeap = GetProcessHeap();
+	g_hAppHeap = GetProcessHeap();
 
 	// Create Strings
-	LoadString(hAppInstance, IDS_PMCLASS, szClass, ARRAYSIZE(szClass));
-	LoadString(hAppInstance, IDS_APPTITLE, szAppTitle, ARRAYSIZE(szAppTitle));
-	LoadString(hAppInstance, IDS_WEBSITE, szWebsite, ARRAYSIZE(szWebsite));
+	LoadString(g_hAppInstance, IDS_PMCLASS, g_szClass, ARRAYSIZE(g_szClass));
+	LoadString(g_hAppInstance, IDS_APPTITLE, g_szAppTitle, ARRAYSIZE(g_szAppTitle));
+	LoadString(g_hAppInstance, IDS_WEBSITE, g_szWebsite, ARRAYSIZE(g_szWebsite));
 
 	// Get Desktop background color
 	//CreateSolidBrush(GetBackgroundColor
 
 	// Register the Frame Window Class
 	wc.lpfnWndProc = WndProc;
-	wc.hInstance = hAppInstance;
-	wc.hIcon = hProgMgrIcon = LoadImage(hAppInstance, MAKEINTRESOURCE(IDI_PROGMGR), IMAGE_ICON,
+	wc.hInstance = g_hAppInstance;
+	wc.hIcon = g_hProgMgrIcon = LoadImage(g_hAppInstance, MAKEINTRESOURCE(IDI_PROGMGR), IMAGE_ICON,
 		0, 0, LR_DEFAULTSIZE | LR_SHARED);
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 	// wc.hbrBackground = (HBRUSH)(COLOR_BACKGROUND);
 	wc.hbrBackground = NULL;
 	wc.lpszMenuName = MAKEINTRESOURCE(IDM_MAIN);
-	wc.lpszClassName = szClass;
+	wc.lpszClassName = g_szClass;
 
 	if (!RegisterClass(&wc))
 		return FALSE;
 
 	// Load the Accelerator table
-	hAccel = LoadAccelerators(hAppInstance, MAKEINTRESOURCE(IDA_ACCELS));
+	hAccel = LoadAccelerators(g_hAppInstance, MAKEINTRESOURCE(IDA_ACCELS));
 	if (!hAccel)
 		return FALSE;
 
@@ -112,7 +112,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	if (!InitializeRegistryKeys())
 		return FALSE;
 	
-	bIsDefaultShell = IsProgMgrDefaultShell();
+	g_bIsDefaultShell = IsProgMgrDefaultShell();
 
 	// Load configuration, but don't load groups yet
 	if(LoadConfig(TRUE, TRUE, FALSE) != RCE_SUCCESS)
@@ -127,23 +127,23 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 	// Create main window with a default size
 	// TODO: i pulled 320x240 out of my ass, make this dynamic later
-	if ((hWndProgMgr = CreateWindowW(wc.lpszClassName, szAppTitle,
+	if ((g_hWndProgMgr = CreateWindowW(wc.lpszClassName, g_szAppTitle,
 		WS_OVERLAPPEDWINDOW | WS_VISIBLE,
 		rcRoot.left + ptOffset.x, rcRoot.top + ptOffset.y,
 		rcRoot.left + ptOffset.x + 320, rcRoot.top + ptOffset.y + 240,
-		0, 0, hAppInstance, NULL)) == NULL)
+		0, 0, g_hAppInstance, NULL)) == NULL)
 		return 2;
 
 	// Set the window size from the registry, but only if the coords make sense
 	if ((rcMainWindow.left != rcMainWindow.right) && (rcMainWindow.top != rcMainWindow.bottom))
-		SetWindowPos(hWndProgMgr, NULL,
+		SetWindowPos(g_hWndProgMgr, NULL,
 			rcMainWindow.left, rcMainWindow.top,
 			rcMainWindow.right - rcMainWindow.left,
 			rcMainWindow.bottom - rcMainWindow.top, SWP_NOZORDER);
 
 	// Load the menus...
-	hMenu = GetMenu(hWndProgMgr);
-	hSystemMenu = GetSystemMenu(hWndProgMgr, FALSE);
+	hMenu = GetMenu(g_hWndProgMgr);
+	hSystemMenu = GetSystemMenu(g_hWndProgMgr, FALSE);
 
 	// Update relevant parts of the window
 	UpdateChecks(bAutoArrange, IDM_OPTIONS, IDM_OPTIONS_AUTOARRANGE);
@@ -156,21 +156,21 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 	// Update settings based on their values
 	if (bTopMost)
-		SetWindowPos(hWndProgMgr, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+		SetWindowPos(g_hWndProgMgr, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
-	if (bIsDefaultShell)
+	if (g_bIsDefaultShell)
 	{
 		// Modify the context menus since we're the default shell
 		DeleteMenu(hSystemMenu, SC_CLOSE, MF_BYCOMMAND);
 
-		LoadString(hAppInstance, IDS_SHUTDOWN, szBuffer, ARRAYSIZE(szBuffer));
+		LoadString(g_hAppInstance, IDS_SHUTDOWN, szBuffer, ARRAYSIZE(szBuffer));
 		InsertMenu(hSystemMenu, 6, MF_BYPOSITION | MF_STRING, IDM_SHUTDOWN, szBuffer);
 		ModifyMenu(hMenu, IDM_FILE_EXIT, MF_BYCOMMAND | MF_STRING, IDM_SHUTDOWN, szBuffer);
 
-		LoadString(hAppInstance, IDS_RUN, szBuffer, ARRAYSIZE(szBuffer));
+		LoadString(g_hAppInstance, IDS_RUN, szBuffer, ARRAYSIZE(szBuffer));
 		InsertMenu(hSystemMenu, 6, MF_BYPOSITION | MF_STRING, IDM_FILE_RUN, szBuffer);
 
-		LoadString(hAppInstance, IDS_TASKMGR, szBuffer, ARRAYSIZE(szBuffer));
+		LoadString(g_hAppInstance, IDS_TASKMGR, szBuffer, ARRAYSIZE(szBuffer));
 		InsertMenu(hSystemMenu, 6, MF_BYPOSITION | MF_STRING, IDM_TASKMGR, szBuffer);
 		
 		// Create the desktop window...
@@ -184,7 +184,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	while (GetMessage(&msg, NULL, 0, 0) > 0)
 	{
 		if (!TranslateMDISysAccel(hWndMDIClient, &msg) &&
-			!TranslateAccelerator(hWndProgMgr, hAccel, &msg))
+			!TranslateAccelerator(g_hWndProgMgr, hAccel, &msg))
 		{
 			DispatchMessage(&msg);
 		}

@@ -43,22 +43,22 @@ BOOL InitializeGroups(VOID)
 	RECT rcFrame;
 
 	// Create the MDI Client Window
-	ccs.hWindowMenu = GetSubMenu(GetMenu(hWndProgMgr), 2);
+	ccs.hWindowMenu = GetSubMenu(GetMenu(g_hWndProgMgr), 2);
 	ccs.idFirstChild = IDM_WINDOW_CHILDSTART;
 
-	GetClientRect(hWndProgMgr, &rcFrame);
+	GetClientRect(g_hWndProgMgr, &rcFrame);
 
 	if ((hWndMDIClient = CreateWindowEx(WS_EX_COMPOSITED,
 		TEXT("MDIClient"), NULL, WS_CLIPCHILDREN | WS_CHILD |
 		WS_VSCROLL | WS_HSCROLL | WS_VISIBLE,
 		rcFrame.left, rcFrame.top, rcFrame.right, rcFrame.bottom,
-		hWndProgMgr, (HMENU)1, hAppInstance, (LPWSTR)&ccs)) == NULL)
+		g_hWndProgMgr, (HMENU)1, g_hAppInstance, (LPWSTR)&ccs)) == NULL)
 	{
 		return FALSE;
 	}
 
 	// Load the group class string
-	LoadString(hAppInstance, IDS_GRPCLASS,
+	LoadString(g_hAppInstance, IDS_GRPCLASS,
 		szGrpClass, ARRAYSIZE(szGrpClass));
 
 	// Register the group window class
@@ -67,8 +67,8 @@ BOOL InitializeGroups(VOID)
 	wce.lpfnWndProc = GroupWndProc;
 	wce.cbClsExtra = 0;
 	wce.cbWndExtra = 0;
-	wce.hInstance = hAppInstance;
-	wce.hIcon = hGroupIcon = LoadImage(hAppInstance,
+	wce.hInstance = g_hAppInstance;
+	wce.hIcon = g_hGroupIcon = LoadImage(g_hAppInstance,
 		MAKEINTRESOURCE(IDI_PROGGRP), IMAGE_ICON,
 		0, 0, LR_DEFAULTSIZE | LR_SHARED);
 	wce.hCursor = LoadCursor(NULL, IDC_ARROW);
@@ -131,7 +131,7 @@ HWND CreateGroup(_In_ PGROUP pg)
 
 	mcs.szClass = szGrpClass;
 	mcs.szTitle = pg->szName;
-	mcs.hOwner = hAppInstance;
+	mcs.hOwner = g_hAppInstance;
 	if ((pg->rcGroup.left == CW_USEDEFAULT) & (pg->rcGroup.right == CW_USEDEFAULT))
 	{
 		mcs.x = mcs.y = mcs.cx = mcs.cy = CW_USEDEFAULT;
@@ -175,7 +175,7 @@ HWND CreateGroup(_In_ PGROUP pg)
 		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		LVS_ICON | LVS_SINGLESEL | LVS_AUTOARRANGE,
 		mcs.x, mcs.y, mcs.cx, mcs.cy,
-		hWndGroup, NULL, hAppInstance, NULL)) == NULL)
+		hWndGroup, NULL, g_hAppInstance, NULL)) == NULL)
 		return NULL;
 
 	// ((LVS_AUTOARRANGE & bAutoArrange) * LVS_AUTOARRANGE)
@@ -290,7 +290,7 @@ PITEM CreateItem(_In_ HWND hWndGroup, _In_ PITEM pi)
 	hImageList = ListView_GetImageList(hWndListView, LVSIL_NORMAL);
 
 	// extract that icon son!!
-	hIcon = ExtractIcon(hAppInstance, (LPWSTR)pItem->szIconPath, pItem->iIconIndex);
+	hIcon = ExtractIcon(g_hAppInstance, (LPWSTR)pItem->szIconPath, pItem->iIconIndex);
 
 	// populate the listview with the relevant information
 	lvi.mask = LVIF_TEXT | LVIF_IMAGE | LVIF_PARAM;
@@ -363,7 +363,7 @@ BOOL LoadItems(_In_ HWND hWndGroup)
 		pItem = pGroup->pItemArray + cItemIndex;
 
 		// extract that icon son!!
-		hIcon = ExtractIcon(hAppInstance, (LPWSTR)pItem->szIconPath, pItem->iIconIndex);
+		hIcon = ExtractIcon(g_hAppInstance, (LPWSTR)pItem->szIconPath, pItem->iIconIndex);
 
 		// populate the listview with the relevant information
 		lvi.mask = LVIF_TEXT | LVIF_IMAGE | LVIF_PARAM;
@@ -415,7 +415,7 @@ BOOL RemoveItem(_In_ PITEM pi)
 BOOL ExecuteItem(_In_ PITEM pi)
 {
 	// TODO: nCmdShow from program item flags
-	ShellExecute(hWndProgMgr, TEXT("open"),
+	ShellExecute(g_hWndProgMgr, TEXT("open"),
 		pi->szExecPath, NULL,
 		(pi->szWorkPath != TEXT("")) ? pi->szWorkPath : NULL,
 		SW_NORMAL);

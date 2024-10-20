@@ -54,13 +54,13 @@ PWSTR pszSettingsMask = TEXT("SettingsMask");
 \* * * */
 BOOL InitializeRegistryKeys(VOID)
 {
-	if (!RegCreateKeyEx(HKEY_CURRENT_USER, PROGMGR_KEY, 0, szProgMgr, 0,
+	if (!RegCreateKeyEx(HKEY_CURRENT_USER, PROGMGR_KEY, 0, g_szProgMgr, 0,
 		KEY_READ | KEY_WRITE, NULL, &hKeyProgramManager, NULL))
 	{
 		// Create Program Groups and Settings keys
-		RegCreateKeyEx(hKeyProgramManager, pszProgramGroups, 0, szProgMgr, 0,
+		RegCreateKeyEx(hKeyProgramManager, pszProgramGroups, 0, g_szProgMgr, 0,
 			KEY_READ | KEY_WRITE, NULL, &hKeyProgramGroups, NULL);
-		RegCreateKeyEx(hKeyProgramManager, pszSettings, 0, szProgMgr, 0,
+		RegCreateKeyEx(hKeyProgramManager, pszSettings, 0, g_szProgMgr, 0,
 			KEY_READ | KEY_WRITE, NULL, &hKeySettings, NULL);
 		
 		return TRUE;
@@ -88,7 +88,7 @@ BOOL IsProgMgrDefaultShell(VOID)
 		if (RegQueryValueEx(hKeyWinlogon, TEXT("Shell"), 0, &dwType,
 			(LPBYTE)szShell, &dwBufferSize) == ERROR_SUCCESS)
 		{
-			if (StrStr(szShell, szProgMgr))
+			if (StrStr(szShell, g_szProgMgr))
 			{
 				// ProgMgr detected >:)
 				RegCloseKey(hKeyWinlogon);
@@ -170,7 +170,7 @@ DWORD SaveConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups, _In_ BO
 
 		// Get and save window position
 		wpProgMgr.length = sizeof(WINDOWPLACEMENT);
-		GetWindowPlacement(hWndProgMgr, &wpProgMgr);
+		GetWindowPlacement(g_hWndProgMgr, &wpProgMgr);
 		CopyRect(&rcWindow, &wpProgMgr.rcNormalPosition);
 
 		if (!RegSetValueEx(hKeySettings, pszSettingsWindow, 0, REG_BINARY,

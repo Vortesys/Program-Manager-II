@@ -15,6 +15,7 @@
 #include <shellapi.h>
 #include <Lmcons.h>
 #include <security.h>
+#include <Mmsystem.h>
 #include "progmgr.h"
 #include "dialog.h"
 #include "group.h"
@@ -36,6 +37,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_CREATE:
 	{
+		// Play the logon sound. (But only if we're the default shell)
+		if (g_bIsDefaultShell)
+			PlaySound(TEXT("WindowsLogon"), NULL, SND_ALIAS | SND_ASYNC);
 
 		return TRUE;
 	}
@@ -46,7 +50,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			if (wParam == IDM_TASKMGR)
 			{
-				ShellExecute(hWndProgMgr, TEXT("open"), TEXT("TASKMGR.EXE"), NULL, NULL, SW_NORMAL);
+				ShellExecute(g_hWndProgMgr, TEXT("open"), TEXT("TASKMGR.EXE"), NULL, NULL, SW_NORMAL);
 				return 0;
 			}
 
@@ -67,7 +71,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if (bSaveSettings)
 			SaveConfig(TRUE, TRUE, TRUE, TRUE);
 
-		if (bIsDefaultShell && (GetShellWindow() != NULL))
+		if (g_bIsDefaultShell && (GetShellWindow() != NULL))
 			SetShellWindow(0);
 
 		PostQuitMessage(0);
@@ -96,15 +100,15 @@ LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	{
 
 	case IDM_SHUTDOWN:
-		DialogBox(hAppInstance, MAKEINTRESOURCE(DLG_POWER), hWnd, (DLGPROC)ShutdownDlgProc);
+		DialogBox(g_hAppInstance, MAKEINTRESOURCE(DLG_POWER), hWnd, (DLGPROC)ShutdownDlgProc);
 		break;
 
 	case IDM_FILE_NEW_GROUP:
-		DialogBox(hAppInstance, MAKEINTRESOURCE(DLG_GROUP), hWnd, (DLGPROC)NewGroupDlgProc);
+		DialogBox(g_hAppInstance, MAKEINTRESOURCE(DLG_GROUP), hWnd, (DLGPROC)NewGroupDlgProc);
 		break;
 
 	case IDM_FILE_NEW_ITEM:
-		DialogBox(hAppInstance, MAKEINTRESOURCE(DLG_ITEM), hWnd, (DLGPROC)NewItemDlgProc);
+		DialogBox(g_hAppInstance, MAKEINTRESOURCE(DLG_ITEM), hWnd, (DLGPROC)NewItemDlgProc);
 		break;
 
 	case IDM_FILE_RUN:
@@ -127,7 +131,7 @@ LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	case IDM_OPTIONS_TOPMOST:
 		bTopMost = !bTopMost;
-		SetWindowPos(hWndProgMgr, bTopMost ? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+		SetWindowPos(g_hWndProgMgr, bTopMost ? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 		UpdateChecks(bTopMost, IDM_OPTIONS, IDM_OPTIONS_TOPMOST);
 		goto SaveConfig;
 
@@ -164,15 +168,15 @@ LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case IDM_HELP_INDEX:
-		ShellExecute(NULL, TEXT("open"), szWebsite, NULL, NULL, SW_SHOWNORMAL);
+		ShellExecute(NULL, TEXT("open"), g_szWebsite, NULL, NULL, SW_SHOWNORMAL);
 		break;
 
 	case IDM_HELP_ABOUT:
 	{
 		WCHAR szTitle[40];
 
-		LoadString(hAppInstance, IDS_APPTITLE, szTitle, ARRAYSIZE(szTitle));
-		ShellAbout(hWndProgMgr, szTitle, NULL, hProgMgrIcon);
+		LoadString(g_hAppInstance, IDS_APPTITLE, szTitle, ARRAYSIZE(szTitle));
+		ShellAbout(g_hWndProgMgr, szTitle, NULL, g_hProgMgrIcon);
 		break;
 	}
 
@@ -205,7 +209,7 @@ VOID UpdateChecks(BOOL bVarMenu, UINT uSubMenu, UINT uID)
 {
 	HMENU hMenu;
 
-	hMenu = GetMenu(hWndProgMgr);
+	hMenu = GetMenu(g_hWndProgMgr);
 	CheckMenuItem(hMenu, uID, (WORD)(bVarMenu ? MF_CHECKED : MF_UNCHECKED));
 
 	return;
@@ -222,13 +226,13 @@ VOID UpdateWindowTitle(VOID)
 {
 	WCHAR szUsername[UNLEN + 1] = TEXT("");
 	DWORD dwUsernameLen = UNLEN;
-	WCHAR szWindowTitle[UNLEN + ARRAYSIZE(szAppTitle) + 4] = TEXT("");
+	WCHAR szWindowTitle[UNLEN + ARRAYSIZE(g_szAppTitle) + 4] = TEXT("");
 
 	// Get user and domain name
 	GetUserNameEx(NameSamCompatible, szUsername, &dwUsernameLen);
 
 	// Add username to window title if settings permit
-	StringCchCopy(szWindowTitle, ARRAYSIZE(szAppTitle), szAppTitle);
+	StringCchCopy(szWindowTitle, ARRAYSIZE(g_szAppTitle), g_szAppTitle);
 
 	if (bShowUsername)
 	{
@@ -236,7 +240,7 @@ VOID UpdateWindowTitle(VOID)
 		StringCchCat(szWindowTitle, ARRAYSIZE(szWindowTitle), szUsername);
 	}
 
-	SetWindowText(hWndProgMgr, (LPCWSTR)&szWindowTitle);
+	SetWindowText(g_hWndProgMgr, (LPCWSTR)&szWindowTitle);
 
 	return;
 }

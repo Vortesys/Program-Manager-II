@@ -60,18 +60,18 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 		// grp.pItemArray = 0; TODO: idk make sure this ain't all screwed up
 
 		// Set the window title
-		LoadString(hAppInstance, IDS_DLT_GRP_NEW, szDlgTitle, ARRAYSIZE(szDlgTitle));
+		LoadString(g_hAppInstance, IDS_DLT_GRP_NEW, szDlgTitle, ARRAYSIZE(szDlgTitle));
 		SetWindowText(hWndDlg, szDlgTitle);
 		
 		// Populate the icon with the default path and index.
-		GetModuleFileName(hAppInstance, (LPWSTR)&grp.szIconPath, ARRAYSIZE(grp.szIconPath));
+		GetModuleFileName(g_hAppInstance, (LPWSTR)&grp.szIconPath, ARRAYSIZE(grp.szIconPath));
 		grp.iIconIndex = IDI_PROGGRP - 1;
 
 		// Get the default hIcon so we can delete it later
 		hIconDef = (HICON)SendDlgItemMessage(hWndDlg, IDD_STAT_ICON, STM_GETICON, 0, 0);
 
 		// Set the icon in the dialog
-		hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)&grp.szIconPath, grp.iIconIndex);
+		hIconDlg = ExtractIcon(g_hAppInstance, (LPWSTR)&grp.szIconPath, grp.iIconIndex);
 		SendDlgItemMessage(hWndDlg, IDD_STAT_ICON, STM_SETICON, (WPARAM)hIconDlg, 0);
 
 		// Set the maximum input length of the text boxes
@@ -81,7 +81,7 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 		EnableWindow(GetDlgItem(hWndDlg, IDD_OK), bOKEnabled);
 
 		// Enable the common group checkbox if perms are good
-		EnableWindow(GetDlgItem(hWndDlg, IDD_COMMGROUP), bPermAdmin);
+		EnableWindow(GetDlgItem(hWndDlg, IDD_COMMGROUP), g_bPermAdmin);
 
 		break;
 
@@ -106,7 +106,7 @@ BOOL CALLBACK NewGroupDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM 
 			if (PickIconDlg(hWndDlg, (LPWSTR)&grp.szIconPath, ARRAYSIZE(grp.szIconPath), &grp.iIconIndex) == TRUE)
 			{
 				// Since we've got the new icon...
-				hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)&grp.szIconPath, grp.iIconIndex);
+				hIconDlg = ExtractIcon(g_hAppInstance, (LPWSTR)&grp.szIconPath, grp.iIconIndex);
 				SendDlgItemMessage(hWndDlg, IDD_STAT_ICON, STM_SETICON, (WPARAM)hIconDlg, 0);
 			}
 
@@ -202,7 +202,7 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 		itm.uiHotkeyVirtualKey = 0;
 		
 		// Set the window title
-		LoadString(hAppInstance, IDS_DLT_ITEM_NEW, szDlgTitle, ARRAYSIZE(szDlgTitle));
+		LoadString(g_hAppInstance, IDS_DLT_ITEM_NEW, szDlgTitle, ARRAYSIZE(szDlgTitle));
 		SetWindowText(hWndDlg, szDlgTitle);
 
 		// Populate the icon with the default path and index.
@@ -213,7 +213,7 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 		hIconDef = (HICON)SendDlgItemMessage(hWndDlg, IDD_STAT_ICON, STM_GETICON, 0, 0);
 
 		// Set the icon in the dialog
-		hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)&itm.szIconPath, itm.iIconIndex);
+		hIconDlg = ExtractIcon(g_hAppInstance, (LPWSTR)&itm.szIconPath, itm.iIconIndex);
 		SendDlgItemMessage(hWndDlg, IDD_STAT_ICON, STM_SETICON, (WPARAM)hIconDlg, 0);
 
 		// Set the maximum input length of the text boxes
@@ -314,14 +314,14 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 			SetDlgItemText(hWndDlg, IDD_NAME, (LPWSTR)szNameBuffer);
 
 			// let's get the icon now
-			if (ExtractIcon(hAppInstance, (LPWSTR)szFileBuffer, -1) > 0)
+			if (ExtractIcon(g_hAppInstance, (LPWSTR)szFileBuffer, -1) > 0)
 			{
 				// file contains at least one icon, set the itm struct values
 				StringCchCopy(itm.szIconPath, ARRAYSIZE(itm.szIconPath), szFileBuffer);
 				itm.iIconIndex = 0;
 				
 				// update icon
-				hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)itm.szIconPath, itm.iIconIndex);
+				hIconDlg = ExtractIcon(g_hAppInstance, (LPWSTR)itm.szIconPath, itm.iIconIndex);
 				SendDlgItemMessage(hWndDlg, IDD_STAT_ICON, STM_SETICON, (WPARAM)hIconDlg, 0);
 			}
 
@@ -360,7 +360,7 @@ BOOL CALLBACK NewItemDlgProc(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 			if (PickIconDlg(hWndDlg, (LPWSTR)&itm.szIconPath, ARRAYSIZE(itm.szIconPath), &itm.iIconIndex) == TRUE)
 			{
 				// Since we've got the new icon...
-				hIconDlg = ExtractIcon(hAppInstance, (LPWSTR)itm.szIconPath, itm.iIconIndex);
+				hIconDlg = ExtractIcon(g_hAppInstance, (LPWSTR)itm.szIconPath, itm.iIconIndex);
 				SendDlgItemMessage(hWndDlg, IDD_STAT_ICON, STM_SETICON, (WPARAM)hIconDlg, 0);
 			}
 
