@@ -25,6 +25,7 @@
 WNDCLASSEX wcGrp;
 WCHAR szGrpClass[16];
 HWND hWndMDIClient = NULL;
+HWND hWndFoundGroup = NULL;
 
 /* Functions */
 
@@ -138,13 +139,6 @@ HWND CreateGroup(_In_ PGROUP pg)
 	{
 		mcs.x = mcs.y = mcs.cx = mcs.cy = CW_USEDEFAULT;
 	}
-	else
-	{
-		mcs.x = pg->rcGroup.left;
-		mcs.y = pg->rcGroup.top;
-		mcs.cx = pg->rcGroup.right - pg->rcGroup.left;
-		mcs.cy = pg->rcGroup.bottom - pg->rcGroup.top;
-	}
 	mcs.style = WS_VISIBLE | WS_THICKFRAME | WS_CAPTION | WS_BORDER | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
 	// TODO: should I pass the pointer to the group through here
 	// or is it better and easier to just do it with GWLP_USERDATA?
@@ -156,6 +150,10 @@ HWND CreateGroup(_In_ PGROUP pg)
 
 	// Associate the group structure pointer to the group window
 	SetWindowLongPtr(hWndGroup, GWLP_USERDATA, (LONG_PTR)pGroup);
+
+	// Resize the group
+	if (pg->wp.length == sizeof(WINDOWPLACEMENT))
+		SetWindowPlacement(hWndGroup, &pg->wp);
 
 	// Load the group icon
 	if (ExtractIconEx(pg->szIconPath, pg->iIconIndex, &hIconLarge, &hIconSmall, 1))
@@ -444,6 +442,8 @@ BOOL ExecuteItem(_In_ PITEM pi)
 VOID UpdateGroup(_In_ PGROUP pg)
 {
 	DWORD dwFlags = 0;
+	HWND hWndGroup = NULL;
+
 	// Set the important flags
 	pg->dwSignature = GRP_SIGNATURE;
 	pg->wVersion = GRP_VERSION;
@@ -452,16 +452,53 @@ VOID UpdateGroup(_In_ PGROUP pg)
 	pg->wChecksum = 1; // NOTE: implement this for real later lol
 
 	// TODO: set name and group flags
-	// pg->szName = GetWindowText(blah blah blah);
 	// pg->dwFlags = GRP_FLAG_MAXIMIZED;// GetGroupFlags(pgw);
 
 	// Set FILETIME
 	GetSystemTimeAsFileTime(&pg->ftLastWrite);
 	
-	// Get the group window rect
-	// GetClientRect(hWndGroup, &rcGroupWindow);
+	if (hWndGroup = GetHwndFromPGroup(pg))
+	{
+		// Get the group window rect and name
+		pg->wp.length = sizeof(WINDOWPLACEMENT);
+		GetWindowPlacement(hWndGroup, &pg->wp);
+		GetWindowText(hWndGroup, pg->szName, ARRAYSIZE(pg->szName));
+	}
 
 	return;
+}
+
+/* * * *\
+	GetHwndFromPGroup -
+		In goes a PGROUP out comes a HWND
+	RETURNS -
+		HWND.
+\* * * */
+HWND GetHwndFromPGroup(_In_ PGROUP pg)
+{
+	EnumChildWindows(g_hWndProgMgr, &GetHwndFromPGroupEnum, (LPARAM)pg);
+
+	return hWndFoundGroup;
+}
+
+/* * * *\
+	GetHwndFromPGroupEnum -
+		Enum Function
+	RETURNS -
+		HWND.
+\* * * */
+BOOL GetHwndFromPGroupEnum(_In_ HWND hwnd, _In_ LPARAM lParam)
+{
+	if (lParam == GetWindowLongPtr(hwnd, GWLP_USERDATA))
+	{
+		hWndFoundGroup = hwnd;
+		return FALSE;
+	}
+	else
+	{
+		hWndFoundGroup = NULL;
+		return TRUE;
+	}
 }
 
 /* * * *\

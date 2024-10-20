@@ -57,6 +57,7 @@ typedef struct _GROUP {
 	FILETIME ftLastWrite;
 	// Window information
 	RECT rcGroup;
+	WINDOWPLACEMENT wp;
 	// Icon
 	WCHAR szIconPath[MAX_PATH + 1];
 	INT iIconIndex;
@@ -85,5 +86,7 @@ VOID UpdateGroup(_In_ PGROUP pg);
 BOOL VerifyGroup(_In_ PGROUP pg, _In_ BOOL bRepair);
 // Helper functions
 UINT CalculateGroupMemory(_In_ PGROUP pGroup, _In_ UINT cItems, _In_ BOOL bLean);
+HWND GetHwndFromPGroup(_In_ PGROUP pg);
+BOOL GetHwndFromPGroupEnum(_In_ HWND hwnd, _In_ LPARAM lParam);
 // Group Window
 LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
