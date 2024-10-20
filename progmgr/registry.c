@@ -304,17 +304,27 @@ DWORD LoadConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups)
 			for (i = 0; i < cGroupVals; i++)
 			{
 				WCHAR szGroupValName[MAX_TITLE_LENGTH] = TEXT("");
-				UINT cbGroupValName = 0;
+				UINT cbGroupValName = MAX_TITLE_LENGTH;
 				UINT cbGroup = 0;
 				PGROUP pGroup = NULL;
+				LSTATUS error = ERROR_SUCCESS;
 
 				// TODO: figure out where i'm really going to store the
 				// group name, if not in the group structure then in
 				// the name of the registry key (val 3 here)
 
 				// get the size of the group
-				RegEnumValue(hKeyProgramGroups, i, (LPWSTR)&szGroupValName,
+				error = RegEnumValue(hKeyProgramGroups, i, (LPWSTR)&szGroupValName,
 					&cbGroupValName, NULL, NULL, NULL, &cbGroup);
+
+				if (error == ERROR_NO_MORE_ITEMS)
+					break;
+				else if (error != ERROR_SUCCESS)
+				{
+					OutputDebugString(TEXT("REGISTRY.C: RegEnumValue failure.\n"));
+					break;
+				}
+
 
 				// allocate memory for the group
 				pGroup = malloc(cbGroup);
@@ -326,25 +336,52 @@ DWORD LoadConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups)
 				}
 
 				// retrieve the group
-				RegGetValue(hKeyProgramGroups, NULL, (LPWSTR)&szGroupValName,
-					RRF_RT_REG_BINARY, NULL, pGroup, &cbGroup);
+				// TODO: add error_checking, ERROR_FILE_NOT_FOUND
+				// stuff like that, please
+				// error checking makes reliability....
+				error = RegGetValue(hKeyProgramGroups, NULL, szGroupValName, RRF_RT_REG_BINARY, NULL, pGroup, &cbGroup);
+				/*error = RegQueryValueEx(hKeyProgramGroups, szGroupValName, NULL, NULL, pGroup, &cbGroup);*/
+				if (error == ERROR_FILE_NOT_FOUND)
+				{
+					OutputDebugString(TEXT("REGISTRY.C: Group not found!\n"));
 
-				OutputDebugString(TEXT("REGISTRY.C: Group retrieved.\n"));
+					dwConfigStatus = dwConfigStatus && RCE_GROUPS;
+				}
+				if (error == ERROR_MORE_DATA)
+				{
+					OutputDebugString(TEXT("REGISTRY.C: Buffer too small!\n"));
+
+					dwConfigStatus = dwConfigStatus && RCE_GROUPS;
+				}
+				else if (error != ERROR_SUCCESS)
+				{
+					OutputDebugString(TEXT("REGISTRY.C: Group retrieval failed!\n"));
+
+					dwConfigStatus = dwConfigStatus && RCE_GROUPS;
+				}
+				else
+					OutputDebugString(TEXT("REGISTRY.C: Group retrieved.\n"));
 
 				// create the group
 				if (pGroup)
 				{
-					CreateGroup(pGroup);
-
-					OutputDebugString(TEXT("REGISTRY.C: Group created.\n"));
+					if (pGroup->dwSignature == GRP_SIGNATURE)
+					{
+						CreateGroup(pGroup);
+						OutputDebugString(TEXT("REGISTRY.C: Group created.\n"));
+					}
+					else
+					{
+						OutputDebugString(TEXT("REGISTRY.C: Group creation aborted.\n"));
+					}
 
 					// free memory
 					free(pGroup);
 				}
 				else
 				{
-					dwConfigStatus = dwConfigStatus && RCE_SETTINGS;
-					OutputDebugString(TEXT("REGISTRY.C: Failed create group!\n"));
+					dwConfigStatus = dwConfigStatus && RCE_GROUPS;
+					OutputDebugString(TEXT("REGISTRY.C: Failed to create group!\n"));
 				}
 			}
 		}

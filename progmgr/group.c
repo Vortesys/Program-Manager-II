@@ -113,6 +113,8 @@ HWND CreateGroup(_In_ PGROUP pg)
 
 	// error checking, if we get trash don't try to
 	// make a group out of it
+	// TODO: if a group is garbled, throw an error
+	// and ask the user if they want to delete it!
 	if (pg->dwSignature != GRP_SIGNATURE)
 		return NULL;
 
