@@ -279,64 +279,74 @@ DWORD LoadConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups)
 	{
 		DWORD dwBufferSize = sizeof(dwSettingsMask);
 		DWORD dwType = REG_BINARY;
-		PGROUP pGroup = NULL;
-		UINT cbGroup = 0;
-		UINT cGroupKeys = 0;
-		UINT cGroupIndex = 0;
+		UINT cGroupVals = 0;
 
+		OutputDebugString(TEXT("REGISTRY.C: Loading groups...\n"));
+
+		// Get the num of group values, if we fail then ABORT!
 		if (!(RegQueryInfoKey(hKeyProgramGroups, NULL, NULL, NULL,
-			NULL, NULL, NULL, &cGroupKeys,
+			NULL, NULL, NULL, &cGroupVals,
 			NULL, NULL, NULL, NULL) == ERROR_SUCCESS))
 		{
 			dwConfigStatus = dwConfigStatus && RCE_SETTINGS;
 
 			// I can get away with returning here upon
 			// failure since this is the last one
+			OutputDebugString(TEXT("REGISTRY.C: Failed to get # of values!\n"));
 			return dwConfigStatus;
 		}
 
-		if (cGroupKeys > 0)
+		// Enumerate through the registry values
+		if (cGroupVals)
 		{
-			while (cGroupKeys >= cGroupIndex)
+			DWORD i = 0;
+
+			for (i = 0; i < cGroupVals; i++)
 			{
-				WCHAR szValueName[MAX_TITLE_LENGTH] = TEXT("");
-				UINT cbValueName = 0;
+				WCHAR szGroupValName[MAX_TITLE_LENGTH] = TEXT("");
+				UINT cbGroupValName = 0;
+				UINT cbGroup = 0;
+				PGROUP pGroup = NULL;
 
 				// TODO: figure out where i'm really going to store the
 				// group name, if not in the group structure then in
 				// the name of the registry key (val 3 here)
 
 				// get the size of the group
-				RegEnumValue(hKeyProgramGroups, cGroupIndex, (LPWSTR)&szValueName,
-					&cbValueName, NULL, NULL, NULL, &cbGroup);
+				RegEnumValue(hKeyProgramGroups, i, (LPWSTR)&szGroupValName,
+					&cbGroupValName, NULL, NULL, NULL, &cbGroup);
 
 				// allocate memory for the group
 				pGroup = malloc(cbGroup);
-				
+
 				if (pGroup == NULL)
 				{
 					dwConfigStatus = dwConfigStatus && RCE_GROUPS;
 					return dwConfigStatus;
 				}
 
-				ZeroMemory(pGroup, cbGroup);
+				// retrieve the group
+				RegGetValue(hKeyProgramGroups, NULL, (LPWSTR)&szGroupValName,
+					RRF_RT_REG_BINARY, NULL, pGroup, &cbGroup);
 
-				// get the group
-				RegQueryValueEx(hKeyProgramGroups, (LPWSTR)&szValueName, NULL, NULL,
-					(LPBYTE)pGroup, &cbGroup);
+				OutputDebugString(TEXT("REGISTRY.C: Group retrieved.\n"));
 
-				// load the group
+				// create the group
 				if (pGroup)
 				{
 					CreateGroup(pGroup);
 
+					OutputDebugString(TEXT("REGISTRY.C: Group created.\n"));
+
 					// free memory
 					free(pGroup);
 				}
+				else
+				{
+					dwConfigStatus = dwConfigStatus && RCE_SETTINGS;
+					OutputDebugString(TEXT("REGISTRY.C: Failed create group!\n"));
+				}
 			}
-
-			// increment
-			cGroupIndex++;
 		}
 	}
 
