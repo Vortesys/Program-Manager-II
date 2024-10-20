@@ -26,7 +26,6 @@ BOOL		g_bIsDebugBuild = FALSE;
 BOOL		g_bIsDefaultShell = FALSE;
 // Handles
 HINSTANCE	g_hAppInstance;
-HANDLE		g_hAppHeap;
 HWND		g_hWndProgMgr = NULL;
 // Icons
 HICON		g_hProgMgrIcon = NULL;
@@ -77,9 +76,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 	// Initialize the instance
 	g_hAppInstance = hInstance;
-
-	// Create our global heap handle
-	g_hAppHeap = GetProcessHeap();
 
 	// Create Strings
 	LoadString(g_hAppInstance, IDS_PMCLASS, g_szClass, ARRAYSIZE(g_szClass));

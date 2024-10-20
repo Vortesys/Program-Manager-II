@@ -34,7 +34,6 @@
 extern BOOL			g_bIsDefaultShell;
 // Handles
 extern HINSTANCE	g_hAppInstance;
-extern HANDLE		g_hAppHeap;
 extern HWND			g_hWndProgMgr;
 // Icons
 extern HICON		g_hProgMgrIcon;
