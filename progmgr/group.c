@@ -572,10 +572,6 @@ UINT CalculateGroupMemory(_In_ PGROUP pGroup, _In_ UINT cItems, _In_ BOOL bLean)
 \* * * */
 LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	HWND hWndListView = NULL;
-
-	// find the listview control
-	hWndListView = FindWindowEx(hWnd, NULL, WC_LISTVIEW, NULL);
 
 	switch (message)
 	{
@@ -612,6 +608,12 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 	case WM_NOTIFY:
 	{
 		LPNMHDR lpnmhdr = (LPNMHDR)lParam;
+		HWND hWndListView = NULL;
+
+		// find the listview control
+		hWndListView = FindWindowEx(hWnd, NULL, WC_LISTVIEW, NULL);
+		if (hWndListView == NULL)
+			break;
 
 		switch (lpnmhdr->code)
 		{
@@ -652,6 +654,9 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 
 		// get the group window rect
 		GetClientRect(hWnd, &rcGroupWindow);
+
+		// find the listview control
+		hWndListView = FindWindowEx(hWnd, NULL, WC_LISTVIEW, NULL);
 		if (hWndListView == NULL)
 			break;
 		
