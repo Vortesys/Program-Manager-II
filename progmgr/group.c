@@ -476,7 +476,7 @@ VOID UpdateGroup(_In_ PGROUP pg)
 \* * * */
 HWND GetHwndFromPGroup(_In_ PGROUP pg)
 {
-	EnumChildWindows(g_hWndProgMgr, &GetHwndFromPGroupEnum, (LPARAM)pg);
+	EnumChildWindows(g_hWndProgMgr, (WNDENUMPROC)GetHwndFromPGroupEnum, (LPARAM)pg);
 
 	return hWndFoundGroup;
 }
