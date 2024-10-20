@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Language Resources">
+      <UniqueIdentifier>{71dbbd6d-c82a-4fac-a0ff-74be88190f82}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Resource Files\en-US">
       <UniqueIdentifier>{2a11d118-5a5c-4681-86dc-31de4f0251ff}</UniqueIdentifier>
     </Filter>
