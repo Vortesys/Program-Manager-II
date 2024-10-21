@@ -69,18 +69,29 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	HANDLE hAccel;
 	HMENU hMenu;
 	HMENU hSystemMenu;
+	HWND hOldProgMgr;
 	WNDCLASS wc = { 0 };
 	WCHAR szBuffer[MAX_PATH];
 	RECT rcRoot;
 	POINT ptOffset = { 0 };
 
-	// Initialize the instance
+	// Grab the instance
 	g_hAppInstance = hInstance;
 
 	// Create Strings
 	LoadString(g_hAppInstance, IDS_PMCLASS, g_szClass, ARRAYSIZE(g_szClass));
 	LoadString(g_hAppInstance, IDS_APPTITLE, g_szAppTitle, ARRAYSIZE(g_szAppTitle));
 	LoadString(g_hAppInstance, IDS_WEBSITE, g_szWebsite, ARRAYSIZE(g_szWebsite));
+
+	// Lazily search for another instance of Program Manager
+	// If we find one, switch focus to it and then abort.
+	hOldProgMgr = FindWindowEx(NULL, NULL, g_szClass, NULL);
+
+	if (hOldProgMgr != NULL)
+	{
+		SwitchToThisWindow(hOldProgMgr, FALSE);
+		return FALSE;
+	}
 
 	// Get Desktop background color
 	//CreateSolidBrush(GetBackgroundColor
