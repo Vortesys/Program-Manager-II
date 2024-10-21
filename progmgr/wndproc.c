@@ -68,16 +68,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		return DefFrameProc(hWnd, hWndMDIClient, message, wParam, lParam);
 
 	case WM_CLOSE:
+	case WM_ENDSESSION:
 		if (bSaveSettings)
 			SaveConfig(TRUE, TRUE, TRUE, TRUE);
 
 		if (g_bIsDefaultShell && (GetShellWindow() != NULL))
 			SetShellWindow(0);
 
-		PostQuitMessage(0);
-		break;
-
-	case WM_ENDSESSION:
 		PostQuitMessage(0);
 		break;
 

@@ -336,11 +336,8 @@ DWORD LoadConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups)
 				}
 
 				// retrieve the group
-				// TODO: add error_checking, ERROR_FILE_NOT_FOUND
-				// stuff like that, please
-				// error checking makes reliability....
 				error = RegGetValue(hKeyProgramGroups, NULL, szGroupValName, RRF_RT_REG_BINARY, NULL, pGroup, &cbGroup);
-				/*error = RegQueryValueEx(hKeyProgramGroups, szGroupValName, NULL, NULL, pGroup, &cbGroup);*/
+
 				if (error == ERROR_FILE_NOT_FOUND)
 				{
 					OutputDebugString(TEXT("REGISTRY.C: Group not found!\n"));
