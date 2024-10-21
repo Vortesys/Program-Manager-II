@@ -304,7 +304,7 @@ DWORD LoadConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups)
 			for (i = 0; i < cGroupVals; i++)
 			{
 				WCHAR szGroupValName[MAX_TITLE_LENGTH] = TEXT("");
-				UINT cbGroupValName = MAX_TITLE_LENGTH;
+				UINT cbGroupValName = ARRAYSIZE(szGroupValName);
 				UINT cbGroup = 0;
 				PGROUP pGroup = NULL;
 				LSTATUS error = ERROR_SUCCESS;
