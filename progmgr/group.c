@@ -453,7 +453,7 @@ VOID UpdateGroup(_In_ PGROUP pg)
 	// Set the group checksum
 	pg->wChecksum = 1; // NOTE: implement this for real later lol
 
-	// TODO: set name and group flags
+	// TODO: group flags
 	// pg->dwFlags = GRP_FLAG_MAXIMIZED;// GetGroupFlags(pgw);
 
 	// Set FILETIME
