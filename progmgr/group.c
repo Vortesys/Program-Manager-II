@@ -699,8 +699,34 @@ LRESULT CALLBACK GroupCmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	switch (GET_WM_COMMAND_ID(wParam, lParam))
 	{
 	case IDM_FILE_OPEN:
-		// TODO: ITEM Get currently selected item(s) from listview and open them
-		break;
+	{
+		HWND hWndListView = NULL;
+		LVITEM lvi = { 0 };
+		PITEM pItem = NULL;
+
+		// find the listview control
+		hWndListView = FindWindowEx(hWnd, NULL, WC_LISTVIEW, NULL);
+		if (hWndListView == NULL)
+			break;
+
+		// what info do we want?
+		lvi.mask = LVIF_PARAM;
+		lvi.iItem = ((LPNMITEMACTIVATE)lParam)->iItem;
+
+		// get the listview item
+		ListView_GetItem(hWndListView, &lvi);
+
+		// get the item pointer
+		pItem = (PITEM)lvi.lParam;
+
+		// verify...
+		if (pItem)
+		{
+			// and execute!
+			ExecuteItem(pItem);
+		}
+
+	}
 
 	case IDM_FILE_MOVE:
 		// TODO: ITEM Create dialog with other MDI groups, pick one to move item
