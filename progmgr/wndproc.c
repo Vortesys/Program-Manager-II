@@ -232,7 +232,7 @@ VOID UpdateChecks(BOOL bVarMenu, UINT uSubMenu, UINT uID)
 \* * * */
 VOID UpdateWindowTitle(VOID)
 {
-	WCHAR szUsername[UNLEN + 1] = TEXT("");
+	WCHAR szUsername[UNLEN] = TEXT("");
 	DWORD dwUsernameLen = UNLEN;
 	WCHAR szWindowTitle[UNLEN + ARRAYSIZE(g_szAppTitle) + 4] = TEXT("");
 
