@@ -108,6 +108,17 @@ LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		DialogBox(g_hAppInstance, MAKEINTRESOURCE(DLG_ITEM), hWnd, (DLGPROC)NewItemDlgProc);
 		break;
 
+	case IDM_FILE_OPEN:
+	case IDM_FILE_MOVE:
+	case IDM_FILE_COPY:
+	case IDM_FILE_DELETE:
+	case IDM_FILE_PROPS:
+	{
+		SendMessage((HWND)SendMessage(hWnd, WM_MDIGETACTIVE, NULL, NULL), WM_COMMAND, wParam, lParam);
+
+		break;
+	}
+
 	case IDM_FILE_RUN:
 		RunFileDlg(hWnd, NULL, NULL, NULL, NULL, RFF_CALCDIRECTORY);
 		break;

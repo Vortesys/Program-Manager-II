@@ -90,3 +90,4 @@ HWND GetHwndFromPGroup(_In_ PGROUP pg);
 BOOL GetHwndFromPGroupEnum(_In_ HWND hwnd, _In_ LPARAM lParam);
 // Group Window
 LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK GroupCmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam);

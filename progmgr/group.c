@@ -423,6 +423,8 @@ BOOL ExecuteItem(_In_ PITEM pi)
 	// TODO: if item has run as admin as a flag,
 	// run it as an admin
 
+	// TODO: if path is invalid or other error then tell the user
+
 	// TODO: make sure environment is
 	// refreshed before execution
 	return FALSE;
@@ -585,7 +587,15 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 		pCreateStruct = (CREATESTRUCT*)lParam;
 		pMDICreateStruct = (MDICREATESTRUCT*)pCreateStruct->lpCreateParams;
 
-		return 0;
+		return DefMDIChildProc(hWnd, message, wParam, lParam);
+	}
+
+	case WM_SYSCOMMAND:
+	{
+		if (CmdProc(hWnd, wParam, lParam))
+			return 0;
+
+		return DefMDIChildProc(hWnd, message, wParam, lParam);
 	}
 
 	case WM_CONTEXTMENU:
@@ -643,8 +653,10 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 			break;
 		}
 
+		default:
+			break;
 		}
-		return 0;
+		return DefMDIChildProc(hWnd, message, wParam, lParam);
 	}
 
 	case WM_SIZE:
@@ -673,5 +685,44 @@ LRESULT CALLBACK GroupWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
 		return DefMDIChildProc(hWnd, message, wParam, lParam);
 	}
 
-	return TRUE;
+	return DefMDIChildProc(hWnd, message, wParam, lParam);
+}
+
+/* * * *\
+	GroupCmdProc -
+		Group syscommand procedure.
+	RETURNS -
+		Zero if nothing, otherwise returns the good stuff.
+\* * * */
+LRESULT CALLBACK GroupCmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	switch (GET_WM_COMMAND_ID(wParam, lParam))
+	{
+	case IDM_FILE_OPEN:
+		// TODO: ITEM Get currently selected item(s) from listview and open them
+		break;
+
+	case IDM_FILE_MOVE:
+		// TODO: ITEM Create dialog with other MDI groups, pick one to move item
+		break;
+
+	case IDM_FILE_COPY:
+		// TODO: ITEM Copy item structure to clipboard
+		break;
+
+	case IDM_FILE_DELETE:
+		// TODO: ITEM/GROUP Delete selected item, if no items selected or no items
+		// exist then delete the group
+		break;
+
+	case IDM_FILE_PROPS:
+		// TODO: ITEM/GROUP Open properties of selected item or if nothing selected
+		// then open group properties
+		break;
+
+	default:
+		return 0;
+	}
+
+	return 0;
 }
