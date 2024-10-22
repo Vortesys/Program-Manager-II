@@ -114,7 +114,7 @@ LRESULT CALLBACK CmdProc(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case IDM_FILE_DELETE:
 	case IDM_FILE_PROPS:
 	{
-		SendMessage((HWND)SendMessage(hWnd, WM_MDIGETACTIVE, NULL, NULL), WM_COMMAND, wParam, lParam);
+		SendMessage((HWND)SendMessage(hWnd, WM_MDIGETACTIVE, (WPARAM)NULL, (LPARAM)NULL), WM_COMMAND, wParam, lParam);
 
 		break;
 	}
