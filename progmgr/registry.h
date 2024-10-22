@@ -48,6 +48,7 @@ BOOL InitializeRegistryKeys(VOID);
 BOOL IsProgMgrDefaultShell(VOID);
 // Groups
 DWORD RegistrySaveGroup(_In_ PGROUP pg);
+DWORD RegistryRemoveGroup(_In_ PGROUP pg);
 // Settings
 DWORD SaveConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups, _In_ BOOL bExit);
 DWORD LoadConfig(_In_ BOOL bSettings, _In_ BOOL bPos, _In_ BOOL bGroups);

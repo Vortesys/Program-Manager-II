@@ -114,25 +114,43 @@ BOOL IsProgMgrDefaultShell(VOID)
 
 /* * * *\
 	RegistrySaveGroup -
-		Saves a group structure to registry.
+		Saves a group structure to the registry.
 	RETURNS -
 		RCE_* configuration error value
 \* * * */
 DWORD RegistrySaveGroup(_In_ PGROUP pg)
 {
-	DWORD dwConfigStatus = RCE_SUCCESS;
-
-	// If the pointer is invalid then fail out
-	if (pg == NULL)
+	// If the pointer or HKEY is invalid then fail out
+	if ((pg == NULL) || (hKeyProgramGroups == NULL))
 		return RCE_FAILURE;
 
 	// Save group
 	UpdateGroup(pg);
 	if (!RegSetValueEx(hKeyProgramGroups, pg->szName, 0, REG_BINARY,
 		(const BYTE*)pg, sizeof(*pg)) == ERROR_SUCCESS)
-		dwConfigStatus = dwConfigStatus && RCE_GROUPS;
+		return RCE_GROUPS;
 
-	return dwConfigStatus;
+	return RCE_SUCCESS;
+}
+
+/* * * *\
+	RegistryRemoveGroup -
+		Removes a group structure from the registry.
+	RETURNS -
+		RCE_* configuration error value
+\* * * */
+DWORD RegistryRemoveGroup(_In_ PGROUP pg)
+{
+	// If the pointer or HKEY is invalid then fail out
+	if ((pg == NULL) || (hKeyProgramGroups == NULL))
+		return RCE_FAILURE;
+
+	// Try to remove the group matching the name
+	// If we fail, group does not exist in the registry
+	if (RegDeleteValue(hKeyProgramGroups, pg->szName) != ERROR_SUCCESS)
+		return RCE_FAILURE;
+
+	return RCE_SUCCESS;
 }
 
 /* * * *\
